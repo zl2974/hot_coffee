@@ -9,6 +9,7 @@ knitr::opts_chunk$set(echo = TRUE)
 ```
 
 <h1><center>Risky Coffee? Or...Not?</center></h1>
+<h2><center>Examing the risk of parking violation in different boroughs in NYC</center></h2>
 
 # Motivation
 
@@ -30,7 +31,7 @@ knitr::opts_chunk$set(echo = TRUE)
 
 # Research questions
 
-\ In this project, we are interested in using quantitative data to assess whether streets with cafes are easier to generate parking tickets and how much fine- amount are possibly associated with coffee. We are also interested in the association between parking violations and time period during a day and different boroughs.
+\ In this project, we are interested in using quantitative data to assess whether streets with cafes are easier to generate parking tickets and how much fine- amount are possibly associated with boroughs. We are also interested in the association between parking violations and time period during a day and different boroughs.
 
 # Analysis/Visualizations
 

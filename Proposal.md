@@ -13,6 +13,16 @@ Risky Coffee? Or…Not?
 
 </h1>
 
+<h2>
+
+<center>
+
+Examing the risk of parking violation in different boroughs in NYC
+
+</center>
+
+</h2>
+
 # Motivation
 
 ![Tweets](./file/tweets.png)
@@ -47,7 +57,7 @@ nearest location to have a cup of coffee without receiving a ticket.
 
  In this project, we are interested in using quantitative data to assess
 whether streets with cafes are easier to generate parking tickets and
-how much fine- amount are possibly associated with coffee. We are also
+how much fine- amount are possibly associated with boroughs. We are also
 interested in the association between parking violations and time period
 during a day and different boroughs.
 
