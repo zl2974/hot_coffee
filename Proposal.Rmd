@@ -1,6 +1,6 @@
 ---
 title: "Project Proposal"
-author : Zhuohui Liang(zl2974), Chufeng Yang(cy2588), Yiming Zhao(), Yu Liu(yl4604)
+author : Zhuohui Liang(zl2974), Chufeng Yang(cy2588), Yiming Zhao(yz3955), Yu Liu(yl4604)
 output: github_document
 ---
 
@@ -45,6 +45,9 @@ knitr::opts_chunk$set(echo = TRUE)
 3. The Shiny app we plan to develop has at least 2 paths of interaction, meaning we need at least  2 modules to produce A to B and B to A. It can be coding intensive and might only finish one module by the time of Due.
 
 # Timeline
-
-
+```{r echo = F, message=F}
+library(tidyverse)
+readxl::read_excel(here::here("YOU FILE HERE")) %>% 
+  knitr::kable(caption = "Timeline")
+```
 
