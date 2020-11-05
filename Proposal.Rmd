@@ -34,6 +34,16 @@ knitr::opts_chunk$set(echo = TRUE)
 
 # Analysis/Visualizations
 
+\ We want to use Logistic regression to analyze association between Cafe and parking violations in different locations and time periods, and figuring out the real price of a cup of coffee.  We expect to use plots (e.g. scatterplots, line plots) to demonstrate our results.Here’s our expected result:  
+
+1.A line plot of trends in parking violations in NYC.  
+2.A box plot of fine-amount in different boroughs.  
+3.A scatterplot of cafe distribution in NYC.  
+4.A map of Violation Counts.  
+5.A map of Violation fine amounts.  
+
+\ Meanwhile, we hope to apply the analysis results on the map of NYC, showing our suggestions for NY citizens about parking and coffee consumption.   
+
 
 
 # Anticipate Challenge
