@@ -50,7 +50,7 @@ nearest location to have a cup of coffee without receiving a ticket.
     Violations](https://data.cityofnewyork.us/City-Government/Open-Parking-and-Camera-Violations/nc67-uf89)
   - [Parking Violations Issued - Fiscal
     Year 2021](https://data.cityofnewyork.us/City-Government/Parking-Violations-Issued-Fiscal-Year-2021/pvqr-7yc4)
-    -[Sidewalk Café Licenses and
+  - [Sidewalk Café Licenses and
     Applications](https://data.cityofnewyork.us/Business/Sidewalk-Caf-Licenses-and-Applications/qcdj-rwhu)
 
 # Research questions
@@ -69,11 +69,11 @@ figuring out the real price of a cup of coffee. We expect to use plots
 (e.g. scatterplots, line plots) to demonstrate our results.Here’s our
 expected result:
 
-1.A line plot of trends in parking violations in NYC.  
-2.A box plot of fine-amount in different boroughs.  
-3.A scatterplot of cafe distribution in NYC.  
-4.A map of Violation Counts.  
-5.A map of Violation fine amounts.
+1.  A line plot of trends in parking violations in NYC.  
+2.  A box plot of fine-amount in different boroughs.  
+3.  A scatterplot of cafe distribution in NYC.  
+4.  A map of Violation Counts.  
+5.  A map of Violation fine amounts.
 
  Meanwhile, we hope to apply the analysis results on the map of NYC,
 showing our suggestions for NY citizens about parking and coffee
@@ -98,7 +98,7 @@ consumption.
 
 | date        | work                                                     | Assignment due |
 | :---------- | :------------------------------------------------------- | :------------- |
-| 44139       | Determine project theme and data source                  | NA             |
+| 11/4/2020   | Determine project theme and data source                  | NA             |
 | 11/5-11/7   | Complete proposal                                        | 11/7, 1pm      |
 | 11/7-11/8/  | Zoom meeting: draw a big picture on how to analysis data | NA             |
 | 11/9-11/10  | complete final source collection                         | NA             |
@@ -110,5 +110,3 @@ consumption.
 | 11/28-12/2  | prepare paper work for report                            | NA             |
 | 12/3-12/4   | Complete report                                          | 12/5, 4pm      |
 | 12/3-12/5   | complete final webpage improvement and screencast        | 12/5, 4pm      |
-
-Timeline
