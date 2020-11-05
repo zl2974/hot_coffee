@@ -1,17 +1,7 @@
-Project Proposal
+Risky Coffee? Or…Not?
 ================
 Zhuohui Liang(zl2974), Chufeng Yang(cy2588), Yiming Zhao(yz3955), Yu
 Liu(yl4604)
-
-<h1>
-
-<center>
-
-Risky Coffee? Or…Not?
-
-</center>
-
-</h1>
 
 # Motivation
 
