@@ -57,7 +57,7 @@ knitr::opts_chunk$set(echo = TRUE)
 # Timeline
 ```{r echo = F, message=F}
 library(tidyverse)
-readxl::read_excel(here::here("YOU FILE HERE")) %>% 
+readxl::read_excel("./file/timeline_proposal.xlsx")%>% 
   knitr::kable(caption = "Timeline")
 ```
 

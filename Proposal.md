@@ -1,6 +1,6 @@
 Project Proposal
 ================
-Zhuohui Liang(zl2974), Chufeng Yang(cy2588), Yiming Zhao(), Yu
+Zhuohui Liang(zl2974), Chufeng Yang(cy2588), Yiming Zhao(yz3955), Yu
 Liu(yl4604)
 
 <h1>
@@ -53,6 +53,22 @@ during a day and different boroughs.
 
 # Analysis/Visualizations
 
+ We want to use Logistic regression to analyze association between Cafe
+and parking violations in different locations and time periods, and
+figuring out the real price of a cup of coffee. We expect to use plots
+(e.g. scatterplots, line plots) to demonstrate our results.Here’s our
+expected result:
+
+1.A line plot of trends in parking violations in NYC.  
+2.A box plot of fine-amount in different boroughs.  
+3.A scatterplot of cafe distribution in NYC.  
+4.A map of Violation Counts.  
+5.A map of Violation fine amounts.
+
+ Meanwhile, we hope to apply the analysis results on the map of NYC,
+showing our suggestions for NY citizens about parking and coffee
+consumption.
+
 # Anticipate Challenge
 
 1.  Although all data come from NYC open data, challenges can still
@@ -69,3 +85,20 @@ during a day and different boroughs.
     module by the time of Due.
 
 # Timeline
+
+| date        | work                                                     | Assignment due |
+| :---------- | :------------------------------------------------------- | :------------- |
+| 44139       | Determine project theme and data source                  | NA             |
+| 11/5-11/7   | Complete proposal                                        | 11/7, 1pm      |
+| 11/7-11/8/  | Zoom meeting: draw a big picture on how to analysis data | NA             |
+| 11/9-11/10  | complete final source collection                         | NA             |
+| 11/11-11/13 | Zoom meeting: determine detailed devision of labour      | NA             |
+| 11/14-11/15 | clean and tidy data                                      | NA             |
+| 11/16-11/17 | Zoom meeting: draw a big picture of website design       | NA             |
+| 11/18-11/20 | clean and tidy data                                      | NA             |
+| 11/21-11/27 | make graphs and data analysis                            | NA             |
+| 11/28-12/2  | prepare paper work for report                            | NA             |
+| 12/3-12/4   | Complete report                                          | 12/5, 4pm      |
+| 12/3-12/5   | complete final webpage improvement and screencast        | 12/5, 4pm      |
+
+Timeline
