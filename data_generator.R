@@ -1,13 +1,66 @@
 library(tidyverse)
 library(rvest)
 library(httr)
+if (!"sf" %in% installed.packages()) {
+  install.packages('sf')
+}
+require(sf)
+
+paging =
+  function(url, page = 1) {
+    row_limit = 50000
+    df = GET(url,
+             query = list("$limit" = row_limit,
+                          "$offset" = (page-1) * row_limit,
+                          "$order"=":id")) %>%
+      content("parsed")
+    
+    return(df)
+  }
+
+# GET street longtitude and latitude
+get_location = 
+  function(location_name="Columbia University"){
+    
+    location_name = str_c(
+      "https://geosearch.planninglabs.nyc/v1/search?text=",
+      location_name,", New York, NY")
+    
+    url =
+      URLencode(location_name)
+    
+    df = read_sf(GET(url) %>% content("text"))
+    
+    geometry = df%>% 
+      pull(geometry) %>% 
+      as.tibble() %>%
+      mutate(geometry = as.character(geometry),
+             geometry = str_replace_all(geometry,"c|[\\(\\)]","")) %>% 
+      separate(geometry,into = c("long","lat"),sep = ",") %>% 
+      mutate_all(as.numeric) %>% 
+      summarise(long = long,
+                lat = lat)
+    
+    return(geometry)
+  }
+
 # GET cafe data
 
 cafe =
-  GET("https://data.cityofnewyork.us/resource/qcdj-rwhu.csv",
-      query = list(
-        "$limit" = 5000
-      )) %>% 
-  content("parsed")
+  paging("https://data.cityofnewyork.us/resource/qcdj-rwhu.csv") %>% 
+  unite("search_query", building, street,sep = ",",remove = F) %>%
+  mutate(geo = map(search_query, get_location)) %>% 
+  unnest(geo) %>% 
+  select(-search_query)
 
-cafe %>% write_csv(here::here("data","Sidewalk_Caf__Licenses_and_Applications.csv"))
+cafe %>% 
+  write_csv(here::here("data","Sidewalk_Caf__Licenses_and_Applications.csv"))
+
+#GET ticket data
+ticket = 
+  GET("https://data.cityofnewyork.us/api/views/nc67-uf89/rows.csv?accessType=DOWNLOAD") %>% 
+  content("parse")
+
+write_csv(get_ticket(),here::here("data","Open_Parking_and_Camera_Violations.csv"))
+
+cat("reference:", "https://mltconsecol.github.io/post/20180210_geocodingnyc/")
