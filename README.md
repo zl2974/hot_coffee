@@ -116,9 +116,13 @@ Creating the change
     $ git add <filename>
     $ git rebase --continue
 
+... Or failed use:
+
+    $ git rebase --abort
+
 ... # push my branch back to the server
 
-    $ git push origin my-feature 
+    $ git push -f origin my-feature 
 
 If you want to use git workflow to do code reviews (and are using github), at this point you can create a pull request. Using a pull request, you assign your buddy the task of approving merging your changes (from your feature branch back into master or a release branch). To create the pull request, go to your project on github.com, click "pull requests," then create.
 
@@ -141,7 +145,7 @@ Other guy merges in the changes
 
 ... resolve conflicts and look around ...
 
-    $ git push
+    $ git push -f origin master/main 
 
 ... delete branch (and remote branch) when done
 
