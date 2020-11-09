@@ -24,7 +24,7 @@ paging =
 
 
 #>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
-# GET street longtitude and latitude
+# GET street longtitude and latitude and borough as tibble
 
 get_location = 
   function(location_name="Columbia University"){
@@ -45,15 +45,19 @@ get_location =
              geometry = str_replace_all(geometry,"c|[\\(\\)]","")) %>% 
       separate(geometry,into = c("long","lat"),sep = ",") %>% 
       mutate_all(as.numeric) %>% 
-      summarise(long = long,
-                lat = lat)
+      summarise(long = mean(long),
+                lat = mean(lat)) %>% 
+      mutate(borough = 
+               df %>% 
+               slice(1) 
+             %>% pull(borough))
     
     return(geometry)
   }
 
 
 #>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
-# Get all info from the large data via summon number
+# Get all info from the large data via summon number as tibble
 summon =
   function(summons_number) {
     data =
