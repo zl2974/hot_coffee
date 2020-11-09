@@ -6,6 +6,9 @@ if (!"sf" %in% installed.packages()) {
 }
 require(sf)
 
+#>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+# paging through API
+
 paging =
   function(url, page = 1) {
     row_limit = 50000
@@ -17,8 +20,12 @@ paging =
     
     return(df)
   }
+#>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
+
+#>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 # GET street longtitude and latitude
+
 get_location = 
   function(location_name="Columbia University"){
     
@@ -44,6 +51,24 @@ get_location =
     return(geometry)
   }
 
+
+#>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+# Get all info from the large data via summon number
+summon =
+  function(summons_number) {
+    data =
+      GET(
+        "https://data.cityofnewyork.us/resource/nc67-uf89.csv",
+        query = list(
+          "$where" = str_c("summons_number=", summons_number)
+        )
+      ) %>%
+      content("parsed")
+    return(data)
+  }
+
+
+#>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 # GET cafe data
 
 cafe =
@@ -56,6 +81,8 @@ cafe =
 cafe %>% 
   write_csv(here::here("data","Sidewalk_Caf__Licenses_and_Applications.csv"))
 
+
+#>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 #GET ticket data
 ticket = 
   GET("https://data.cityofnewyork.us/api/views/nc67-uf89/rows.csv?accessType=DOWNLOAD") %>% 
