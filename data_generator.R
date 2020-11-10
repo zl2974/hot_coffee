@@ -79,7 +79,8 @@ cafe =
   paging("https://data.cityofnewyork.us/resource/qcdj-rwhu.csv") %>%
   left_join(read_csv(here::here("data/zipcode.csv"))) %>% 
   rename(long = longitude,
-         lat = latitude)
+         lat = latitude,
+         street_name = street)
 
 cafe =
   cafe %>% 
@@ -87,7 +88,7 @@ cafe =
   rbind(cafe %>% 
           filter(business_name == "MULBERRY STREET BAR LLC") %>%
           select(-long,-lat,-borough) %>% 
-          unite("search_query",building,street,remove = F) %>% 
+          unite("search_query",building,street_name,remove = F) %>% 
           mutate(geo = map(search_query,get_location)) %>% 
           unnest(geo) %>% 
           select(-search_query)

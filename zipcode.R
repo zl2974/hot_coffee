@@ -24,6 +24,7 @@ table_zip =
            into = c("zip", "borough"),
            sep = "-") %>%
   mutate(across(zip,as.numeric)) %>% 
-  select(-name)
+  select(-name) %>% 
+  distinct()
 
 write_csv(table_zip,here::here("data","zipcode.csv"))
