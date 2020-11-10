@@ -107,3 +107,31 @@ ticket =
 write_csv(get_ticket(),here::here("data","Open_Parking_and_Camera_Violations.csv"))
 
 cat("reference:", "https://mltconsecol.github.io/post/20180210_geocodingnyc/")
+
+#>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+# Cleaning parking 2021 data
+## pull out address data
+
+###pull out house number(without NA) +street number
+park21house_geo_df = 
+  read_csv("./data/Parking_Violations_Issued_-_Fiscal_Year_2021.csv") %>% 
+  janitor::clean_names() %>% 
+  subset(select= c(house_number, street_name)) %>% 
+  drop_na(house_number) %>% 
+  unite("address", house_number:street_name, sep = ",", remove = FALSE) %>% 
+  distinct(address, .keep_all = TRUE) %>% 
+  rowid_to_column("id")
+
+###pull out street number +intersect street(without NA) 
+park21sec_geo_df = 
+  read_csv("./data/Parking_Violations_Issued_-_Fiscal_Year_2021.csv") %>% 
+  janitor::clean_names() %>% 
+  subset(select= c(house_number, street_name, intersecting_street)) %>% 
+  mutate(house_number = replace_na(house_number, "0")) %>% 
+  filter(house_number == "0") %>% 
+  drop_na(intersecting_street) %>% 
+  unite("address", street_name:intersecting_street, sep = ",", remove = FALSE) %>% 
+  distinct(address, .keep_all = TRUE) %>% 
+  rowid_to_column("id") %>% 
+  select(-house_number)
+
