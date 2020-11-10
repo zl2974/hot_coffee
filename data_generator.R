@@ -81,6 +81,18 @@ cafe =
   rename(long = longitude,
          lat = latitude)
 
+cafe =
+  cafe %>% 
+  filter(business_name != "MULBERRY STREET BAR LLC") %>% 
+  rbind(cafe %>% 
+          filter(business_name == "MULBERRY STREET BAR LLC") %>%
+          select(-long,-lat,-borough) %>% 
+          unite("search_query",building,street,remove = F) %>% 
+          mutate(geo = map(search_query,get_location)) %>% 
+          unnest(geo) %>% 
+          select(-search_query)
+          )
+
 cafe %>% 
   write_csv(here::here("data","Sidewalk_Caf__Licenses_and_Applications_clean.csv"))
 

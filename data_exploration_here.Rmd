@@ -1,0 +1,70 @@
+---
+title: "Data Exploration"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+library(tidyverse)
+library(readxl)
+library(patchwork)
+library(multcomp)
+library(plotly)
+library(leaflet)
+
+knitr::opts_chunk$set(
+  fig.height = 6,
+  fig.width = 8,
+  message = T,
+  echo = T,
+  warning = T,
+  cache = F
+)
+
+theme_set(theme_minimal() + theme(legend.position = "bottom"))
+options(
+  ggplot2.continuous.colour = "viridis",
+  ggplot2.continuous.fill = "viridis",
+  digits = 3
+)
+
+scale_colour_discrete = scale_colour_viridis_d
+
+scale_fill_discrete = scale_fill_viridis_d
+
+```
+
+# Load data
+```{r load_data}
+cafe = read_csv(here::here("data/Sidewalk_Caf__Licenses_and_Applications_clean.csv"))
+```
+
+
+
+# Cafe Map
+```{r cafe_map}
+#pal = colorNumeric(
+#  palette = "viridis",
+#  domain = cafe %>% pull(Risk)
+#)
+#
+#icons = 
+#  awesomeIcons(
+#    icon = "",
+#    markerColor = pal(cafe %>% pull(Risk))
+#  )
+
+plot_cafe_map=
+  leaflet(cafe) %>% 
+  addProviderTiles(providers$CartoDB.Positron) %>%
+  addCircleMarkers(~ long,  ~ lat,
+                    radius = .1,
+                    popup = ~ htmltools::htmlEscape(business_name))
+#  addAwesomeMarkers(
+#    ~long,~lat, 
+#    #icon =  icons,
+#    popup = ~htmltools::htmlEscape(business_name)
+#  )
+
+plot_cafe_map
+```
+
