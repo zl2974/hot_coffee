@@ -27,7 +27,10 @@ paging =
 # GET street longtitude and latitude and borough as tibble
 
 get_location = 
-  function(location_name="Columbia University"){
+  function(location_name="Columbia University",
+           .pd = NA){
+    cat("\r",location_name)
+    if (!is.na(.pd)){.pd$tick()$print()}
     
     location_name = str_c(
       "https://geosearch.planninglabs.nyc/v1/search?text=",
@@ -37,6 +40,8 @@ get_location =
       URLencode(location_name)
     
     df = read_sf(GET(url) %>% content("text"))
+    
+    if (nrow(df)==0){return(tibble(long = NA,lat = NA, borough = NA))}
     
     geometry = df%>% 
       pull(geometry) %>% 
@@ -118,7 +123,7 @@ park21house_geo_df =
   janitor::clean_names() %>% 
   subset(select= c(house_number, street_name)) %>% 
   drop_na(house_number) %>% 
-  unite("address", house_number:street_name, sep = ",", remove = FALSE) %>% 
+  unite("address", house_number:street_name, sep = ",", remove = FALSE) %>%
   distinct(address, .keep_all = TRUE) %>% 
   rowid_to_column("id")
 
@@ -134,4 +139,6 @@ park21sec_geo_df =
   distinct(address, .keep_all = TRUE) %>% 
   rowid_to_column("id") %>% 
   select(-house_number)
+
+
 
