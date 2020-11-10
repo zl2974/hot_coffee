@@ -76,14 +76,13 @@ summon =
 # GET cafe data
 
 cafe =
-  paging("https://data.cityofnewyork.us/resource/qcdj-rwhu.csv") %>% 
-  unite("search_query", building, street,sep = ",",remove = F) %>%
-  mutate(geo = map(search_query, get_location)) %>% 
-  unnest(geo) %>% 
-  select(-search_query)
+  paging("https://data.cityofnewyork.us/resource/qcdj-rwhu.csv") %>%
+  left_join(read_csv(here::here("data/zipcode.csv"))) %>% 
+  rename(long = longitude,
+         lat = latitude)
 
 cafe %>% 
-  write_csv(here::here("data","Sidewalk_Caf__Licenses_and_Applications.csv"))
+  write_csv(here::here("data","Sidewalk_Caf__Licenses_and_Applications_clean.csv"))
 
 
 #>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>

@@ -21,9 +21,9 @@ table_zip =
   pivot_longer(zip_1:zip_2,
                values_to = "zip") %>%
   separate(zip,
-           into = c("zipcode", "borough"),
+           into = c("zip", "borough"),
            sep = "-") %>%
-  mutate(across(zipcode,as.numeric)) %>% 
+  mutate(across(zip,as.numeric)) %>% 
   select(-name)
 
 write_csv(table_zip,here::here("data","zipcode.csv"))
