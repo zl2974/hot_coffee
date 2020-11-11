@@ -5,6 +5,18 @@ if (!"sf" %in% installed.packages()) {
   install.packages('sf')
 }
 require(sf)
+library(tidyverse)
+if (!"reconPlots" %in% installed.packages()) {
+install.packages("remotes")
+remotes::install_github("andrewheiss/reconPlots")
+}
+require(reconPlots)
+
+vec_to_df =
+  function(vec){
+    df = tibble(geo =vec) 
+    return(df)
+  }
 
 #>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 # paging through API
@@ -29,7 +41,6 @@ paging =
 get_location = 
   function(location_name="Columbia University",
            .pd = NA){
-    cat("\r",location_name)
     if (!is.na(.pd)){.pd$tick()$print()}
     
     location_name = str_c(
@@ -140,5 +151,88 @@ park21sec_geo_df =
   rowid_to_column("id") %>% 
   select(-house_number)
 
+output = list()
+for (i in 1:17) {
+  if (length(output) >i) {
+    next
+  }
+  pb = progress_estimated(length((1 + 500 * (i - 1)):500 * i))
+  output[[i]] = park21house_geo_df %>% arrange(desc(id)) %>% slice((1 + 500 *
+                                                                      (i - 1)):500 * i) %>%
+    mutate(geo = map(.x = address,  ~ get_location(.x, pb))) %>%
+    unnest(geo)
+  
+}
+
+while (T) {
+  doit = function(output, i) {
+    cat(i,"\n")
+    pb = progress_estimated(length((1 + 500 * (i - 1)):500 * i))
+    output[[i]] = park21house_geo_df %>%
+      arrange(desc(id)) %>%
+      slice((1 + 500 * (i - 1)):500 * i) %>%
+      mutate(geo = map(.x = address,  ~ get_location(.x, pb))) %>%
+      unnest(geo)
+    return(output[[i]])
+  }
+  for (i in 1:17) {
+    if (length(output) > i) {
+      next
+    }
+    output[[i]] = tryCatch(doit(output, i),error = function(cond) return(NULL),T)
+  }
+  if (i == 17) {
+    park21house_geo_df = bind_rows(output)
+    break
+  }
+}
 
 
+
+st = 
+  read_csv(here::here("data/Centerline.csv")) %>% 
+  janitor::clean_names() %>% 
+  select(street_name = full_stree,geom=the_geom) %>% 
+  mutate(geom = str_extract_all(geom,"\\-.+,"),
+         geom = str_split(geom,",\\s?"),
+         geom = map(geom,vec_to_df)) %>%
+  unnest(geom) %>% 
+  separate(geo,into = c("long","lat"),sep = " ") %>% 
+  drop_na() %>% 
+  mutate(across(c(long,lat),as.numeric))
+
+street_intersect =
+  function(street_1,street_2,.pd = NULL){
+    
+    if (!is.na(.pd)){.pd$tick()$print()}
+    
+    street_1_df =
+      st %>% 
+      filter(street_name==
+               agrep(street_1,st %>% pull(street_name),
+                     value = T,
+                     max =list(del = 0.4),
+                     ignore.case = T) %>% first()) %>% 
+      select(x = long, y = lat)
+    
+    street_2_df =
+      st %>% 
+      filter(street_name==
+               agrep(street_2,st %>% pull(street_name),
+                     value = T,
+                     max =list(del = 0.4),
+                     ignore.case = T) %>% first()) %>% 
+      select(x = long, y = lat)
+    answer = tryCatch(curve_intersect(street_1_df,street_2_df) %>% bind_rows(),
+                      error = function(cond) return(tibble(x = NA,y=NA)),T)
+    return(answer)
+  }
+
+pb = progress_estimated(nrow(park21sec_geo_df))
+park21sec_geo_df =
+  park21sec_geo_df %>%
+  mutate(geo = map2(.x = street_name, 
+                    .y =intersecting_street, 
+                    ~street_intersect(.x,.y,pb))) %>%
+  unnest(geo) %>%
+  rename(long = x, lat = y)
