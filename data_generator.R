@@ -241,3 +241,14 @@ park21sec_geo_df =
                     ~street_intersect(.x,.y,pb))) %>%
   unnest(geo) %>%
   rename(long = x, lat = y)
+
+#>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+# Join with fine amount
+fine_data =
+  GET("https://data.cityofnewyork.us/resource/nc67-uf89.csv") %>% 
+  content("parsed")%>% 
+  janitor::clean_names() %>% 
+  select(summons_number, fine_amount) 
+fine_2021_data = 
+  left_join(fine_data, data_2021, by = "summons_number")
+  
