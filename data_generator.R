@@ -126,6 +126,13 @@ cat("reference:", "https://mltconsecol.github.io/post/20180210_geocodingnyc/")
 
 #>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 # Cleaning parking 2021 data
+
+## Drop unused data in 2021 data
+data_2021 =  
+  read_csv("./data/Parking_Violations_Issued_-_Fiscal_Year_2021.csv") %>% 
+  janitor::clean_names() %>% 
+  select(summons_number, issue_date, house_number, street_name, intersecting_street, violation_time)
+
 ## pull out address data
 
 ###pull out house number(without NA) +street number
