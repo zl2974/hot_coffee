@@ -115,11 +115,11 @@ cafe %>%
 
 
 #>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
-#GET ticket data
-ticket = 
-  GET("https://data.cityofnewyork.us/api/views/nc67-uf89/rows.csv?accessType=DOWNLOAD") %>% 
-  content("parse")
-
+##GET ticket data
+#ticket = 
+#  GET("https://data.cityofnewyork.us/api/views/nc67-uf89/rows.csv?accessType=DOWNLOAD") %>% 
+#  content("parse")
+#
 write_csv(get_ticket(),here::here("data","Open_Parking_and_Camera_Violations.csv"))
 
 cat("reference:", "https://mltconsecol.github.io/post/20180210_geocodingnyc/")
@@ -140,7 +140,7 @@ park21house_geo_df =
 
 ###pull out street number +intersect street(without NA) 
 park21sec_geo_df = 
-  read_csv("./data/Parking_Violations_Issued_-_Fiscal_Year_2021.csv") %>% 
+  read_csv(here::here("data/Parking_Violations_Issued_-_Fiscal_Year_2021.csv")) %>% 
   janitor::clean_names() %>% 
   subset(select= c(house_number, street_name, intersecting_street)) %>% 
   mutate(house_number = replace_na(house_number, "0")) %>% 
@@ -151,42 +151,48 @@ park21sec_geo_df =
   rowid_to_column("id") %>% 
   select(-house_number)
 
+#>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+# get geo for house (you can try to run all this)
 output = list()
-for (i in 1:17) {
-  if (length(output) >i) {
-    next
-  }
-  pb = progress_estimated(length((1 + 500 * (i - 1)):500 * i))
-  output[[i]] = park21house_geo_df %>% arrange(desc(id)) %>% slice((1 + 500 *
-                                                                      (i - 1)):500 * i) %>%
-    mutate(geo = map(.x = address,  ~ get_location(.x, pb))) %>%
-    unnest(geo)
-  
-}
+
+tryCatch(
+  function(){
+    park21house_geo_df =
+      park21house_geo_df %>%
+      filter(!id %in% pull(read_csv(here::here("data/cache.csv")), id))
+  },
+  error = function(cond)
+    cat(cond),
+  F
+)
 
 while (T) {
   doit = function(output, i) {
     cat(i,"\n")
     pb = progress_estimated(length((1 + 500 * (i - 1)):500 * i))
     output[[i]] = park21house_geo_df %>%
-      arrange(desc(id)) %>%
+      #arrange(desc(id)) %>%
       slice((1 + 500 * (i - 1)):500 * i) %>%
       mutate(geo = map(.x = address,  ~ get_location(.x, pb))) %>%
       unnest(geo)
     return(output[[i]])
   }
-  for (i in 1:17) {
-    if (length(output) > i) {
-      next
+  for (i in 1:nrow(park21house_geo_df)%/%500+1) {
+    if (length(output) >= i) {
+      if (!is.null(output[[i]])){next}
     }
     output[[i]] = tryCatch(doit(output, i),error = function(cond) return(NULL),T)
   }
-  if (i == 17) {
+  if (i == nrow(park21house_geo_df)%/%500+1) {
     park21house_geo_df = bind_rows(output)
     break
   }
 }
-
+output %>% 
+  bind_rows() %>% 
+  bind_rows(read_csv(here::here("data/cache.csv"))) %>%
+  select(id:borough) %>% 
+  write_csv(here::here("data/cache.csv"))
 
 
 st = 
@@ -236,3 +242,4 @@ park21sec_geo_df =
                     ~street_intersect(.x,.y,pb))) %>%
   unnest(geo) %>%
   rename(long = x, lat = y)
+#>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
