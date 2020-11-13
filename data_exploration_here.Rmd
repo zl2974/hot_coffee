@@ -113,6 +113,22 @@ parking_time %>%
       title = 'Count of violations'))
 ```
 
+plots: violation vs weekday
+```{r}
+parking %>% 
+  mutate(day_week = weekdays(issue_date))%>%
+  group_by(day_week) %>% 
+  summarize(n = n()) %>%
+  plot_ly(x = ~day_week, y =~n, type = 'scatter',mode = 'line')%>%
+  layout(
+    title = 'Violations by weekday',
+    xaxis = list(
+      type = 'category',
+      title = 'Weekday'),
+    yaxis = list(
+      title = 'Count of violations'))
+```
+
 
 Line plots: vilation vs time
 ```{r}
