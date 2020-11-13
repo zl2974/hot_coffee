@@ -11,6 +11,7 @@ library(multcomp)
 library(plotly)
 library(leaflet)
 library(ggplot2)
+library(lubridate)
 
 knitr::opts_chunk$set(
   fig.height = 6,
@@ -44,8 +45,6 @@ parking = read_csv(
 ) %>% 
   janitor::clean_names()
 ```
-
-
 
 # Cafe Map
 ```{r cafe_map}
@@ -83,7 +82,6 @@ convert date and time format
 parking_time = 
   parking %>% 
   select(issue_date, violation_time, summons_number, vehicle_make) %>% 
-
   separate(issue_date, into = c('month', 'day', 'year'), sep = '/') %>% 
   separate(violation_time, into = c('hour', 'min', 'am_pm'), sep = c(2,4)) %>% 
   filter(am_pm %in% c('P', 'A')) %>% 
@@ -115,7 +113,13 @@ parking_time %>%
 
 plots: violation vs weekday
 ```{r}
-parking %>% 
+library(readr)
+parking_day = read_csv("data/Parking_Violations_Issued_-_Fiscal_Year_2021.csv", 
+    col_types = cols(`Issue Date` = col_date(format = "%m/%d/%Y")))%>%
+  janitor::clean_names()%>%
+  select(issue_date, summons_number)
+parking_day %>% 
+  mutate(issue_date = as_date(issue_date))%>%
   mutate(day_week = weekdays(issue_date))%>%
   group_by(day_week) %>% 
   summarize(n = n()) %>%
