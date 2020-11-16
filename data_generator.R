@@ -248,6 +248,8 @@ park21sec_geo_df =
 fine_data =read_excel("data/ParkingViolationCodes_January2020.xlsx")%>% 
   janitor::clean_names()%>% 
   select(-violation_description)
+
 fine_2021_data = 
-  left_join(fine_data, data_2021, by = "violation_code")
+  data_2021 %>% 
+  left_join(fine_data, by = "violation_code")
   
