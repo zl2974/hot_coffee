@@ -270,7 +270,14 @@ data_2021_cleanv1 =
     vehicle_make, violation_time, violation_county, house_number, street_name,
     intersecting_street,vehicle_color, vehicle_year
     )) %>% 
-  left_join(house_no_dic, by = c("house_number", "street_name"))
+  left_join(house_no_dic, by = c("house_number", "street_name")) %>% 
+  separate(violation_time, into = c('hour', 'min', 'am_pm'), sep = c(2,4)) %>% 
+  mutate(am_pm = recode(am_pm, `P` = 12, `A` = 0),
+         hour = as.numeric(hour),
+         hour = ifelse((hour == 12 & am_pm == 12), hour, (hour + am_pm))) %>% 
+  subset(select = c(-am_pm))
+        
+write_csv(data_2021_cleanv1, "./data/parking_vio2021_cleanv1.csv")
   
 
   
