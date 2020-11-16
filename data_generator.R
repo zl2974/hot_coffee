@@ -153,20 +153,9 @@ park21sec_geo_df =
 
 #>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 # get geo for house (you can try to run all this)
-output = list()
-
-tryCatch(
-  function(){
-    park21house_geo_df =
-      park21house_geo_df %>%
-      filter(!id %in% pull(read_csv(here::here("data/cache.csv")), id))
-  },
-  error = function(cond)
-    cat(cond),
-  F
-)
 
 while (T) {
+  output = list()
   doit = function(output, i) {
     cat(i,"\n")
     pb = progress_estimated(length((1 + 500 * (i - 1)):500 * i))
@@ -178,21 +167,26 @@ while (T) {
     return(output[[i]])
   }
   for (i in 1:nrow(park21house_geo_df)%/%500+1) {
+    park21house_geo_df =
+      park21house_geo_df %>%
+      filter(!id %in% pull(read_csv(here::here("data/cache.csv")), id))
+    
     if (length(output) >= i) {
       if (!is.null(output[[i]])){next}
     }
     output[[i]] = tryCatch(doit(output, i),error = function(cond) return(NULL),T)
-  }
+    output %>% 
+      bind_rows() %>% 
+      bind_rows(read_csv(here::here("data/cache.csv"))) %>%
+      select(id:borough) %>% 
+      write_csv(here::here("data/cache.csv"))
+    output = list()
+    }
   if (i == nrow(park21house_geo_df)%/%500+1) {
     park21house_geo_df = bind_rows(output)
     break
   }
 }
-output %>% 
-  bind_rows() %>% 
-  bind_rows(read_csv(here::here("data/cache.csv"))) %>%
-  select(id:borough) %>% 
-  write_csv(here::here("data/cache.csv"))
 
 
 st = 
