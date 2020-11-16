@@ -40,10 +40,8 @@ scale_fill_discrete = scale_fill_viridis_d
 cafe = read_csv(here::here("data/Sidewalk_Caf__Licenses_and_Applications_clean.csv"))
 
 parking = read_csv(
-  here::here("data/Parking_Violations_Issued_-_Fiscal_Year_2021.csv"),
-  col_types = "dccccdcccddddcdddcccccccccddclccccddcdcclll"
-) %>% 
-  janitor::clean_names()
+  here::here("data/parking_vio2021_cleanv1.csv"))
+
 ```
 
 # Cafe Map
@@ -76,19 +74,14 @@ plot_cafe_map
 
 ## plot violation vs time
 
-convert date and time format
+convert date and format
 
 ```{r}
 parking_time = 
   parking %>% 
-  select(issue_date, violation_time, summons_number, vehicle_make) %>% 
+  select(issue_date,summons_number, vehicle_make, hour, min) %>% 
   separate(issue_date, into = c('month', 'day', 'year'), sep = '/') %>% 
-  separate(violation_time, into = c('hour', 'min', 'am_pm'), sep = c(2,4)) %>% 
-  filter(am_pm %in% c('P', 'A')) %>% 
-  mutate(am_pm = recode(am_pm, `P` = 12, `A` = 0),
-         hour = as.numeric(hour)) %>% 
-  mutate(hour = hour + am_pm,
-         month = as.numeric(month)) %>% 
+  mutate( month = as.numeric(month)) %>% 
   select(-year) 
   
 
@@ -114,10 +107,10 @@ parking_time %>%
 plots: violation vs weekday
 ```{r}
 library(readr)
-parking_day = read_csv("data/Parking_Violations_Issued_-_Fiscal_Year_2021.csv", 
-    col_types = cols(`Issue Date` = col_date(format = "%m/%d/%Y")))%>%
-  janitor::clean_names()%>%
+parking_day = read_csv("data/parking_vio2021_cleanv1.csv", 
+    col_types = cols(issue_date = col_date(format = "%m/%d/%Y"))) %>%
   select(issue_date, summons_number)
+
 parking_day %>% 
   mutate(issue_date = as_date(issue_date))%>%
   mutate(day_week = weekdays(issue_date))%>%
@@ -139,7 +132,7 @@ Line plots: vilation vs time
 parking_time %>% 
   group_by(hour) %>% 
   summarize(n = n()) %>%
-  plot_ly(x = ~hour, y =~n, type = 'scatter',mode = 'line')%>%
+  plot_ly(x = ~hour, y =~n, type = 'scatter',mode = 'line') %>%
   layout(
     title = 'Violations per Hour',
     xaxis = list(
