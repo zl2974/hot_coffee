@@ -252,4 +252,25 @@ fine_data =read_excel("data/ParkingViolationCodes_January2020.xlsx")%>%
 fine_2021_data = 
   data_2021 %>% 
   left_join(fine_data, by = "violation_code")
+#>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+# clean the parking_violation issued-fiscal_year_2021 data, and add geographic information to it
+
+
+house_no_dic = 
+  read_csv("./data/house_no_dic.csv") %>% 
+  subset(select = -c(id, geo))
+  
+  
+data_2021_cleanv1 = 
+  read_csv("./data/Parking_Violations_Issued_-_Fiscal_Year_2021.csv") %>%
+  janitor::clean_names() %>% 
+  rowid_to_column("id") %>% 
+  subset(select = c(
+    id, summons_number, registration_state, issue_date, violation_code,
+    vehicle_make, violation_time, violation_county, house_number, street_name,
+    intersecting_street,vehicle_color, vehicle_year
+    )) %>% 
+  left_join(house_no_dic, by = c("house_number", "street_name"))
+  
+
   
