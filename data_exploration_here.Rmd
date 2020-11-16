@@ -127,18 +127,19 @@ parking_day %>%
 ```
 
 
-Line plots: vilation vs time
+Line plots: vilation vs hour
 ```{r}
 parking_time %>% 
   group_by(hour) %>% 
   summarize(n = n()) %>%
-  plot_ly(x = ~hour, y =~n, type = 'scatter',mode = 'line') %>%
+  filter(hour != 12.3) %>% 
+  plot_ly(x = ~hour, y = ~n, type = 'scatter',mode = 'line') %>%
   layout(
     title = 'Violations per Hour',
     xaxis = list(
       type = 'category',
       title = 'Hour',
-      range = c(0, 24)),
+      range = c(0, 23)),
     yaxis = list(
       title = 'Count of violations'))
 ```
