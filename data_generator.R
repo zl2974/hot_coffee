@@ -6,6 +6,7 @@ if (!"sf" %in% installed.packages()) {
 }
 require(sf)
 library(tidyverse)
+library(readxl)
 if (!"reconPlots" %in% installed.packages()) {
 install.packages("remotes")
 remotes::install_github("andrewheiss/reconPlots")
@@ -131,7 +132,7 @@ cat("reference:", "https://mltconsecol.github.io/post/20180210_geocodingnyc/")
 data_2021 =  
   read_csv("./data/Parking_Violations_Issued_-_Fiscal_Year_2021.csv") %>% 
   janitor::clean_names() %>% 
-  select(summons_number, issue_date, house_number, street_name, intersecting_street, violation_time)
+  select(summons_number, issue_date, house_number, street_name, intersecting_street, violation_time, violation_code)
 
 ## pull out address data
 
@@ -244,11 +245,9 @@ park21sec_geo_df =
 
 #>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 # Join with fine amount
-fine_data =
-  GET("https://data.cityofnewyork.us/resource/nc67-uf89.csv") %>% 
-  content("parsed")%>% 
-  janitor::clean_names() %>% 
-  select(summons_number, fine_amount) 
+fine_data =read_excel("data/ParkingViolationCodes_January2020.xlsx")%>% 
+  janitor::clean_names()%>% 
+  select(-violation_description)
 fine_2021_data = 
-  left_join(fine_data, data_2021, by = "summons_number")
+  left_join(fine_data, data_2021, by = "violation_code")
   
