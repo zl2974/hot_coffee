@@ -6,6 +6,7 @@ if (!"sf" %in% installed.packages()) {
 }
 require(sf)
 library(tidyverse)
+library(readxl)
 if (!"reconPlots" %in% installed.packages()) {
 install.packages("remotes")
 remotes::install_github("andrewheiss/reconPlots")
@@ -126,12 +127,18 @@ cat("reference:", "https://mltconsecol.github.io/post/20180210_geocodingnyc/")
 
 #>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 # Cleaning parking 2021 data
+
+## Drop unused data in 2021 data
+data_2021 =  
+  read_csv("./data/Parking_Violations_Issued_-_Fiscal_Year_2021.csv") %>% 
+  janitor::clean_names() %>% 
+  select(summons_number, issue_date, house_number, street_name, intersecting_street, violation_time, violation_code)
+
 ## pull out address data
 
 ###pull out house number(without NA) +street number
 park21house_geo_df = 
-  read_csv("./data/Parking_Violations_Issued_-_Fiscal_Year_2021.csv") %>% 
-  janitor::clean_names() %>% 
+  data_2021%>% 
   subset(select= c(house_number, street_name)) %>% 
   drop_na(house_number) %>% 
   unite("address", house_number:street_name, sep = ",", remove = FALSE) %>%
@@ -140,8 +147,7 @@ park21house_geo_df =
 
 ###pull out street number +intersect street(without NA) 
 park21sec_geo_df = 
-  read_csv(here::here("data/Parking_Violations_Issued_-_Fiscal_Year_2021.csv")) %>% 
-  janitor::clean_names() %>% 
+  data_2021 %>% 
   subset(select= c(house_number, street_name, intersecting_street)) %>% 
   mutate(house_number = replace_na(house_number, "0")) %>% 
   filter(house_number == "0") %>% 
@@ -236,4 +242,12 @@ park21sec_geo_df =
                     ~street_intersect(.x,.y,pb))) %>%
   unnest(geo) %>%
   rename(long = x, lat = y)
+
 #>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+# Join with fine amount
+fine_data =read_excel("data/ParkingViolationCodes_January2020.xlsx")%>% 
+  janitor::clean_names()%>% 
+  select(-violation_description)
+fine_2021_data = 
+  left_join(fine_data, data_2021, by = "violation_code")
+  
