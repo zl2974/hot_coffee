@@ -147,16 +147,133 @@ parking_time %>%
 
 
 
-##violation and boro
+##violation type
 
 ```{r}
-parking %>%
+
+vio_code = readxl::read_xlsx('data/ParkingViolationCodes_January2020.xlsx') %>% 
+  janitor::clean_names() %>% 
+  select(violation_code, violation_description) %>% 
+  mutate(violation_description = str_to_lower(violation_description))
+
+violation_count = 
+  parking %>% 
   group_by(violation_code) %>% 
-  summarize(n = n()) %>% 
-  arrange(desc(n))
-  
+  summarise(n = n()) %>% 
+  left_join(vio_code, by = 'violation_code') %>% 
+  arrange(desc(n)) %>% 
+  filter(n > 10000)
+```
+
+bar_plot
+
+```{r}
+violation_count %>% 
+  mutate(violation_description = fct_reorder(violation_description, n)) %>% 
+  plot_ly(x = ~violation_description, y = ~n, type = "bar", colors = "viridis")
 ```
 
 
+##violation type by Borough
+
+```{r}
+
+vio_count_boro = 
+  parking %>% 
+  left_join(vio_code, by = 'violation_code') %>% 
+  drop_na()
+
+
+
+Manhattan_vio = 
+  vio_count_boro %>% 
+  filter(borough == 'Manhattan') %>% 
+  group_by(violation_code, violation_description) %>% 
+  summarize(n = n()) %>% 
+  mutate(violation_description = fct_reorder(violation_description, n)) %>% 
+  head(10) %>% 
+  plot_ly(x = ~violation_description, y = ~n, type = "bar", colors = "viridis") %>% 
+  layout(
+    title = 'Top 10 violations in Manhattan',
+    xaxis = list(
+      type = 'category',
+      title = 'violation description'),
+    yaxis = list(
+      title = 'Count of violations'))
+
+
+
+Queens_vio = 
+  vio_count_boro %>% 
+  filter(borough == 'Queens') %>% 
+  group_by(violation_code, violation_description) %>% 
+  summarize(n = n()) %>% 
+  arrange(desc(n)) %>% 
+  head(10) %>% 
+  mutate(violation_description = fct_reorder(violation_description, n)) %>% 
+  
+  plot_ly(x = ~violation_description, y = ~n, type = "bar", colors = "viridis") %>% 
+  layout(
+    title = 'Top 10 violations in Queens',
+    xaxis = list(
+      type = 'category',
+      title = 'violation description'),
+    yaxis = list(
+      title = 'Count of violations'))
+
+Bronx_vio = 
+  vio_count_boro %>% 
+  filter(borough == 'Bronx') %>% 
+  group_by(violation_code, violation_description) %>% 
+  summarize(n = n()) %>% 
+  mutate(violation_description = fct_reorder(violation_description, n)) %>% 
+  head(10) %>% 
+  plot_ly(x = ~violation_description, y = ~n, type = "bar", colors = "viridis") %>% 
+  layout(
+    title = 'Top 10 violations in Bronx',
+    xaxis = list(
+      type = 'category',
+      title = 'violation description'),
+    yaxis = list(
+      title = 'Count of violations'))
+
+Brooklyn_vio = 
+  vio_count_boro %>% 
+  filter(borough == 'Brooklyn') %>% 
+  group_by(violation_code, violation_description) %>% 
+  summarize(n = n()) %>% 
+  mutate(violation_description = fct_reorder(violation_description, n)) %>% 
+  head(10) %>% 
+  plot_ly(x = ~violation_description, y = ~n, type = "bar", colors = "viridis") %>% 
+  layout(
+    title = 'Top 10 violations in Brooklyn',
+    xaxis = list(
+      type = 'category',
+      title = 'violation description'),
+    yaxis = list(
+      title = 'Count of violations'))
+
+Staten_vio = 
+  vio_count_boro %>% 
+  filter(borough == 'Staren Iland') %>% 
+  group_by(violation_code, violation_description) %>% 
+  summarize(n = n()) %>% 
+  mutate(violation_description = fct_reorder(violation_description, n)) %>% 
+  head(10) %>% 
+  plot_ly(x = ~violation_description, y = ~n, type = "bar", colors = "viridis") %>% 
+  layout(
+    title = 'Top 10 violations in Staten Island',
+    xaxis = list(
+      type = 'category',
+      title = 'violation description'),
+    yaxis = list(
+      title = 'Count of violations'))
+  
+Manhattan_vio
+Queens_vio
+Bronx_vio
+Brooklyn_vio
+Staten_vio
+```
 
 
