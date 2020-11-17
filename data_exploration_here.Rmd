@@ -45,7 +45,7 @@ parking = read_csv(
 ```
 
 # Cafe Map
-```{r cafe_map}
+```{r cafe_map，cache = F}
 plot_cafe_map =
   parking %>%
   count(street_name, name = "ticket") %>%
@@ -72,6 +72,16 @@ plot_cafe_map =
 plot_cafe_map
 ```
 
+```{r violation_overview, cache=T}
+vio = parking %>%
+  ggplot(aes(x = long, y = lat,color = borough),alpha = 0.0001)+
+  geom_jitter()
+
+vio
+```
+
+
+
 ## plot violation vs time
 
 convert date and format
@@ -80,12 +90,8 @@ convert date and format
 parking_time = 
   parking %>% 
   select(issue_date,summons_number, vehicle_make, hour, min) %>% 
-  separate(issue_date, into = c('month', 'day', 'year'), sep = '/') %>% 
-  mutate( month = as.numeric(month)) %>% 
-  select(-year) 
-  
-
-    
+  mutate( month = lubridate::month(issue_date),
+          day = lubridate::day(issue_date))
 ```
 
 Make line plots: violation vs month
@@ -107,14 +113,12 @@ parking_time %>%
 plots: violation vs weekday
 ```{r}
 library(readr)
-parking_day = read_csv("data/parking_vio2021_cleanv1.csv", 
-    col_types = cols(issue_date = col_date(format = "%m/%d/%Y"))) %>%
+parking_day = parking %>%
   select(issue_date, summons_number)
 
 day_order = c("Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday")
 
 parking_day %>% 
-  mutate(issue_date = as_date(issue_date))%>%
   mutate(day_week = weekdays(issue_date))%>%
   group_by(day_week) %>% 
   summarize(n = n()) %>%
