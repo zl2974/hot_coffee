@@ -114,6 +114,7 @@ parking_day = read_csv("data/parking_vio2021_cleanv1.csv",
 parking_day %>% 
   mutate(issue_date = as_date(issue_date))%>%
   mutate(day_week = weekdays(issue_date))%>%
+  mutate(day_week = fct_relevel(day_week, levels = c('Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'))) %>%
   group_by(day_week) %>% 
   summarize(n = n()) %>%
   plot_ly(x = ~day_week, y =~n, type = 'scatter',mode = 'line')%>%
@@ -145,6 +146,16 @@ parking_time %>%
 ```
 
 
+
+##violation and boro
+
+```{r}
+parking %>%
+  group_by(violation_code) %>% 
+  summarize(n = n()) %>% 
+  arrange(desc(n))
+  
+```
 
 
 
