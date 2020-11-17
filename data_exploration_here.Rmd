@@ -111,13 +111,17 @@ parking_day = read_csv("data/parking_vio2021_cleanv1.csv",
     col_types = cols(issue_date = col_date(format = "%m/%d/%Y"))) %>%
   select(issue_date, summons_number)
 
+day_order = c("Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday")
+
 parking_day %>% 
   mutate(issue_date = as_date(issue_date))%>%
   mutate(day_week = weekdays(issue_date))%>%
   mutate(day_week = fct_relevel(day_week, levels = c('Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'))) %>%
   group_by(day_week) %>% 
   summarize(n = n()) %>%
-  plot_ly(x = ~day_week, y =~n, type = 'scatter',mode = 'line')%>%
+  mutate(day_week = factor(day_week, levels = day_order)) %>% 
+  arrange(day_week) %>% 
+  plot_ly(x = ~ day_week, y = ~ n, type = 'scatter', mode = "line") %>%
   layout(
     title = 'Violations by weekday',
     xaxis = list(
