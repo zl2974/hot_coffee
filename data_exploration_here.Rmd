@@ -89,25 +89,20 @@ convert date and format
 ```{r}
 parking_time = 
   parking %>% 
-  select(issue_date,summons_number, vehicle_make, hour, min) %>% 
-  mutate( month = lubridate::month(issue_date),
-          day = lubridate::day(issue_date))
+  mutate( issue_date = mdy(issue_date)) %>% 
+  filter(issue_date >= as.Date('2020-1-1') & issue_date <= as.Date('2020-12-31'))
 ```
 
 Make line plots: violation vs month
 
 ```{r}
 parking_time %>% 
-  group_by(month) %>% 
-  summarize(n = n()) %>%
-  plot_ly(x = ~month, y =~n, type = 'scatter',mode = 'line')%>%
-  layout(
-    title = 'Violations per Month',
-    xaxis = list(
-      type = 'category',
-      title = 'Month'),
-    yaxis = list(
-      title = 'Count of violations'))
+  group_by(issue_date) %>% 
+  summarise(n = n()) %>% 
+  ggplot(aes(x = issue_date, y =n))+ geom_point()+geom_line()+
+  scale_x_date(date_labels = '%m-%Y', date_breaks = '1 month') + 
+  scale_y_continuous()+theme_bw()
+ 
 ```
 
 plots: violation vs weekday
