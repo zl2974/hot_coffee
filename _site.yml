@@ -1,0 +1,20 @@
+name: "Yay Our Project!"
+output_dir: "."
+navbar:
+  title: "Overview"
+  right:
+    - text: "map"
+      href: map.html
+    - text: 'data analysis'
+      href: rita_plotly.html
+    - text: 'shiny'
+      href: rita_dashboard.html
+    - text: 'data_source'
+      href: about_bobo.html
+    - icon: fa-envelope fa-lg
+      href: mailto:<liuyuzhust@163.com>
+    - icon: fa-github fa-lg
+      href: https://github.com/yuliu426
+output:
+  html_document:
+    theme: cosmo
