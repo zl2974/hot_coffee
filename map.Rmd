@@ -1,9 +1,13 @@
 ---
-title: "Untitled"
+title: "Where Do You Like A Cup of Safe Coffee?"
+runtime: shiny
 output: 
   flexdashboard::flex_dashboard:
     orientation: rows
     vertical_layout: fill
+    source: embed
+    code_folding: hide
+    theme: flatly
 ---
 
 ```{r setup, include=FALSE}
@@ -16,6 +20,7 @@ library(plotly)
 library(leaflet)
 library(ggplot2)
 library(lubridate)
+library(shiny)
 
 knitr::opts_chunk$set(
   fig.height = 6,
@@ -37,18 +42,15 @@ scale_colour_discrete = scale_colour_viridis_d
 
 scale_fill_discrete = scale_fill_viridis_d
 
-cafe = read_csv(here::here("data/Sidewalk_Caf__Licenses_and_Applications_clean.csv"))
-
-parking = read_csv(here::here("data/parking_vio2021_cleanv1.csv")) %>% 
-  select(id,long,lat,issue_date)
 ```
 
-Row {data-width=600}
------------------------------------------------------------------------
+```{r data, cache=T}
+cafe = read_csv(here::here("data/Sidewalk_Caf__Licenses_and_Applications_clean.csv")) %>% 
+  left_join(read_csv(here::here("data/zipcode.csv")))
 
-### Chart A
+parking = read_csv(here::here("data/parking_vio2021_cleanv1.csv")) %>% 
+  select(id,long,lat,issue_date,hour)
 
-```{r}
 get_nearby_area =
   function(p_long = 0, p_lat = 0,area=500) {
     return(
@@ -85,13 +87,27 @@ cafe =
   )
 ```
 
-```{r map}
+Column {.sidebar}
+-----------------------------------------------------------------------
+
+```{r Sidebar,echo = F}
+
+```
+
+
+
+Row {data-width=600}
+-----------------------------------------------------------------------
+
+### Cafe Map
+
+```{r map,cache=T}
 plot_cafe_df =
   cafe %>%
   mutate(ticket = map_dbl(nearby, nrow))
 
 pal = colorNumeric(palette = c("viridis", "magma", "inferno","plasma")[[4]],
-                   domain = plot_cafe_df$ticket +1%>% log())
+                   domain = plot_cafe_df$ticket %>% sqrt())
 
 plot_cafe_map =
   plot_cafe_df%>%
@@ -102,7 +118,7 @@ plot_cafe_map =
   addCircleMarkers(
     ~ long,
     ~ lat,
-    color = ~pal(ticket + 1%>% log()),
+    color = ~pal(ticket %>% sqrt()),
     radius = .1,
     popup = ~ (pop)
   )
@@ -115,4 +131,42 @@ plot_cafe_map
 Row {data-width=400}
 -----------------------------------------------------------------------
 
-### Chart B
+### Tickets 
+
+```{r time}
+plot_time_df =
+  cafe %>% 
+  unnest(nearby) %>% 
+  mutate(hour = lubridate::hour(issue_date),
+         weekday = weekdays(issue_date),
+         weekday = 
+           forcats::fct_relevel(
+             weekday,
+             c("Monday", "Tuesday", "Wednesday", "Thursday",
+               "Friday", "Saturday", "Sunday")
+           )) %>% 
+  drop_na(borough) %>%
+  count(weekday, hour, borough, name = "ticket") %>%
+  mutate(text = str_c("TIME: ", hour, ":00 on ", weekday, 
+                      "<br>Total Tickets:",ticket)) %>% 
+  plot_ly(
+    type = "bar",
+    x = ~ hour,
+    y = ~ ticket,
+    text = ~text,
+    frame = ~ weekday,
+    color = ~ borough,
+    colors = viridis::viridis(4,option = "D")
+  ) %>%
+  layout(barmode = 'group',
+         title = "Total Number of Tickets by Hour",
+         showlegend = T,
+         legend = list(orientation = "h"),
+         yaxis =list(type = "log"),
+         xaxis = list(nticks = 24)) %>%
+  animation_opts(transition = 0) %>% 
+  animation_button(hide =T)
+
+plot_time_df
+```
+
