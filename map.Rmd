@@ -2,7 +2,7 @@
 title: "Untitled"
 output: 
   flexdashboard::flex_dashboard:
-    orientation: columns
+    orientation: rows
     vertical_layout: fill
 ---
 
@@ -21,9 +21,9 @@ knitr::opts_chunk$set(
   fig.height = 6,
   fig.width = 8,
   message = T,
-  echo = T,
+  echo = F,
   warning = T,
-  cache = F
+  cache = T
 )
 
 theme_set(theme_minimal() + theme(legend.position = "bottom"))
@@ -43,7 +43,7 @@ parking = read_csv(here::here("data/parking_vio2021_cleanv1.csv")) %>%
   select(id,long,lat,issue_date)
 ```
 
-Column {data-width=1000}
+Row {data-width=600}
 -----------------------------------------------------------------------
 
 ### Chart A
@@ -71,7 +71,7 @@ get_data =
              long > long_lwr,
              lat < lat_upr,
              lat > lat_lwr) %>% 
-      select(-long_lwr,-long_upr,-lat_lwr,-lat_upr)
+      select(id,issue_date)
     
     return(data)
   }
@@ -85,5 +85,34 @@ cafe =
   )
 ```
 
+```{r map}
+plot_cafe_df =
+  cafe %>%
+  mutate(ticket = map_dbl(nearby, nrow))
+
+pal = colorNumeric(palette = c("viridis", "magma", "inferno","plasma")[[4]],
+                   domain = plot_cafe_df$ticket +1%>% log())
+
+plot_cafe_map =
+  plot_cafe_df%>%
+  mutate(pop =
+           str_c("<b>",business_name,"</b><br>",round(ticket)," tickets")) %>% 
+  leaflet() %>%
+  addProviderTiles(providers$CartoDB.Positron) %>%
+  addCircleMarkers(
+    ~ long,
+    ~ lat,
+    color = ~pal(ticket + 1%>% log()),
+    radius = .1,
+    popup = ~ (pop)
+  )
+
+plot_cafe_map
+  
+```
 
 
+Row {data-width=400}
+-----------------------------------------------------------------------
+
+### Chart B
