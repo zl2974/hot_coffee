@@ -87,7 +87,7 @@ vio
 convert date and format
 
 ```{r}
-parking_time = 
+parking = 
   parking %>% 
   mutate( issue_date = mdy(issue_date)) %>% 
   filter(issue_date >= as.Date('2020-1-1') & issue_date <= as.Date('2020-12-31'))
@@ -96,7 +96,7 @@ parking_time =
 Make line plots: violation vs month
 
 ```{r}
-parking_time %>% 
+parking %>% 
   group_by(issue_date) %>% 
   summarise(n = n()) %>% 
   ggplot(aes(x = issue_date, y =n))+ geom_point()+geom_line()+
@@ -133,7 +133,7 @@ parking_day %>%
 
 Line plots: vilation vs hour
 ```{r}
-parking_time %>% 
+parking %>% 
   group_by(hour) %>% 
   summarize(n = n()) %>%
   filter(hour != 12.3) %>% 
@@ -191,10 +191,12 @@ vio_count_boro =
 Manhattan_vio = 
   vio_count_boro %>% 
   filter(borough == 'Manhattan') %>% 
-  group_by(violation_code, violation_description) %>% 
+  group_by(violation_description,violation_code) %>% 
   summarize(n = n()) %>% 
   mutate(violation_description = fct_reorder(violation_description, n)) %>% 
-  head(10) %>% 
+  arrange(desc(n)) %>% 
+  filter(n > 5530) %>%   ## if I run code before this, I can get a tibble(10*3)
+  ungroup() %>% 
   plot_ly(x = ~violation_description, y = ~n, type = "bar", colors = "viridis") %>% 
   layout(
     title = 'Top 10 violations in Manhattan',
@@ -202,7 +204,7 @@ Manhattan_vio =
       type = 'category',
       title = 'violation description'),
     yaxis = list(
-      title = 'Count of violations'))
+      title = 'Count of violations'))  # But why the plot still plot 19 bars?
 
 
 
@@ -256,27 +258,27 @@ Brooklyn_vio =
     yaxis = list(
       title = 'Count of violations'))
 
-Staten_vio = 
-  vio_count_boro %>% 
-  filter(borough == 'Staren Iland') %>% 
-  group_by(violation_code, violation_description) %>% 
-  summarize(n = n()) %>% 
-  mutate(violation_description = fct_reorder(violation_description, n)) %>% 
-  head(10) %>% 
-  plot_ly(x = ~violation_description, y = ~n, type = "bar", colors = "viridis") %>% 
-  layout(
-    title = 'Top 10 violations in Staten Island',
-    xaxis = list(
-      type = 'category',
-      title = 'violation description'),
-    yaxis = list(
-      title = 'Count of violations'))
+##There are no observations in Staten Island
   
 Manhattan_vio
 Queens_vio
 Bronx_vio
 Brooklyn_vio
-Staten_vio
+
 ```
+
+
+
+### Some thought about how to study the correlation of tickets and cafe.
+
+- problem: we have location information(lat, long) for both tickets and cafe. but we cannot define their correlation because they are continuous
+
+- solution: 
+-- discrete the NYC district by euqally distribute it into smaller boxes with same area.  
+-- consider the cafe and tickets are correlated if their location fall into same box
+
+- some special case:
+-- new york is not a square
+-- if N tickets and M cafe are in the same box: modify the correlation coefficient?
 
 
