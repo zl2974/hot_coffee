@@ -269,7 +269,7 @@ Brooklyn_vio
 
 
 
-### Some thought about how to study the correlation of tickets and cafe.
+### Initial Design about how to study the correlation of tickets and cafe.
 
 - problem: we have location information(lat, long) for both tickets and cafe. but we cannot define their correlation because they are continuous
 
@@ -278,7 +278,7 @@ Brooklyn_vio
 -- consider the cafe and tickets are correlated if their location fall into same box
 
 - some special case:
--- new york is not a square
--- if N tickets and M cafe are in the same box: modify the correlation coefficient?
+-- new york is not a square: we simply choose a square big enough to cover the whole new york.
+-- if N tickets and M cafe are in the same box: distribute the correlation coefficient averagely.
 
 
