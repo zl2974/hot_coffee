@@ -13,22 +13,17 @@ output:
 ```{r setup, include=FALSE}
 library(flexdashboard)
 library(tidyverse)
-library(readxl)
-library(patchwork)
-library(multcomp)
 library(plotly)
 library(leaflet)
-library(ggplot2)
-library(lubridate)
 library(shiny)
+library(httr)
+library(rvest)
+library(sf)
 
 knitr::opts_chunk$set(
-  fig.height = 6,
-  fig.width = 8,
-  message = T,
+  message = F,
   echo = F,
-  warning = T,
-  cache = T
+  warning = F
 )
 
 theme_set(theme_minimal() + theme(legend.position = "bottom"))
@@ -42,14 +37,55 @@ scale_colour_discrete = scale_colour_viridis_d
 
 scale_fill_discrete = scale_fill_viridis_d
 
+get_location =
+  function(location_name = "Columbia University",
+           .pd = NA) {
+    if (!is.na(.pd)) {
+      .pd$tick()$print()
+    }
+    
+    location_name = str_c(
+      "https://geosearch.planninglabs.nyc/v1/search?text=",
+      location_name,
+      ", New York, NY&size=2"
+    )
+    
+    url =
+      URLencode(location_name)
+    
+    df = read_sf(GET(url) %>% content("text"))
+    
+    if (nrow(df) == 0) {
+      return(tibble(
+        long = NA,
+        lat = NA,
+        borough = NA
+      ))
+    }
+    
+    geometry = df %>%
+      pull(geometry) %>%
+      as.tibble() %>%
+      mutate(geometry = as.character(geometry),
+             geometry = str_replace_all(geometry, "c|[\\(\\)]", "")) %>%
+      separate(geometry, into = c("long", "lat"), sep = ",") %>%
+      mutate_all(as.numeric) %>%
+      summarise(long = mean(long),
+                lat = mean(lat))
+    return(geometry)
+  }
 ```
 
-```{r data, cache=T}
+```{r data}
 cafe = read_csv(here::here("data/Sidewalk_Caf__Licenses_and_Applications_clean.csv")) %>% 
-  left_join(read_csv(here::here("data/zipcode.csv")))
+  left_join(read_csv(here::here("data/zipcode.csv"))) %>% 
+  unite("adress",
+        building:state,
+        sep = ",") %>% 
+  select(business_name,adress,starts_with("swc"),long,lat,borough)
 
 parking = read_csv(here::here("data/parking_vio2021_cleanv1.csv")) %>% 
-  select(id,long,lat,issue_date,hour)
+  select(id,long,lat,issue_date)
 
 get_nearby_area =
   function(p_long = 0, p_lat = 0,area=500) {
@@ -58,8 +94,8 @@ get_nearby_area =
         long_lwr = p_long - area / (6378137 * cos(pi * p_lat / 180)) * 180 / pi,
         long_upr = p_long + area / (6378137 * cos(pi * p_lat / 180)) * 180 /
           pi,
-        lat_lwr = p_lat - area / 6378137,
-        lat_upr = p_lat + area / 6378137
+        lat_lwr = p_lat - area / 6378137 * 180 / pi,
+        lat_upr = p_lat + area / 6378137 * 180 / pi
       )
     )
   }
@@ -73,82 +109,133 @@ get_data =
              long > long_lwr,
              lat < lat_upr,
              lat > lat_lwr) %>% 
-      select(id,issue_date)
+      select(id)
     
     return(data)
   }
-
 
 cafe =
   cafe %>%
   mutate(
     nearby = map2(.x = long, .y = lat, ~ get_nearby_area(.x, .y)),
-    nearby = map(.x = nearby,  ~ get_data(.x))
-  )
+    nearby = map(.x = nearby,  ~ get_data(.x)),
+    ticket = map_dbl(nearby, nrow)) %>% 
+  drop_na(borough) %>% select(-nearby)
+
+rm(parking)
 ```
 
 Column {.sidebar}
 -----------------------------------------------------------------------
 
-```{r Sidebar,echo = F}
+```{r Sidebar}
+textInput(
+  inputId = "location",
+  label = h3("Where You At?"),
+  value = "Columbia University"
+)
+
+sliderInput(
+  inputId = "tolerant",
+  label = h3("Risk Willing to take"),
+  min =   cafe %>%
+    mutate(ticket = map_dbl(nearby, nrow)) %>%
+    pull(ticket) %>% min(),
+  max =  cafe %>%
+    mutate(ticket = map_dbl(nearby, nrow)) %>%
+    pull(ticket) %>% max(),
+  value = c(0,50000)
+)
+
+checkboxGroupInput(
+  "borough",
+  label = h2("Which Borough?"),
+  choices = cafe %>% distinct(borough) %>% pull(borough),
+  selected = cafe %>% distinct(borough) %>% pull(borough)
+)
+
 
 ```
 
 
 
-Row {data-width=600}
+Row {data-width=1000}
 -----------------------------------------------------------------------
 
 ### Cafe Map
 
-```{r map,cache=T}
-plot_cafe_df =
-  cafe %>%
-  mutate(ticket = map_dbl(nearby, nrow))
-
-pal = colorNumeric(palette = c("viridis", "magma", "inferno","plasma")[[4]],
-                   domain = plot_cafe_df$ticket %>% sqrt())
-
-plot_cafe_map =
-  plot_cafe_df%>%
-  mutate(pop =
-           str_c("<b>",business_name,"</b><br>",round(ticket)," tickets")) %>% 
-  leaflet() %>%
-  addProviderTiles(providers$CartoDB.Positron) %>%
-  addCircleMarkers(
-    ~ long,
-    ~ lat,
-    color = ~pal(ticket %>% sqrt()),
-    radius = .1,
-    popup = ~ (pop)
+```{r map}
+renderLeaflet({
+  plot_cafe_df =
+    cafe  %>%
+    filter(between(ticket, input$tolerant[1] %>% as.numeric(),
+                   input$tolerant[2] %>% as.numeric()),
+           borough %in% input$borough) %>% 
+    select(-nearby)
+  
+  if (!is.null(input$location)) {
+    locat = get_location(input$location)
+  } else {locat = c(NA,NA)}
+  
+  pal = colorNumeric(
+    palette = c("viridis", "magma", "inferno", "plasma")[[4]],
+    domain = plot_cafe_df$ticket %>% sqrt()
   )
-
-plot_cafe_map
+  
+  plot_cafe_map =
+    plot_cafe_df %>%
+    mutate(pop =
+             str_c("<b>", business_name, "</b><br>",
+                   swc_chairs," chairs in ",swc_sq_ft," feet space<br>",
+                   round(ticket), " tickets in 500m<br>",
+                   adress)) %>%
+    leaflet() %>%
+    addProviderTiles(providers$CartoDB.Positron) %>%
+    addCircles(
+      locat[[1]],
+      locat[[2]],
+      radius = 1000,
+      label = "Your Location",
+      weight = 1,
+      fillOpacity = 0.6,
+      group = "Nearby Cafe"
+    ) %>% 
+    addCircleMarkers(
+      ~ long,
+      ~ lat,
+      color = ~ pal(ticket %>% sqrt()),
+      radius = .1,
+      popup = ~ (pop),
+      label = ~business_name,
+      group = "Cafe Shop"
+    ) %>% 
+    addLayersControl(
+      overlayGroups = c("Nearby Cafe","Cafe Shop"),
+      options = layersControlOptions(collapsed = FALSE)
+    ) %>% 
+    setView(lng = locat[[1]], lat = locat[[2]], zoom = 16)
+  
+  plot_cafe_map
+})
   
 ```
 
 
-Row {data-width=400}
------------------------------------------------------------------------
-
-### Tickets 
-
-```{r time}
+```{r time,eval=F}
 plot_time_df =
   cafe %>% 
   unnest(nearby) %>% 
   mutate(hour = lubridate::hour(issue_date),
          weekday = weekdays(issue_date),
          weekday = 
-           forcats::fct_relevel(
-             weekday,
-             c("Monday", "Tuesday", "Wednesday", "Thursday",
-               "Friday", "Saturday", "Sunday")
-           )) %>% 
+           forcats::fct_relevel(weekday,c("Monday","Tuesday","Wednesday",
+               "Thursday","Friday","Saturday","Sunday"))) %>% 
   drop_na(borough) %>%
   count(weekday, hour, borough, name = "ticket") %>%
   mutate(text = str_c("TIME: ", hour, ":00 on ", weekday, 
-                      "<br>Total Tickets:",ticket)) %>% 
+                      "<br>Total Tickets:",ticket))
+plot_time =
+  plot_time_df %>% 
   plot_ly(
     type = "bar",
     x = ~ hour,
@@ -162,11 +249,12 @@ plot_time_df =
          title = "Total Number of Tickets by Hour",
          showlegend = T,
          legend = list(orientation = "h"),
-         yaxis =list(type = "log"),
+         yaxis =list(type = "log",
+                     title = ''),
          xaxis = list(nticks = 24)) %>%
   animation_opts(transition = 0) %>% 
   animation_button(hide =T)
-
-plot_time_df
+ 
+plot_time
 ```
 
