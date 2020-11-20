@@ -82,30 +82,29 @@ vio
 
 
 
-## plot violation vs time
+## Violation vs Time
 
-convert date and format
-
-```{r}
-parking = 
-  parking %>% 
-  mutate( issue_date = mdy(issue_date)) %>% 
-  filter(issue_date >= as.Date('2020-1-1') & issue_date <= as.Date('2020-12-31'))
-```
-
-Make line plots: violation vs month
+1.The distribution of tickets quantities over year
 
 ```{r}
 parking %>% 
+  mutate(issue_date = as.Date(issue_date)) %>% 
   group_by(issue_date) %>% 
   summarise(n = n()) %>% 
   ggplot(aes(x = issue_date, y =n))+ geom_point()+geom_line()+
   scale_x_date(date_labels = '%m-%Y', date_breaks = '1 month') + 
-  scale_y_continuous()+theme_bw()
+  scale_y_continuous()+theme_bw()+
+  labs(
+    x = 'Issuing Month',
+    y = 'count',
+    title = 'The distribution of tickets quantities over time '
+  )
  
 ```
 
-plots: violation vs weekday
+
+
+2.plots: violation vs weekday
 ```{r}
 library(readr)
 parking_day = parking %>%
@@ -113,7 +112,7 @@ parking_day = parking %>%
 
 day_order = c("Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday")
 
-parking_day %>% 
+parking %>% 
   mutate(day_week = weekdays(issue_date))%>%
   mutate(day_week = fct_relevel(day_week, levels = c('Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'))) %>%
   group_by(day_week) %>% 
@@ -130,8 +129,13 @@ parking_day %>%
       title = 'Count of violations'))
 ```
 
+Conclusion: 
+The volume of parking tickets issuing during weekdays are larger than volume of those issuing during weekends. This could be attibuted to two reasons:   
+1. the overall demand for parking in NYC are smaller during weekend than during weekdays
+2. Many parking spots are designed to be free parking during weekends.
 
-Line plots: vilation vs hour
+
+3.vilation vs hour
 ```{r}
 parking %>% 
   group_by(hour) %>% 
@@ -168,7 +172,7 @@ violation_count =
   filter(n > 10000)
 ```
 
-bar_plot
+bar_plot: 
 
 ```{r}
 violation_count %>% 
@@ -184,19 +188,18 @@ violation_count %>%
 vio_count_boro = 
   parking %>% 
   left_join(vio_code, by = 'violation_code') %>% 
-  drop_na()
+  drop_na() 
 
 
 
 Manhattan_vio = 
   vio_count_boro %>% 
   filter(borough == 'Manhattan') %>% 
-  group_by(violation_description,violation_code) %>% 
+  group_by(violation_description) %>% 
   summarize(n = n()) %>% 
   mutate(violation_description = fct_reorder(violation_description, n)) %>% 
   arrange(desc(n)) %>% 
-  filter(n > 5530) %>%   ## if I run code before this, I can get a tibble(10*3)
-  ungroup() %>% 
+  head(10) %>% 
   plot_ly(x = ~violation_description, y = ~n, type = "bar", colors = "viridis") %>% 
   layout(
     title = 'Top 10 violations in Manhattan',
@@ -204,19 +207,18 @@ Manhattan_vio =
       type = 'category',
       title = 'violation description'),
     yaxis = list(
-      title = 'Count of violations'))  # But why the plot still plot 19 bars?
+      title = 'Count of tickets'))  
 
 
 
 Queens_vio = 
   vio_count_boro %>% 
   filter(borough == 'Queens') %>% 
-  group_by(violation_code, violation_description) %>% 
+  group_by(violation_description) %>% 
   summarize(n = n()) %>% 
   arrange(desc(n)) %>% 
   head(10) %>% 
   mutate(violation_description = fct_reorder(violation_description, n)) %>% 
-  
   plot_ly(x = ~violation_description, y = ~n, type = "bar", colors = "viridis") %>% 
   layout(
     title = 'Top 10 violations in Queens',
@@ -224,14 +226,15 @@ Queens_vio =
       type = 'category',
       title = 'violation description'),
     yaxis = list(
-      title = 'Count of violations'))
+      title = 'Count of tickets'))
 
 Bronx_vio = 
   vio_count_boro %>% 
   filter(borough == 'Bronx') %>% 
-  group_by(violation_code, violation_description) %>% 
+  group_by(violation_description) %>% 
   summarize(n = n()) %>% 
   mutate(violation_description = fct_reorder(violation_description, n)) %>% 
+  arrange(desc(n)) %>%
   head(10) %>% 
   plot_ly(x = ~violation_description, y = ~n, type = "bar", colors = "viridis") %>% 
   layout(
@@ -240,14 +243,15 @@ Bronx_vio =
       type = 'category',
       title = 'violation description'),
     yaxis = list(
-      title = 'Count of violations'))
+      title = 'Count of tickets'))
 
 Brooklyn_vio = 
   vio_count_boro %>% 
   filter(borough == 'Brooklyn') %>% 
-  group_by(violation_code, violation_description) %>% 
+  group_by(violation_description) %>% 
   summarize(n = n()) %>% 
   mutate(violation_description = fct_reorder(violation_description, n)) %>% 
+  arrange(desc(n)) %>%
   head(10) %>% 
   plot_ly(x = ~violation_description, y = ~n, type = "bar", colors = "viridis") %>% 
   layout(
@@ -256,7 +260,7 @@ Brooklyn_vio =
       type = 'category',
       title = 'violation description'),
     yaxis = list(
-      title = 'Count of violations'))
+      title = 'Count of tackets'))
 
 ##There are no observations in Staten Island
   
@@ -264,6 +268,7 @@ Manhattan_vio
 Queens_vio
 Bronx_vio
 Brooklyn_vio
+
 
 ```
 
