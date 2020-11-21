@@ -83,6 +83,15 @@ vio = parking %>%
 vio
 ```
 
+```{r}
+parking %>%
+  ggplot(aes(x = long, y = lat)) +
+  geom_hex() +
+  theme(
+    legend.position = "right") +
+  labs(
+    title = "tickets counts show in georaphic information") 
+```
 
 
 ## Violation vs Time
