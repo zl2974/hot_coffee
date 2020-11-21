@@ -45,7 +45,7 @@ parking = read_csv(
 ```
 
 # Cafe Map
-```{r cafe_map，cache = F}
+```{r cache = F}
 plot_cafe_map =
   parking %>%
   count(street_name, name = "ticket") %>%
@@ -106,38 +106,8 @@ Conclusion: This dataset has nearly 39 million observations, most of which are r
 
 
 2.plots: violation vs weekday
-```{r}
-library(readr)
-parking_day = parking %>%
-  select(issue_date, summons_number)
-
-day_order = c("Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday")
-
-parking_day %>% 
-  mutate(day_week = weekdays(issue_date))%>%
-  mutate(day_week = fct_relevel(day_week, levels = c('Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'))) %>%
-  group_by(day_week, borough) %>% 
-  summarize(n = n()) %>%
-  mutate(day_week = factor(day_week, levels = day_order)) %>% 
-  arrange(day_week) %>% 
-  plot_ly(x = ~ day_week, y = ~ n, type = 'scatter', mode = "line", color = borough) %>%
-  layout(
-    title = 'Violations by weekday',
-    xaxis = list(
-      type = 'category',
-      title = 'Weekday'),
-    yaxis = list(
-      title = 'Count of violations'))
-```
-Conclusion: 
-The volume of parking tickets issuing during weekdays are larger than volume of those issuing during weekends. This could be attibuted to two reasons:   
-1. the overall demand for parking in NYC are smaller during weekend than during weekdays
-2. Many parking spots are designed to be free parking during weekends.
-
-
 
 ```{r}
-library(readr)
 parking_day = parking %>%
   select(issue_date, summons_number, borough) %>% 
   drop_na(borough)
@@ -145,8 +115,7 @@ parking_day = parking %>%
 day_order = c("Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday")
 
 parking_day %>% 
-  mutate(day_week = weekdays(issue_date))%>%
-  mutate(day_week = fct_relevel(day_week, levels = c('Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'))) %>%
+  mutate(day_week = weekdays(issue_date)) %>%
   group_by(day_week, borough) %>% 
   summarize(n = n()) %>%
   mutate(day_week = factor(day_week, levels = day_order)) %>% 
@@ -160,6 +129,11 @@ parking_day %>%
     yaxis = list(
       title = 'Count of violations'))
 ```
+
+Conclusion: 
+The volume of parking tickets issuing during weekdays are larger than volume of those issuing during weekends. This could be attibuted to two reasons:   
+1. the overall demand for parking in NYC are smaller during weekend than during weekdays
+2. Many parking spots are designed to be free parking during weekends.
 
 All the five boroughs in NYC--Manhattan, Bronx, Brooklyn, Queens and Staten Island have the same trend in the term of parking tickets generating. Manhattan always has the highest parking tickets volume, and follows with Brooklyn, Queens, Bronx and Staten Island.
 
@@ -187,6 +161,17 @@ During a day, the parking tickets generating has two peaks-- around 8:00 am and 
 
 
 ```{r}
+vio_code = readxl::read_xlsx('data/ParkingViolationCodes_January2020.xlsx') %>% 
+  janitor::clean_names() %>% 
+  select(violation_code, violation_description) %>% 
+  mutate(violation_description = str_to_lower(violation_description))
+
+vio_count_boro = 
+  parking %>% 
+  left_join(vio_code, by = 'violation_code') %>% 
+  drop_na() 
+
+
 vio_count_boro %>% 
   group_by(hour,borough) %>% 
   summarise(n = n()) %>% 
@@ -207,10 +192,6 @@ vio_count_boro %>%
 
 ```{r}
 
-vio_code = readxl::read_xlsx('data/ParkingViolationCodes_January2020.xlsx') %>% 
-  janitor::clean_names() %>% 
-  select(violation_code, violation_description) %>% 
-  mutate(violation_description = str_to_lower(violation_description))
 
 violation_count = 
   parking %>% 
@@ -237,12 +218,6 @@ The top ten
 ##violation type by Borough
 
 ```{r}
-
-vio_count_boro = 
-  parking %>% 
-  left_join(vio_code, by = 'violation_code') %>% 
-  drop_na() 
-
 
 
 Manhattan_vio = 

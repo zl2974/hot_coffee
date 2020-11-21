@@ -1,0 +1,499 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+
+<meta name="author" content="Zhuohui Liang(zl2974), Chufeng Yang(cy2588), Yiming Zhao(yz3955), Yu Liu(yl4604)" />
+
+
+<title>Project Proposal</title>
+
+<script src="site_libs/jquery-1.11.3/jquery.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="site_libs/bootstrap-3.3.5/css/cosmo.min.css" rel="stylesheet" />
+<script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
+<script src="site_libs/navigation-1.1/tabsets.js"></script>
+<link href="site_libs/highlightjs-9.12.0/default.css" rel="stylesheet" />
+<script src="site_libs/highlightjs-9.12.0/highlight.js"></script>
+<link href="site_libs/font-awesome-5.1.0/css/all.css" rel="stylesheet" />
+<link href="site_libs/font-awesome-5.1.0/css/v4-shims.css" rel="stylesheet" />
+
+<style type="text/css">code{white-space: pre;}</style>
+<style type="text/css">
+  pre:not([class]) {
+    background-color: white;
+  }
+</style>
+<script type="text/javascript">
+if (window.hljs) {
+  hljs.configure({languages: []});
+  hljs.initHighlightingOnLoad();
+  if (document.readyState && document.readyState === "complete") {
+    window.setTimeout(function() { hljs.initHighlighting(); }, 0);
+  }
+}
+</script>
+
+
+
+<style type="text/css">
+h1 {
+  font-size: 34px;
+}
+h1.title {
+  font-size: 38px;
+}
+h2 {
+  font-size: 30px;
+}
+h3 {
+  font-size: 24px;
+}
+h4 {
+  font-size: 18px;
+}
+h5 {
+  font-size: 16px;
+}
+h6 {
+  font-size: 12px;
+}
+.table th:not([align]) {
+  text-align: left;
+}
+</style>
+
+
+
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+code {
+  color: inherit;
+  background-color: rgba(0, 0, 0, 0.04);
+}
+img {
+  max-width:100%;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+.html-widget {
+  margin-bottom: 20px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+summary {
+  display: list-item;
+}
+</style>
+
+
+<style type="text/css">
+/* padding for bootstrap navbar */
+body {
+  padding-top: 51px;
+  padding-bottom: 40px;
+}
+/* offset scroll position for anchor links (for fixed navbar)  */
+.section h1 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.section h2 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.section h3 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.section h4 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.section h5 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.section h6 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.dropdown-submenu {
+  position: relative;
+}
+.dropdown-submenu>.dropdown-menu {
+  top: 0;
+  left: 100%;
+  margin-top: -6px;
+  margin-left: -1px;
+  border-radius: 0 6px 6px 6px;
+}
+.dropdown-submenu:hover>.dropdown-menu {
+  display: block;
+}
+.dropdown-submenu>a:after {
+  display: block;
+  content: " ";
+  float: right;
+  width: 0;
+  height: 0;
+  border-color: transparent;
+  border-style: solid;
+  border-width: 5px 0 5px 5px;
+  border-left-color: #cccccc;
+  margin-top: 5px;
+  margin-right: -10px;
+}
+.dropdown-submenu:hover>a:after {
+  border-left-color: #ffffff;
+}
+.dropdown-submenu.pull-left {
+  float: none;
+}
+.dropdown-submenu.pull-left>.dropdown-menu {
+  left: -100%;
+  margin-left: 10px;
+  border-radius: 6px 0 6px 6px;
+}
+</style>
+
+<script>
+// manage active state of menu based on current page
+$(document).ready(function () {
+  // active menu anchor
+  href = window.location.pathname
+  href = href.substr(href.lastIndexOf('/') + 1)
+  if (href === "")
+    href = "index.html";
+  var menuAnchor = $('a[href="' + href + '"]');
+
+  // mark it active
+  menuAnchor.parent().addClass('active');
+
+  // if it's got a parent navbar menu mark it active as well
+  menuAnchor.closest('li.dropdown').addClass('active');
+});
+</script>
+
+<!-- tabsets -->
+
+<style type="text/css">
+.tabset-dropdown > .nav-tabs {
+  display: inline-table;
+  max-height: 500px;
+  min-height: 44px;
+  overflow-y: auto;
+  background: white;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs > li.active:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
+  content: "&#xe258;";
+  border: none;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs > li.active {
+  display: block;
+}
+
+.tabset-dropdown > .nav-tabs > li > a,
+.tabset-dropdown > .nav-tabs > li > a:focus,
+.tabset-dropdown > .nav-tabs > li > a:hover {
+  border: none;
+  display: inline-block;
+  border-radius: 4px;
+  background-color: transparent;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li {
+  display: block;
+  float: none;
+}
+
+.tabset-dropdown > .nav-tabs > li {
+  display: none;
+}
+</style>
+
+<!-- code folding -->
+
+
+
+
+</head>
+
+<body>
+
+
+<div class="container-fluid main-container">
+
+
+
+
+<div class="navbar navbar-default  navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="index.html">Overview</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        <li>
+  <a href="map.html">map</a>
+</li>
+<li>
+  <a href="rita_plotly.html">data analysis</a>
+</li>
+<li>
+  <a href="rita_dashboard.html">shiny</a>
+</li>
+<li>
+  <a href="about_bobo.html">data_source</a>
+</li>
+<li>
+  <a href="mailto:&lt;liuyuzhust@163.com&gt;">
+    <span class="fa fa-envelope fa-lg"></span>
+     
+  </a>
+</li>
+<li>
+  <a href="https://github.com/yuliu426">
+    <span class="fa fa-github fa-lg"></span>
+     
+  </a>
+</li>
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div><!--/.container -->
+</div><!--/.navbar -->
+
+<div class="fluid-row" id="header">
+
+
+
+<h1 class="title toc-ignore">Project Proposal</h1>
+<h4 class="author">Zhuohui Liang(zl2974), Chufeng Yang(cy2588), Yiming Zhao(yz3955), Yu Liu(yl4604)</h4>
+
+</div>
+
+
+<h1>
+<center>
+Risky Coffee? Or…Not?
+</center>
+</h1>
+<h2>
+<center>
+Examing the risk of parking violation in different boroughs in NYC
+</center>
+</h2>
+<div id="motivation" class="section level1">
+<h1>Motivation</h1>
+<div class="figure">
+<img src="file/tweets.png" alt="" />
+<p class="caption">Tweets</p>
+</div>
+<p> You temporarily parked in front of your office building to buy a cup of coffee in a side-walk cafe. A parking ticket warrior walked to your car, raised her scanner, and fired an invisible beam of light at your registration. She handed you a NYC parking ticket and that beam of light cost you $115.</p>
+<p> According to statistics, New Yorkers drink 6.7 times the amount of coffee compared to average, and the average price consumers are paying for a cup of coffee is $2.99, but consider the above, do you think you really only paid a few bucks on your coffee?</p>
+</div>
+<div id="intended-final-product" class="section level1">
+<h1>Intended final product</h1>
+<p> A report regarding the distribution and relationship of cafe and parking violation, and a cool shiny app helps citizens to find the nearest location to have a cup of coffee without receiving a ticket.</p>
+</div>
+<div id="data-source" class="section level1">
+<h1>Data source</h1>
+<ul>
+<li><a href="https://data.cityofnewyork.us/City-Government/Open-Parking-and-Camera-Violations/nc67-uf89">Open Parking and Camera Violations</a></li>
+<li><a href="https://data.cityofnewyork.us/City-Government/Parking-Violations-Issued-Fiscal-Year-2021/pvqr-7yc4">Parking Violations Issued - Fiscal Year 2021</a></li>
+<li><a href="https://data.cityofnewyork.us/Business/Sidewalk-Caf-Licenses-and-Applications/qcdj-rwhu">Sidewalk Café Licenses and Applications</a></li>
+</ul>
+</div>
+<div id="research-questions" class="section level1">
+<h1>Research questions</h1>
+<p> In this project, we are interested in using quantitative data to assess whether streets with cafes are easier to generate parking tickets and how much fine- amount are possibly associated with boroughs. We are also interested in the association between parking violations and time period during a day and different boroughs.</p>
+</div>
+<div id="analysisvisualizations" class="section level1">
+<h1>Analysis/Visualizations</h1>
+<p> We want to use Logistic regression to analyze association between Cafe and parking violations in different locations and time periods, and figuring out the real price of a cup of coffee. We expect to use plots (e.g. scatterplots, line plots) to demonstrate our results.Here’s our expected result:</p>
+<ol style="list-style-type: decimal">
+<li>A line plot of trends in parking violations in NYC.<br />
+</li>
+<li>A box plot of fine-amount in different boroughs.<br />
+</li>
+<li>A scatterplot of cafe distribution in NYC.<br />
+</li>
+<li>A map of Violation Counts.<br />
+</li>
+<li>A map of Violation fine amounts.</li>
+</ol>
+<p> Meanwhile, we hope to apply the analysis results on the map of NYC, showing our suggestions for NY citizens about parking and coffee consumption.</p>
+</div>
+<div id="anticipate-challenge" class="section level1">
+<h1>Anticipate Challenge</h1>
+<ol style="list-style-type: decimal">
+<li><p>Although all data come from NYC open data, challenges can still emerge as they did not come from the same department and thus identity of the subjects, location name can vary.</p></li>
+<li><p>Matching the violation location and coffee on to the map can be difficult, because all these information is marked by STREET, and we need to find the longitude and latitude information separately</p></li>
+<li><p>The Shiny app we plan to develop has at least 2 paths of interaction, meaning we need at least 2 modules to produce A to B and B to A. It can be coding intensive and might only finish one module by the time of Due.</p></li>
+</ol>
+</div>
+<div id="timeline" class="section level1">
+<h1>Timeline</h1>
+<table>
+<thead>
+<tr class="header">
+<th align="left">date</th>
+<th align="left">work</th>
+<th align="left">Assignment due</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">44139</td>
+<td align="left">Determine project theme and data source</td>
+<td align="left">NA</td>
+</tr>
+<tr class="even">
+<td align="left">11/5-11/7</td>
+<td align="left">Complete proposal</td>
+<td align="left">11/7, 1pm</td>
+</tr>
+<tr class="odd">
+<td align="left">11/7-11/8</td>
+<td align="left">Zoom meeting: draw a big picture on how to analysis data</td>
+<td align="left">NA</td>
+</tr>
+<tr class="even">
+<td align="left">11/9-11/10</td>
+<td align="left">complete final source collection</td>
+<td align="left">NA</td>
+</tr>
+<tr class="odd">
+<td align="left">11/11-11/13</td>
+<td align="left">Zoom meeting: determine detailed devision of labour</td>
+<td align="left">NA</td>
+</tr>
+<tr class="even">
+<td align="left">11/14-11/15</td>
+<td align="left">clean and tidy data</td>
+<td align="left">NA</td>
+</tr>
+<tr class="odd">
+<td align="left">11/16-11/17</td>
+<td align="left">Zoom meeting: draw a big picture of website design</td>
+<td align="left">NA</td>
+</tr>
+<tr class="even">
+<td align="left">11/18-11/20</td>
+<td align="left">clean and tidy data</td>
+<td align="left">NA</td>
+</tr>
+<tr class="odd">
+<td align="left">11/21-11/27</td>
+<td align="left">make graphs and data analysis</td>
+<td align="left">NA</td>
+</tr>
+<tr class="even">
+<td align="left">11/28-12/2</td>
+<td align="left">prepare paper work for report</td>
+<td align="left">NA</td>
+</tr>
+<tr class="odd">
+<td align="left">12/3-12/4</td>
+<td align="left">Complete report</td>
+<td align="left">12/5, 4pm</td>
+</tr>
+<tr class="even">
+<td align="left">12/3-12/5</td>
+<td align="left">complete final webpage improvement and screencast</td>
+<td align="left">12/5, 4pm</td>
+</tr>
+</tbody>
+</table>
+</div>
+
+
+
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.header').parent('thead').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- tabsets -->
+
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+
+$(document).ready(function () {
+  $('.tabset-dropdown > .nav-tabs > li').click(function () {
+    $(this).parent().toggleClass('nav-tabs-open')
+  });
+});
+</script>
+
+<!-- code folding -->
+
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>
