@@ -75,7 +75,9 @@ plot_cafe_map
 ```{r violation_overview, cache=T}
 vio = parking %>%
   ggplot(aes(x = long, y = lat,color = borough),alpha = 0.0001)+
-  geom_jitter()
+  geom_jitter() +
+  xlab("longitutde") +
+  ylab("altitude")
 
 vio
 ```
@@ -88,17 +90,17 @@ vio
 
 ```{r}
 parking %>% 
-  mutate(issue_date = as.Date(issue_date)) %>% 
-  group_by(issue_date) %>% 
-  summarise(n = n()) %>% 
-  ggplot(aes(x = issue_date, y =n))+ geom_point()+geom_line()+
-  scale_x_date(date_labels = '%m-%Y', date_breaks = '1 month') + 
-  scale_y_continuous()+theme_bw()+
-  labs(
-    x = 'Issuing Month',
-    y = 'count',
-    title = 'The distribution of tickets quantities over time '
-  )
+  separate(issue_date, into = c("issue_date", "time"), sep = " ") %>% 
+  separate(issue_date, into = c('year', 'month', 'day'), sep = "-") %>% 
+  drop_na(month) %>% 
+  group_by(borough,month) %>% 
+  summarize(count = n()) %>% 
+  ggplot(aes(x = month, y = count, fill = borough)) + 
+    geom_bar(stat = "identity") +
+    labs(
+      x = 'Issuing Month',
+      y = 'counts',
+      title = 'The distribution of tickets quantities over month ')
  
 ```
 
