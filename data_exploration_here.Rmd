@@ -40,7 +40,8 @@ scale_fill_discrete = scale_fill_viridis_d
 cafe = read_csv(here::here("data/Sidewalk_Caf__Licenses_and_Applications_clean.csv"))
 
 parking = read_csv(
-  here::here("data/parking_vio2021_cleanv1.csv"))
+  here::here("data/parking_vio2021_cleanv1.csv")) %>% 
+  filter(hour != 12.3) 
 
 ```
 
@@ -146,7 +147,6 @@ All the five boroughs in NYC--Manhattan, Bronx, Brooklyn, Queens and Staten Isla
 parking %>% 
   group_by(hour) %>% 
   summarize(n = n()) %>%
-  filter(hour != 12.3) %>% 
   plot_ly(x = ~hour, y = ~n, type = 'scatter',mode = 'line') %>%
   layout(
     title = 'Violations per Hour',
@@ -170,8 +170,7 @@ vio_code = readxl::read_xlsx('data/ParkingViolationCodes_January2020.xlsx') %>%
 
 vio_count_boro = 
   parking %>% 
-  left_join(vio_code, by = 'violation_code') %>% 
-  drop_na() 
+  left_join(vio_code, by = 'violation_code')
 
 
 vio_count_boro %>% 
