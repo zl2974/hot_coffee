@@ -5,6 +5,7 @@ if (!"sf" %in% installed.packages()) {
   install.packages('sf')
 }
 require(sf)
+library(readr)
 library(tidyverse)
 library(readxl)
 if (!"reconPlots" %in% installed.packages()) {
@@ -389,29 +390,30 @@ data_2021_cleanv1 =
 
 ##>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 ## Join with fine amount
-#
-#st_96 = lm(lat~long,read_csv("data/96th.csv"))
-#
-#fine_data = read_excel("data/ParkingViolationCodes_January2020.xlsx") %>%
-#  janitor::clean_names() %>%
-#  select(-violation_description) %>% 
-#  pivot_longer(
-#    manhattan_96th_st_below_fine_amount:all_other_areas_fine_amount,
-#    names_to = "below_96",
-#    values_to = "fine_amount"
-#  ) %>% 
-#  mutate(below_96_m = 
-#           case_when(below_96 == "manhattan_96th_st_below_fine_amount" ~T,
-#                     below_96 != "manhattan_96th_st_below_fine_amount" ~F)) %>% 
-#  select(-below_96)
-#
-#data_2021_cleanv1 
-#  data_2021_cleanv1 %>%
-#  mutate(below_96 =
-#           lat < predict(st_96,
-#                         tibble(long = data_2021_cleanv1$long)),
-#         below_96_M = all(below_96,borough=="Manhattan")) %>%
-#  left_join(fine_data, by = c("violation_code","below_96_m")) %>% View()
+
+st_96 = lm(lat~long,read_csv("data/96th.csv"))
+
+fine_data = read_excel("data/ParkingViolationCodes_January2020.xlsx") %>%
+  janitor::clean_names() %>%
+  select(-violation_description) %>% 
+  pivot_longer(
+    manhattan_96th_st_below_fine_amount:all_other_areas_fine_amount,
+    names_to = "below_96",
+    values_to = "fine_amount"
+  ) %>% 
+  mutate(below_96_m = 
+           case_when(below_96 == "manhattan_96th_st_below_fine_amount" ~T,
+                     below_96 != "manhattan_96th_st_below_fine_amount" ~F)) %>% 
+  select(-below_96)
+
+data_2021_cleanv1 = data_2021_cleanv1 %>%
+  mutate(below_96 =
+           lat < predict(st_96,
+                         tibble(long = data_2021_cleanv1$long)),
+         below_96_m = ifelse(borough == "Manhattan" & below_96 == TRUE, T, F)
+         ) %>% 
+  left_join(fine_data, by = c("violation_code","below_96_m")) %>% 
+  select(-below_96, -below_96_m) 
  
 
 write_csv(data_2021_cleanv1, "./data/parking_vio2021_cleanv1.csv")
