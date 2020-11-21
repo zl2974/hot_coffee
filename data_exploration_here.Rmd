@@ -104,7 +104,7 @@ parking %>%
  
 ```
 
-Conclusion: This dataset has nearly 39 million observations, most of which are recorded during June, July, August, and October.  
+Conclusion: This dataset has nearly 39 million observations, most of which are recorded during June, July, August, and September.  
 
 
 2.plots: violation vs weekday
@@ -230,14 +230,17 @@ Manhattan_vio =
   mutate(violation_description = fct_reorder(violation_description, n)) %>% 
   arrange(desc(n)) %>% 
   head(10) %>% 
-  plot_ly(x = ~violation_description, y = ~n, type = "bar", colors = "viridis") %>% 
-  layout(
-    title = 'Top 10 violations in Manhattan',
-    xaxis = list(
-      type = 'category',
-      title = 'violation description'),
-    yaxis = list(
-      title = 'Count of tickets'))  
+  ggplot(aes(x = violation_description, y = n, fill = violation_description)) +
+  geom_bar(stat = "identity") + 
+  theme(
+    axis.text.x = element_text(angle = 90, vjust = .5, hjust = 1),
+    legend.position = "right",
+    legend.text = element_text(size = 8)
+  ) +
+  labs(
+    title = 'Top 10 violations in Manhattan') +
+    xlab("violation description") +
+    ylab('Count of tickets')  
 
 
 
@@ -246,17 +249,21 @@ Queens_vio =
   filter(borough == 'Queens') %>% 
   group_by(violation_description) %>% 
   summarize(n = n()) %>% 
+  mutate(violation_description = fct_reorder(violation_description, n)) %>% 
   arrange(desc(n)) %>% 
   head(10) %>% 
-  mutate(violation_description = fct_reorder(violation_description, n)) %>% 
-  plot_ly(x = ~violation_description, y = ~n, type = "bar", colors = "viridis") %>% 
-  layout(
-    title = 'Top 10 violations in Queens',
-    xaxis = list(
-      type = 'category',
-      title = 'violation description'),
-    yaxis = list(
-      title = 'Count of tickets'))
+  ggplot(aes(x = violation_description, y = n, fill = violation_description)) +
+  geom_bar(stat = "identity") + 
+  theme(
+    axis.text.x = element_text(angle = 90, vjust = .5, hjust = 1),
+    legend.position = "right",
+    legend.text = element_text(size = 8)
+  ) +
+  labs(
+    title = 'Top 10 violations in Queens') +
+    xlab("violation description") +
+    ylab('Count of tickets') 
+
 
 Bronx_vio = 
   vio_count_boro %>% 
@@ -264,16 +271,20 @@ Bronx_vio =
   group_by(violation_description) %>% 
   summarize(n = n()) %>% 
   mutate(violation_description = fct_reorder(violation_description, n)) %>% 
-  arrange(desc(n)) %>%
+  arrange(desc(n)) %>% 
   head(10) %>% 
-  plot_ly(x = ~violation_description, y = ~n, type = "bar", colors = "viridis") %>% 
-  layout(
-    title = 'Top 10 violations in Bronx',
-    xaxis = list(
-      type = 'category',
-      title = 'violation description'),
-    yaxis = list(
-      title = 'Count of tickets'))
+  ggplot(aes(x = violation_description, y = n, fill = violation_description)) +
+  geom_bar(stat = "identity") + 
+  theme(
+    axis.text.x = element_text(angle = 90, vjust = .5, hjust = 1),
+    legend.position = "right",
+    legend.text = element_text(size = 8)
+  ) +
+  labs(
+    title = 'Top 10 violations in Bronx') +
+    xlab("violation description") +
+    ylab('Count of tickets')  
+
 
 Brooklyn_vio = 
   vio_count_boro %>% 
@@ -281,16 +292,20 @@ Brooklyn_vio =
   group_by(violation_description) %>% 
   summarize(n = n()) %>% 
   mutate(violation_description = fct_reorder(violation_description, n)) %>% 
-  arrange(desc(n)) %>%
+  arrange(desc(n)) %>% 
   head(10) %>% 
-  plot_ly(x = ~violation_description, y = ~n, type = "bar", colors = "viridis") %>% 
-  layout(
-    title = 'Top 10 violations in Brooklyn',
-    xaxis = list(
-      type = 'category',
-      title = 'violation description'),
-    yaxis = list(
-      title = 'Count of tackets'))
+  ggplot(aes(x = violation_description, y = n, fill = violation_description)) +
+  geom_bar(stat = "identity") + 
+  theme(
+    axis.text.x = element_text(angle = 90, vjust = .5, hjust = 1),
+    legend.position = "right",
+    legend.text = element_text(size = 8)
+  ) +
+  labs(
+    title = 'Top 10 violations in Brooklyn') +
+    xlab("violation description") +
+    ylab('Count of tickets') 
+
 
 
 Staten_vio = 
@@ -299,16 +314,20 @@ Staten_vio =
   group_by(violation_description) %>% 
   summarize(n = n()) %>% 
   mutate(violation_description = fct_reorder(violation_description, n)) %>% 
-  arrange(desc(n)) %>%
+  arrange(desc(n)) %>% 
   head(10) %>% 
-  plot_ly(x = ~violation_description, y = ~n, type = "bar", colors = "viridis") %>% 
-  layout(
-    title = 'Top 10 violations in Staten Island',
-    xaxis = list(
-      type = 'category',
-      title = 'violation description'),
-    yaxis = list(
-      title = 'Count of tackets'))
+  ggplot(aes(x = violation_description, y = n, fill = violation_description)) +
+  geom_bar(stat = "identity") + 
+  theme(
+    axis.text.x = element_text(angle = 90, vjust = .5, hjust = 1),
+    legend.position = "right",
+    legend.text = element_text(size = 8)
+  ) +
+  labs(
+    title = 'Top 10 violations in Staten Island') +
+    xlab("violation description") +
+    ylab('Count of tickets')  
+
 
   
 Manhattan_vio
