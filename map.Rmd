@@ -77,52 +77,9 @@ get_location =
 ```
 
 ```{r data}
-cafe = read_csv(here::here("data/Sidewalk_Caf__Licenses_and_Applications_clean.csv")) %>% 
-  left_join(read_csv(here::here("data/zipcode.csv"))) %>% 
-  unite("adress",
-        building:state,
-        sep = ",") %>% 
-  select(business_name,adress,starts_with("swc"),long,lat,borough)
-
-parking = read_csv(here::here("data/parking_vio2021_cleanv1.csv")) %>% 
-  select(id,long,lat,issue_date)
-
-get_nearby_area =
-  function(p_long = 0, p_lat = 0,area=500) {
-    return(
-      tibble(
-        long_lwr = p_long - area / (6378137 * cos(pi * p_lat / 180)) * 180 / pi,
-        long_upr = p_long + area / (6378137 * cos(pi * p_lat / 180)) * 180 /
-          pi,
-        lat_lwr = p_lat - area / 6378137 * 180 / pi,
-        lat_upr = p_lat + area / 6378137 * 180 / pi
-      )
-    )
-  }
-
-get_data =
-  function(area) {
-    data =
-      parking %>%
-      bind_cols(area) %>%
-      filter(long < long_upr,
-             long > long_lwr,
-             lat < lat_upr,
-             lat > lat_lwr) %>% 
-      select(id)
-    
-    return(data)
-  }
-
-cafe =
-  cafe %>%
-  mutate(
-    nearby = map2(.x = long, .y = lat, ~ get_nearby_area(.x, .y)),
-    nearby = map(.x = nearby,  ~ get_data(.x)),
-    ticket = map_dbl(nearby, nrow)) %>% 
-  drop_na(borough) %>% select(-nearby)
-
-rm(parking)
+if (file.exists("data/map_data.csv")){
+  cafe = read_csv(here::here("data/map_data.csv"))
+} else {source("map_data.R")}
 ```
 
 Column {.sidebar}
@@ -139,21 +96,18 @@ sliderInput(
   inputId = "tolerant",
   label = h3("Risk Willing to take"),
   min =   cafe %>%
-    mutate(ticket = map_dbl(nearby, nrow)) %>%
     pull(ticket) %>% min(),
   max =  cafe %>%
-    mutate(ticket = map_dbl(nearby, nrow)) %>%
     pull(ticket) %>% max(),
-  value = c(0,50000)
+  value = c(0,2000)
 )
 
 checkboxGroupInput(
   "borough",
   label = h2("Which Borough?"),
   choices = cafe %>% distinct(borough) %>% pull(borough),
-  selected = cafe %>% distinct(borough) %>% pull(borough)
+  selected = cafe %>% distinct(borough) %>% pull(borough) %>% first()
 )
-
 
 ```
 
@@ -170,12 +124,11 @@ renderLeaflet({
     cafe  %>%
     filter(between(ticket, input$tolerant[1] %>% as.numeric(),
                    input$tolerant[2] %>% as.numeric()),
-           borough %in% input$borough) %>% 
-    select(-nearby)
+           borough %in% input$borough)
   
   if (!is.null(input$location)) {
     locat = get_location(input$location)
-  } else {locat = c(NA,NA)}
+  } else {locat = get_location()}
   
   pal = colorNumeric(
     palette = c("viridis", "magma", "inferno", "plasma")[[4]],
@@ -189,6 +142,7 @@ renderLeaflet({
                    swc_chairs," chairs in ",swc_sq_ft," feet space<br>",
                    round(ticket), " tickets in 500m<br>",
                    adress)) %>%
+    select(long,lat,pop,business_name,ticket) %>% 
     leaflet() %>%
     addProviderTiles(providers$CartoDB.Positron) %>%
     addCircles(
@@ -197,7 +151,7 @@ renderLeaflet({
       radius = 1000,
       label = "Your Location",
       weight = 1,
-      fillOpacity = 0.6,
+      fillOpacity = 0.5,
       group = "Nearby Cafe"
     ) %>% 
     addCircleMarkers(
@@ -213,7 +167,7 @@ renderLeaflet({
       overlayGroups = c("Nearby Cafe","Cafe Shop"),
       options = layersControlOptions(collapsed = FALSE)
     ) %>% 
-    setView(lng = locat[[1]], lat = locat[[2]], zoom = 16)
+    setView(lng = locat[[1]], lat = locat[[2]], zoom = 13)
   
   plot_cafe_map
 })
