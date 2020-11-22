@@ -178,6 +178,15 @@ parking %>%
       range = c(0, 23)),
     yaxis = list(
       title = 'Count of violations'))
+
+parking %>% 
+  filter(hour < 23) %>% 
+  drop_na(borough) %>% 
+  ggplot(aes(x = hour, fill = borough)) +
+  geom_bar(stat = "count") +
+  labs(title = 'Violations per Hour for each borough') +
+  ylab('Count of tickets') 
+  
 ```
 
 During a day, the parking tickets generating has two peaks-- around 8:00 am and aroung 1:00 pm. This may caused by the high parking demand especially during meal time. 
@@ -359,7 +368,7 @@ Staten_vio =
 
   
 Manhattan_vio
-Queens_vio
+Queens_vio 
 Bronx_vio
 Brooklyn_vio
 Staten_vio
