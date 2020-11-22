@@ -75,13 +75,26 @@ plot_cafe_map
 
 ```{r violation_overview, cache=T}
 vio = parking %>%
-  ggplot(aes(x = long, y = lat,color = borough),alpha = 0.0001)+
+  ggplot(aes(x = lat, y = long,color = borough),alpha = 0.0001)+
   geom_jitter() +
-  xlab("longitutde") +
-  ylab("altitude")
+  xlab("altitude") +
+  ylab("longitutde")
 
 vio
 ```
+
+
+add a 3d plot geo vs ticket count
+```{r}
+parking %>% 
+  group_by(borough, lat, long) %>% 
+  summarize(tickets_count = n()) %>% 
+  mutate(text_label = str_c("Tickets count:", tickets_count, "Borough:", borough)) %>% 
+  plot_ly(x = ~lat, y = ~long, z = ~tickets_count, text = ~ text_label) %>%
+  add_markers(color = ~tickets_count,
+              alpha = 0.0001) 
+```
+
 
 ```{r}
 parking %>%
