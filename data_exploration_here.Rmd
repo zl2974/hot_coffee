@@ -7,7 +7,6 @@ output: html_document
 library(tidyverse)
 library(readxl)
 library(patchwork)
-library(multcomp)
 library(plotly)
 library(leaflet)
 library(ggplot2)
@@ -93,6 +92,29 @@ parking %>%
   plot_ly(x = ~lat, y = ~long, z = ~tickets_count, text = ~ text_label) %>%
   add_markers(color = ~tickets_count,
               alpha = 0.0001) 
+```
+
+
+```{r, cache = T}
+parking %>% 
+  select(long,lat,hour) %>% 
+  mutate(long = abs(long)) %>% 
+  drop_na() %>% 
+  with(.,MASS::kde2d(lat,long)) %>% 
+  as_tibble() %>% 
+  plot_ly(x = ~x, y = ~y, z = ~z) %>% 
+    add_surface() %>% 
+  layout(scene = list(yaixs = list(autorange = "reversed"),
+                      zaxis = list(range = c(1,150)),
+                      image = list(
+                        source = base64enc::dataURI(file ="file/nyc.jpg"),
+                        x = ~min(x),
+                        y = ~min(y),
+                        sizex = 0.2, sizey = 0.1,
+                        xanchor = "left",
+                        yanchor = "bottom"
+                      )),
+         showlegend = F)
 ```
 
 
