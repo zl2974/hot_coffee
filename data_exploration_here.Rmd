@@ -185,7 +185,8 @@ parking %>%
   ggplot(aes(x = hour, fill = borough)) +
   geom_bar(stat = "count") +
   labs(title = 'Violations per Hour for each borough') +
-  ylab('Count of tickets') 
+  ylab('Count of tickets') +
+  scale_x_continuous(breaks=seq(0, 23, 1))
   
 ```
 
