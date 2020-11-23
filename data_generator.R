@@ -52,7 +52,7 @@ get_location =
     location_name = str_c(
       "https://geosearch.planninglabs.nyc/v1/search?text=",
       location_name,
-      ", New York, NY"
+      ", New York, NY&size=2"
     )
     
     url =
