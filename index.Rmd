@@ -1,5 +1,4 @@
 ---
-title: <h1><b><center>"Risky Coffee??"</center></b></h1>
 output: 
   html_document:
     toc: false
@@ -9,7 +8,7 @@ output:
 ```{css echo = F}
 .container_video {
     position: relative;
-    width: 100%;
+    width: 90%;
     height: 0;
     padding-bottom: 56.25%;
 }
@@ -21,6 +20,8 @@ output:
     height: 100%;
 }
 ```
+<h1><b><center>Risky Coffee??</center></b></h1>
+
 <h2><b><center>
      --A study regarding to parking tickets in NYC during 2020.
 </center></b></h2>
