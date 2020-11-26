@@ -3,14 +3,16 @@ output_dir: "."
 navbar:
   title: "Overview"
   right:
-    - text: "map"
+    - text: "Map"
       href: map.html
-    - text: 'data analysis'
+    - text: 'Data Exploration'
+      href: figures.html
+    - text: 'Data Analysis'
       href: rita_plotly.html
-    - text: 'shiny'
+    - text: 'Shiny'
       href: rita_dashboard.html
-    - text: 'data_source'
-      href: about_bobo.html
+    - text: 'Data source'
+      href: data_source.html
     - icon: fa-envelope fa-lg
       href: mailto:<liuyuzhust@163.com>
     - icon: fa-github fa-lg
