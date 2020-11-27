@@ -1,0 +1,22 @@
+---
+title: "Data Soruce"
+output: 
+  html_document:
+    toc: true
+    toc_float: true
+---
+
+
+[Parking Violations Issued - Fiscal Year 2021](https://data.cityofnewyork.us/City-Government/Parking-Violations-Issued-Fiscal-Year-2021/pvqr-7yc4)
+
+This dataset contains 380 million violations issued during the 2021 fiscal year.Data is provided by the Department of Finance (DOF).Each record represents a single violation issued. Information on summond number, issue date, violation code and issue street, house number,ect. are recorded. The Issuance datasets are not updated to reflect violation status, the information only represents the violation(s) at the time they are issued.
+
+A ParkingViolation Code excel is attached to this dataset, which records corresponding violation information of each violation code.
+
+[Sidewalk Café Licenses and Applications](https://data.cityofnewyork.us/Business/Sidewalk-Caf-Licenses-and-Applications/qcdj-rwhu)
+
+This dataset features detailed information about sidewalk café license applications and, if applicable, issued licenses. Data is provided by the Department of Consumer Affairs (DCA). There are total of 1124 cafe information,each record represents a single sidewalk café. Location information, such as street number and house humber are recorded.
+
+
+
+*All data was downloaded from [NYC Open Data](https://opendata.cityofnewyork.us/). 
