@@ -41,7 +41,6 @@ cafe = read_csv(here::here("data/Sidewalk_Caf__Licenses_and_Applications_clean.c
 parking = read_csv(
   here::here("data/parking_vio2021_cleanv1.csv")) %>% 
   filter(hour != 12.3) 
-
 ```
 
 # Cafe Map
@@ -209,7 +208,6 @@ parking %>%
   labs(title = 'Violations per Hour for each borough') +
   ylab('Count of tickets') +
   scale_x_continuous(breaks=seq(0, 23, 1))
-  
 ```
 
 During a day, the parking tickets generating has two peaks-- around 8:00 am and aroung 1:00 pm. This may caused by the high parking demand especially during meal time. 
@@ -246,8 +244,6 @@ vio_count_boro %>%
 ##Overall violation type
 
 ```{r}
-
-
 violation_count = 
   parking %>% 
   group_by(violation_code) %>% 
@@ -417,6 +413,44 @@ parking %>%
 According to the distribution of vehicle make of the parking ticket dataset, we can roughly know the tops 10 vehicle make that are most popular among new yorkers.
 
 ## Some plot/description/test about fine amount
+Generate data near by cafe
+```{r}
+get_nearby_area =
+  function(p_long = 0, p_lat = 0,area=100) {
+    return(
+      tibble(
+        long_lwr = p_long - area / (6378137 * cos(pi * p_lat / 180)) * 180 / pi,
+        long_upr = p_long + area / (6378137 * cos(pi * p_lat / 180)) * 180 /
+          pi,
+        lat_lwr = p_lat - area / 6378137 * 180 / pi,
+        lat_upr = p_lat + area / 6378137 * 180 / pi
+      )
+    )
+  }
+
+get_data =
+  function(area) {
+    data =
+      parking %>%
+      bind_cols(area) %>%
+      filter(long < long_upr,
+             long > long_lwr,
+             lat < lat_upr,
+             lat > lat_lwr) %>% 
+  select(summons_number, issue_date, violation_code,hour, vehicle_color, fine_amount)
+    
+    return(data)
+  }
+
+nearby_data = 
+  cafe %>%
+  select(business_name, business_name2, lat, long, borough)%>%
+  mutate(
+    nearby = map2(.x = long, .y = lat, ~ get_nearby_area(.x, .y)),
+    nearby = map(.x = nearby,  ~ get_data(.x),
+    ticket_n = map_dbl(nearby, nrow))) %>% 
+  unnest(nearby)
+```
 
 1. fine amount by boro
 ```{r}
@@ -438,15 +472,16 @@ boro_amount %>%
     legend.text = element_text(size = 8)
   ) 
 ```
-TEST
-```{r}
-res = lm(fine_amount ~factor(borough), data = boro_amount)
-anova(res)
-res1 = aov(fine_amount ~factor(borough), data = boro_amount)
-summary(res1)
-Tukey_comp<-TukeyHSD(res1)
-plot(Tukey_comp)
-```
+
+2. fine amount by time
+
+
+3. fine amount by weekday
+
+
+4. Risk plot
+
+
 
 
 
