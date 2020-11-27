@@ -1,6 +1,8 @@
 ---
 title: "Report"
-output: html_document
+output: 
+  html_document:
+    code_fload : hide
 ---
 
 ```{r setup, include=FALSE}
@@ -15,9 +17,9 @@ library(lubridate)
 knitr::opts_chunk$set(
   fig.height = 6,
   fig.width = 8,
-  message = T,
+  message = F,
   echo = T,
-  warning = T,
+  warning = F,
   cache = F
 )
 
@@ -31,6 +33,15 @@ options(
 scale_colour_discrete = scale_colour_viridis_d
 
 scale_fill_discrete = scale_fill_viridis_d
+
+```
+
+```{r load_data,echo = F}
+cafe = read_csv(here::here("data/Sidewalk_Caf__Licenses_and_Applications_clean.csv"))
+
+parking = read_csv(
+  here::here("data/parking_vio2021_cleanv1.csv")) %>% 
+  filter(hour != 12.3) 
 
 ```
 
@@ -55,3 +66,74 @@ Third, we identified violation in a certain range of area, and nest them to the
  location we interested.
  
 ## data exploration
+
+To get the most comprehesive understanding the distribution of violation tickets
+ among NYC, we map all violation to a 3D surface.
+ 
+```{r map,cache=T}
+parking %>%
+  select(long, lat, hour) %>%
+  mutate(long = abs(long)) %>%
+  drop_na() %>%
+  with(., MASS::kde2d(lat, long)) %>%
+  as_tibble() %>%
+  plot_ly() %>%
+  add_surface(x = ~ x, y = ~ y, z = ~ z) %>%
+  layout(scene = list(
+    yaixs = list(autorange = "reversed"),
+    zaxis = list(
+      range = c(1, 150),
+      title = "",
+      showline = FALSE,
+      showticklabels = FALSE,
+      showline = FALSE,
+      showgrid = FALSE
+    ),
+    camera = list(eye = list(
+      x = -1.25, y = 1.25, z = 1.25
+    )),
+    showlegend = FALSE
+  ))
+
+parking %>% 
+  drop_na(borough) %>% 
+  group_by(borough) %>% 
+  summarise(ticket =
+              n()/nrow(parking)) %>% 
+  arrange(desc(ticket)) %>% 
+  pivot_wider(
+    names_from = borough,
+    values_from = ticket
+  ) %>% 
+  knitr::kable()
+```
+
+\ We can see that most of the violation ticket issued is concentrated in Manhattan by a large margin, followed by Brooklyn at 23.2%. Staten Island has 
+the least violation ticket issued.
+
+\ Once we have the distribution of the issued, we exploring its characteristics.
+Most of the issued ticket of 2020 by the latest data recording is centered at the 3rd quater, this very strange pattern in the normal time wouldn't come to a 
+surprise at 2020, as NY didn't reopen until late May. Once it reopened, the violation 
+issued increased exponentially.
+
+```{r bar_by_month}
+parking %>% 
+  mutate(month = lubridate::month(issue_date),
+         month = forcats::fct_reorder(as.factor(month),month)
+         ) %>% 
+  drop_na(month,borough) %>% 
+  group_by(borough,month) %>% 
+  summarize(tickets = n()) %>% 
+  ungroup() %>%
+  mutate(borough = forcats::fct_reorder(borough,tickets,sum)) %>% 
+  ggplot(aes(x = month, y = tickets, fill = borough,group = borough)) + 
+    geom_bar(stat = "identity",position = "dodge") +
+    labs(
+      x = 'Issuing Month',
+      y = 'counts',
+      title = 'The distribution of tickets quantities over month ')
+```
+```{r hour_map}
+
+```
+

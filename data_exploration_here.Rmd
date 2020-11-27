@@ -72,17 +72,6 @@ plot_cafe_map =
 plot_cafe_map
 ```
 
-```{r violation_overview, cache=T}
-vio = parking %>%
-  ggplot(aes(x = lat, y = long,color = borough),alpha = 0.0001)+
-  geom_jitter() +
-  xlab("altitude") +
-  ylab("longitutde")
-
-vio
-```
-
-
 ##Geo vs ticket count
 ```{r}
 parking %>% 
@@ -96,25 +85,29 @@ parking %>%
 
 
 ```{r, cache = T}
-parking %>% 
-  select(long,lat,hour) %>% 
-  mutate(long = abs(long)) %>% 
-  drop_na() %>% 
-  with(.,MASS::kde2d(lat,long)) %>% 
-  as_tibble() %>% 
-  plot_ly(x = ~x, y = ~y, z = ~z) %>% 
-    add_surface() %>% 
-  layout(scene = list(yaixs = list(autorange = "reversed"),
-                      zaxis = list(range = c(1,150)),
-                      image = list(
-                        source = base64enc::dataURI(file ="file/nyc.jpg"),
-                        x = ~min(x),
-                        y = ~min(y),
-                        sizex = 0.2, sizey = 0.1,
-                        xanchor = "left",
-                        yanchor = "bottom"
-                      )),
-         showlegend = F)
+parking %>%
+  select(long, lat, hour) %>%
+  mutate(long = abs(long)) %>%
+  drop_na() %>%
+  with(., MASS::kde2d(lat, long)) %>%
+  as_tibble() %>%
+  plot_ly(x = ~ x, y = ~ y, z = ~ z) %>%
+  add_surface() %>%
+  layout(scene = list(
+    yaixs = list(autorange = "reversed"),
+    zaxis = list(
+      range = c(1, 150),
+      title = "",
+      showline = FALSE,
+      showticklabels = FALSE,
+      showline = FALSE,
+      showgrid = FALSE
+    ),
+    camera = list(eye = list(
+      x = -1.25, y = 1.25, z = 1.25
+    )),
+    showlegend = FALSE
+  ))
 ```
 
 
@@ -135,13 +128,16 @@ parking %>%
 
 ```{r}
 parking %>% 
-  separate(issue_date, into = c("issue_date", "time"), sep = " ") %>% 
-  separate(issue_date, into = c('year', 'month', 'day'), sep = "-") %>% 
-  drop_na(month) %>% 
+  mutate(month = lubridate::month(issue_date),
+         month = forcats::fct_reorder(as.factor(month),month)
+         ) %>% 
+  drop_na(month,borough) %>% 
   group_by(borough,month) %>% 
-  summarize(count = n()) %>% 
-  ggplot(aes(x = month, y = count, fill = borough)) + 
-    geom_bar(stat = "identity") +
+  summarize(tickets = n()) %>% 
+  ungroup() %>%
+  mutate(borough = forcats::fct_reorder(borough,tickets,sum)) %>% 
+  ggplot(aes(x = month, y = tickets, fill = borough,group = borough)) + 
+    geom_bar(stat = "identity",position = "dodge") +
     labs(
       x = 'Issuing Month',
       y = 'counts',
