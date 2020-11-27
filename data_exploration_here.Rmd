@@ -416,6 +416,40 @@ parking %>%
 
 According to the distribution of vehicle make of the parking ticket dataset, we can roughly know the tops 10 vehicle make that are most popular among new yorkers.
 
+## Some plot/description/test about fine amount
+
+1. fine amount by boro
+```{r}
+boro_amount = parking %>% 
+  drop_na(fine_amount, borough)%>%
+  select(borough, fine_amount)%>%
+  group_by(borough) 
+
+boro_amount %>%
+  summarize(mean = mean(fine_amount)) %>% 
+  knitr::kable()
+
+boro_amount %>%
+  ggplot(aes(x = borough, y = fine_amount, fill = borough)) +
+  geom_boxplot() +
+  ylim(0,200)+
+  theme(
+    legend.position = "right",
+    legend.text = element_text(size = 8)
+  ) 
+```
+TEST
+```{r}
+res = lm(fine_amount ~factor(borough), data = boro_amount)
+anova(res)
+res1 = aov(fine_amount ~factor(borough), data = boro_amount)
+summary(res1)
+Tukey_comp<-TukeyHSD(res1)
+plot(Tukey_comp)
+```
+
+
+
 
 ### Initial Design about how to study the correlation of tickets and cafe.
 
