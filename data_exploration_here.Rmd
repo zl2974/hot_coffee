@@ -469,7 +469,26 @@ boro_amount %>%
   ) 
 ```
 
-2. fine amount by time
+2. fine amount near cafe
+```{r}
+nearby_data %>% 
+  group_by(business_name) %>% 
+  summarize(mean_fine = mean(fine_amount)) %>% 
+  left_join(distinct(cafe), by = "business_name")%>% 
+  drop_na(mean_fine)%>%
+  mutate(pop =
+           str_c("<b>",business_name,"</b><br>","Average fine amount:" ,round(mean_fine, digits = 2),"$")) %>% 
+  leaflet() %>%
+  addProviderTiles(providers$CartoDB.Positron) %>%
+  addCircleMarkers(
+    ~ long,
+    ~ lat,
+    color = ~pal(mean_fine %>% log()),
+    radius = .1,
+    popup = ~ (pop)
+  )
+```
+
 
 
 3. fine amount by weekday
