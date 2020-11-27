@@ -45,7 +45,7 @@ parking = read_csv(
 
 ```
 
-# Repot{.tabset}
+# Report{.tabset}
 
 ## Data Processing
 

@@ -1,0 +1,587 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+
+
+
+<title>Report</title>
+
+<script src="site_libs/jquery-1.11.3/jquery.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="site_libs/bootstrap-3.3.5/css/cosmo.min.css" rel="stylesheet" />
+<script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
+<script src="site_libs/jqueryui-1.11.4/jquery-ui.min.js"></script>
+<link href="site_libs/tocify-1.9.1/jquery.tocify.css" rel="stylesheet" />
+<script src="site_libs/tocify-1.9.1/jquery.tocify.js"></script>
+<script src="site_libs/navigation-1.1/tabsets.js"></script>
+<script src="site_libs/navigation-1.1/codefolding.js"></script>
+<link href="site_libs/highlightjs-9.12.0/default.css" rel="stylesheet" />
+<script src="site_libs/highlightjs-9.12.0/highlight.js"></script>
+<script src="site_libs/htmlwidgets-1.5.1/htmlwidgets.js"></script>
+<script src="site_libs/plotly-binding-4.9.2.1/plotly.js"></script>
+<script src="site_libs/typedarray-0.1/typedarray.min.js"></script>
+<link href="site_libs/crosstalk-1.1.0.1/css/crosstalk.css" rel="stylesheet" />
+<script src="site_libs/crosstalk-1.1.0.1/js/crosstalk.min.js"></script>
+<link href="site_libs/plotly-htmlwidgets-css-1.52.2/plotly-htmlwidgets.css" rel="stylesheet" />
+<script src="site_libs/plotly-main-1.52.2/plotly-latest.min.js"></script>
+<link href="site_libs/font-awesome-5.1.0/css/all.css" rel="stylesheet" />
+<link href="site_libs/font-awesome-5.1.0/css/v4-shims.css" rel="stylesheet" />
+
+<style type="text/css">code{white-space: pre;}</style>
+<style type="text/css">
+  pre:not([class]) {
+    background-color: white;
+  }
+</style>
+<script type="text/javascript">
+if (window.hljs) {
+  hljs.configure({languages: []});
+  hljs.initHighlightingOnLoad();
+  if (document.readyState && document.readyState === "complete") {
+    window.setTimeout(function() { hljs.initHighlighting(); }, 0);
+  }
+}
+</script>
+
+
+
+<style type="text/css">
+h1 {
+  font-size: 34px;
+}
+h1.title {
+  font-size: 38px;
+}
+h2 {
+  font-size: 30px;
+}
+h3 {
+  font-size: 24px;
+}
+h4 {
+  font-size: 18px;
+}
+h5 {
+  font-size: 16px;
+}
+h6 {
+  font-size: 12px;
+}
+.table th:not([align]) {
+  text-align: left;
+}
+</style>
+
+
+
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+code {
+  color: inherit;
+  background-color: rgba(0, 0, 0, 0.04);
+}
+img {
+  max-width:100%;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+.html-widget {
+  margin-bottom: 20px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+summary {
+  display: list-item;
+}
+</style>
+
+
+<style type="text/css">
+/* padding for bootstrap navbar */
+body {
+  padding-top: 51px;
+  padding-bottom: 40px;
+}
+/* offset scroll position for anchor links (for fixed navbar)  */
+.section h1 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.section h2 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.section h3 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.section h4 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.section h5 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.section h6 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.dropdown-submenu {
+  position: relative;
+}
+.dropdown-submenu>.dropdown-menu {
+  top: 0;
+  left: 100%;
+  margin-top: -6px;
+  margin-left: -1px;
+  border-radius: 0 6px 6px 6px;
+}
+.dropdown-submenu:hover>.dropdown-menu {
+  display: block;
+}
+.dropdown-submenu>a:after {
+  display: block;
+  content: " ";
+  float: right;
+  width: 0;
+  height: 0;
+  border-color: transparent;
+  border-style: solid;
+  border-width: 5px 0 5px 5px;
+  border-left-color: #cccccc;
+  margin-top: 5px;
+  margin-right: -10px;
+}
+.dropdown-submenu:hover>a:after {
+  border-left-color: #ffffff;
+}
+.dropdown-submenu.pull-left {
+  float: none;
+}
+.dropdown-submenu.pull-left>.dropdown-menu {
+  left: -100%;
+  margin-left: 10px;
+  border-radius: 6px 0 6px 6px;
+}
+</style>
+
+<script>
+// manage active state of menu based on current page
+$(document).ready(function () {
+  // active menu anchor
+  href = window.location.pathname
+  href = href.substr(href.lastIndexOf('/') + 1)
+  if (href === "")
+    href = "index.html";
+  var menuAnchor = $('a[href="' + href + '"]');
+
+  // mark it active
+  menuAnchor.parent().addClass('active');
+
+  // if it's got a parent navbar menu mark it active as well
+  menuAnchor.closest('li.dropdown').addClass('active');
+});
+</script>
+
+<!-- tabsets -->
+
+<style type="text/css">
+.tabset-dropdown > .nav-tabs {
+  display: inline-table;
+  max-height: 500px;
+  min-height: 44px;
+  overflow-y: auto;
+  background: white;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs > li.active:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
+  content: "&#xe258;";
+  border: none;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs > li.active {
+  display: block;
+}
+
+.tabset-dropdown > .nav-tabs > li > a,
+.tabset-dropdown > .nav-tabs > li > a:focus,
+.tabset-dropdown > .nav-tabs > li > a:hover {
+  border: none;
+  display: inline-block;
+  border-radius: 4px;
+  background-color: transparent;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li {
+  display: block;
+  float: none;
+}
+
+.tabset-dropdown > .nav-tabs > li {
+  display: none;
+}
+</style>
+
+<!-- code folding -->
+<style type="text/css">
+.code-folding-btn { margin-bottom: 4px; }
+</style>
+
+
+
+<style type="text/css">
+
+#TOC {
+  margin: 25px 0px 20px 0px;
+}
+@media (max-width: 768px) {
+#TOC {
+  position: relative;
+  width: 100%;
+}
+}
+
+@media print {
+.toc-content {
+  /* see https://github.com/w3c/csswg-drafts/issues/4434 */
+  float: right;
+}
+}
+
+.toc-content {
+  padding-left: 30px;
+  padding-right: 40px;
+}
+
+div.main-container {
+  max-width: 1200px;
+}
+
+div.tocify {
+  width: 20%;
+  max-width: 260px;
+  max-height: 85%;
+}
+
+@media (min-width: 768px) and (max-width: 991px) {
+  div.tocify {
+    width: 25%;
+  }
+}
+
+@media (max-width: 767px) {
+  div.tocify {
+    width: 100%;
+    max-width: none;
+  }
+}
+
+.tocify ul, .tocify li {
+  line-height: 20px;
+}
+
+.tocify-subheader .tocify-item {
+  font-size: 0.90em;
+}
+
+.tocify .list-group-item {
+  border-radius: 0px;
+}
+
+
+</style>
+
+
+
+</head>
+
+<body>
+
+
+<div class="container-fluid main-container">
+
+
+<!-- setup 3col/9col grid for toc_float and main content  -->
+<div class="row-fluid">
+<div class="col-xs-12 col-sm-4 col-md-3">
+<div id="TOC" class="tocify">
+</div>
+</div>
+
+<div class="toc-content col-xs-12 col-sm-8 col-md-9">
+
+
+
+
+<div class="navbar navbar-default  navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="index.html">Overview</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        <li>
+  <a href="map.html">Map</a>
+</li>
+<li>
+  <a href="figures.html">Data Exploration</a>
+</li>
+<li>
+  <a href="Report.html">Data Analysis</a>
+</li>
+<li>
+  <a href="https://zl2974.shinyapps.io/Risky_Coffee/">Shiny</a>
+</li>
+<li>
+  <a href="data_source.html">Data source</a>
+</li>
+<li>
+  <a href="mailto:&lt;liuyuzhust@163.com&gt;">
+    <span class="fa fa-envelope fa-lg"></span>
+     
+  </a>
+</li>
+<li>
+  <a href="https://zl2974.github.com/hot_coffee">
+    <span class="fa fa-github fa-lg"></span>
+     
+  </a>
+</li>
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div><!--/.container -->
+</div><!--/.navbar -->
+
+<div class="fluid-row" id="header">
+
+<div class="btn-group pull-right">
+<button type="button" class="btn btn-default btn-xs dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><span>Code</span> <span class="caret"></span></button>
+<ul class="dropdown-menu" style="min-width: 50px;">
+<li><a id="rmd-show-all-code" href="#">Show All Code</a></li>
+<li><a id="rmd-hide-all-code" href="#">Hide All Code</a></li>
+</ul>
+</div>
+
+
+
+<h1 class="title toc-ignore">Report</h1>
+
+</div>
+
+
+<div id="report" class="section level1 tabset">
+<h1>Report</h1>
+<div id="data-processing" class="section level2">
+<h2>Data Processing</h2>
+<p> We set NYC Open Data as primary data source, and required:</p>
+<ol style="list-style-type: decimal">
+<li>Open Parking and Camera Violations</li>
+<li>Parking Violations Issued - Fiscal Year 2021</li>
+<li>Sidewalk Café Licenses and Applications</li>
+</ol>
+<p>from NYC Open Data.</p>
+<p> With these data, we first clean all variable names and select target variables for comparison between data, as well as changing variable types to reflecting their actual value. Then we focus on acquiring geometric information via available information in the datasets. We wrote a function to pull geometric information from <a href="https://labs-geosearch-docs.netlify.app/">Geosearch</a>. Third, we identified violation in a certain range of area, and nest them to the location we interested.</p>
+</div>
+<div id="data-exploration" class="section level2">
+<h2>data exploration</h2>
+<p>To get the most comprehesive understanding the distribution of violation tickets among NYC, we map all violation to a 3D surface.</p>
+<pre class="r"><code>parking %&gt;%
+  select(long, lat, hour) %&gt;%
+  mutate(long = abs(long)) %&gt;%
+  drop_na() %&gt;%
+  with(., MASS::kde2d(lat, long)) %&gt;%
+  as_tibble() %&gt;%
+  plot_ly() %&gt;%
+  add_surface(x = ~ x, y = ~ y, z = ~ z) %&gt;%
+  layout(scene = list(
+    yaixs = list(autorange = &quot;reversed&quot;),
+    zaxis = list(
+      range = c(1, 150),
+      title = &quot;&quot;,
+      showline = FALSE,
+      showticklabels = FALSE,
+      showline = FALSE,
+      showgrid = FALSE
+    ),
+    camera = list(eye = list(
+      x = -1.25, y = 1.25, z = 1.25
+    )),
+    showlegend = FALSE
+  ))</code></pre>
+<div id="htmlwidget-3d5358907b7ead5b50a2" style="width:768px;height:576px;" class="plotly html-widget"></div>
+<script type="application/json" data-for="htmlwidget-3d5358907b7ead5b50a2">{"x":{"visdat":{"294853aa5afe":["function () ","plotlyVisDat"]},"cur_data":"294853aa5afe","attrs":{"294853aa5afe":{"alpha_stroke":1,"sizes":[10,100],"spans":[1,20],"z":{},"type":"surface","x":{},"y":{},"inherit":true}},"layout":{"margin":{"b":40,"l":60,"t":25,"r":10},"scene":{"yaixs":{"autorange":"reversed"},"zaxis":{"range":[1,150],"title":"","showline":false,"showticklabels":false,"showline.1":false,"showgrid":false},"camera":{"eye":{"x":-1.25,"y":1.25,"z":1.25}},"showlegend":false,"xaxis":{"title":"x"},"yaxis":{"title":"y"}},"hovermode":"closest","showlegend":false,"legend":{"yanchor":"top","y":0.5}},"source":"A","config":{"showSendToCloud":false},"data":[{"colorbar":{"title":"z","ticklen":2,"len":0.5,"lenmode":"fraction","y":1,"yanchor":"top"},"colorscale":[["0","rgba(68,1,84,1)"],["0.0416666666666667","rgba(70,19,97,1)"],["0.0833333333333333","rgba(72,32,111,1)"],["0.125","rgba(71,45,122,1)"],["0.166666666666667","rgba(68,58,128,1)"],["0.208333333333333","rgba(64,70,135,1)"],["0.25","rgba(60,82,138,1)"],["0.291666666666667","rgba(56,93,140,1)"],["0.333333333333333","rgba(49,104,142,1)"],["0.375","rgba(46,114,142,1)"],["0.416666666666667","rgba(42,123,142,1)"],["0.458333333333333","rgba(38,133,141,1)"],["0.5","rgba(37,144,140,1)"],["0.541666666666667","rgba(33,154,138,1)"],["0.583333333333333","rgba(39,164,133,1)"],["0.625","rgba(47,174,127,1)"],["0.666666666666667","rgba(53,183,121,1)"],["0.708333333333333","rgba(79,191,110,1)"],["0.75","rgba(98,199,98,1)"],["0.791666666666667","rgba(119,207,85,1)"],["0.833333333333333","rgba(147,214,70,1)"],["0.875","rgba(172,220,52,1)"],["0.916666666666667","rgba(199,225,42,1)"],["0.958333333333333","rgba(226,228,40,1)"],["1","rgba(253,231,37,1)"]],"showscale":true,"z":[[1.37692483683991e-276,3.17224543855767e-247,4.85846125169879e-233,7.09594473402367e-222,2.48152810937897e-194,3.18126772051287e-170,4.00472967369838e-138,9.26740624738961e-121,2.08042905791097e-113,8.73737430752524e-92,8.8891036110811e-85,1.53096725352115e-100,4.93931705805886e-141,4.83298594292459e-125,6.48001756195864e-108,3.0070589603016e-95,1.02098425207242e-72,3.47650499310947e-45,1.15878970842323e-42,4.60198757613799e-34,1.65749453559263e-21,1.12765877365729e-08,1.45832592032461e-09,0.00474001363919335,0.00641135239646757],[2.65890022175059e-198,5.92358643546147e-169,2.04872148084023e-156,1.23350478250499e-148,4.12224360731765e-128,3.10371137097967e-109,7.5825099970367e-84,5.40834364249968e-68,7.34747094742095e-66,1.7722302626117e-47,4.50632767618519e-42,7.71959784017059e-58,1.53247146990854e-86,7.33677959937641e-76,4.5479599628739e-59,1.3161070464881e-49,8.67433279750345e-46,1.66637889059585e-18,5.5543792187368e-16,2.7701354557737e-13,2.90517122738688e-05,0.000376599167627888,0.0684912719575312,0.0442461844833129,0.0105694181894563],[1.98820072187165e-135,4.16014848968502e-106,3.42507828050469e-95,1.63625671697528e-90,3.35476725110615e-77,9.41846462113589e-62,6.29578797817861e-44,1.14913426645498e-30,7.42968819526968e-29,1.52797859997983e-18,8.23446508165502e-15,1.4440936068425e-30,2.21253691492785e-43,7.59421755742431e-40,2.48360549005875e-25,2.07283153804824e-19,3.12692107395547e-17,2.87426388346382e-07,9.58050866788636e-05,0.0060237593456157,0.300633089498822,0.0507094038066472,0.162766443088035,0.00536794503344542,6.99451797349282e-07],[5.98076369424046e-88,1.1320374719227e-58,2.28325376272124e-49,1.93875535051859e-47,5.408342164961e-38,3.12329683082023e-27,5.04807160073653e-17,1.14210127418541e-08,3.50145352467812e-07,0.000439655674208513,0.00623577298534329,9.21847658441096e-17,2.09943334323196e-15,5.81318203289668e-13,4.88220688320504e-07,0.000117478628170766,0.000930695544750725,2.15461884680119e-06,0.136387674826596,0.398326090822814,0.732974682143428,0.478304518064703,0.533710405570432,0.00371246172864031,5.98251591010919e-09],[8.54312567517623e-56,1.29263929192928e-26,7.835345545035e-19,2.16742605806794e-18,1.72862210286033e-12,1.06945531731911e-06,0.0122027916212588,0.618342934611949,0.733650255492336,0.164623242242585,0.000590466303210499,0.0627773619550003,0.103831068353829,0.361473896738143,0.000504478229948912,5.51726167993779e-05,0.00167183520252726,0.195917382016909,1.86040626843873,0.364965191692131,0.0094747495603468,0.0904339886998117,7.70541587141142e-06,2.87960841233377e-13,2.09160461876334e-26],[2.0308053362797e-38,8.42510620843366e-10,0.003930206688954,0.0036440958882512,0.312365319009078,6.49641723799274,1.11749116433301,0.00745321850154014,0.0683795710402209,0.0141170010669259,0.842991065552262,17.435605276768,3.14184860611756,0.188245929659759,0.00753859192503956,0.00133636097774842,0.10991778791572,0.934716304794154,0.0907439909468016,0.0697933620651039,3.13935065627322,0.0115622948103252,0.000156925295392614,2.94680656271837e-28,1.27479651680634e-56],[9.35088461687647e-36,1.47533127188551e-07,3.11985361175734,0.423430360872756,0.118335449290429,1.38595802525477,0.0511188687399406,0.0120787066195972,0.0841958063995448,0.0683834850902396,0.473060085845787,87.534402015988,10.1746536931142,5.42972986327171,0.203598600896736,0.042110011603118,0.261293744673617,1.40630571235732,0.178820077726429,0.288610533480137,0.340085409102299,0.00302868470603847,4.95300655082142e-06,3.09281998721418e-32,1.86114184510964e-82],[3.16371265297508e-44,5.16520406399846e-14,0.00274712776541322,5.4450679072821e-05,0.043959253384404,0.0558823706064997,0.0872910090209353,0.0466205675517953,0.0130105666301305,0.507741557009129,7.33732885458128,15.2508362445595,3.2643867272893,6.1544997509958,13.0534507781187,0.328597266787552,0.653699616892333,1.55916440137666,0.378411322326121,0.425546395555295,1.22068613696403,0.125187888243392,7.68910142621736e-12,9.68746035775904e-42,6.13094987652353e-93],[2.53191193125043e-23,6.96928870463718e-07,0.0190298973280238,0.00163687941550592,0.000182260558032149,0.0213208529494377,0.0633043244474147,0.0445888895153892,2.32315055631267,8.76841134553149,6.58989299311901,16.7239480273907,15.8030589660697,5.63429046204959,10.8247309329547,0.635771299486508,0.717047246789852,1.13831761797067,1.99833006639454,2.10348761626816,1.53978868575297,2.15600864554204e-05,7.05358746371839e-20,4.24067876045126e-55,2.50274915124621e-115],[1.97695764343913e-16,0.279458221488656,0.662477401058331,0.656002920854451,0.0626300730546128,0.0302580056801004,4.42922171438013,0.258083379236913,6.06115542426812,4.31956213128827,16.0405989657423,26.7415601046502,6.98322436375442,9.94369807717378,1.80372320560039,0.686524394135112,0.762356597754451,0.257294476032646,0.00251978130267456,0.00340273512998163,5.17810376978627e-07,4.37938350939731e-11,1.58678117335936e-38,1.40015711342399e-78,8.24024355496501e-139],[5.35611570071301e-19,0.0218433160044267,0.392740412854967,3.22096774393114,2.8693004445904,1.18762837321136,1.17141930303689,3.6559104486448,5.128191393693,12.5808140816883,18.9521335699667,20.5505894124961,17.2903206728244,7.00815369480785,3.72317176717485,3.85183368649417,1.99982138160829,0.0235737097029335,4.09393462344977e-05,4.19917871464174e-12,3.01319207932886e-27,2.14239644763285e-31,4.01190740207449e-59,1.98873209047478e-111,9.79046747040107e-178],[2.54515113890246e-18,0.0373537239128731,2.22002182084536,0.878219229565762,2.96242308053728,17.7303449648994,11.8378065209457,11.6973937939426,1.74166114978813,10.9136334641114,13.5578282261063,26.2761721180596,73.763491033461,13.9635016923314,3.81085138827834,0.265779388759856,0.401833779675432,0.000458368613746514,5.47034601389093e-07,1.53621205901244e-27,2.54282231656689e-54,6.00103595654282e-67,9.47790000579121e-95,4.18191210447393e-147,2.70735088243515e-224],[2.3465693078561e-11,0.0159780279768352,1.11360962960011,1.304541249298,42.7087987716664,19.2881546912991,6.58360294472245,2.07603629614721,9.149566999393,15.9162259099591,19.0795997962226,40.920240797904,15.8713010622057,26.8876980915832,1.37269239283842,0.0111555962930821,0.000358998055047922,2.15962978657525e-13,3.03479363261455e-24,8.5224688285481e-45,2.34323068642249e-90,6.87742416479613e-118,1.00738659933244e-145,4.35636066494308e-198,2.79009027836175e-275],[0.000443237439561059,0.241402020486895,2.72992725569773,0.511363310545686,2.82955717792585,8.74814609532049,27.9226181793219,9.65045072019595,1.56415354447481,12.9718277957753,15.9985134557138,44.7613995362708,169.854885612275,126.606487961841,0.129842492221344,0.022936838991872,5.87370819065032e-09,8.21735150277492e-34,6.05850885700892e-57,1.70138176021946e-77,4.6770928090512e-123,3.12292189527091e-184,4.01159410837951e-212,1.70610351654088e-264,0],[0.0582113737659293,0.204549491253666,0.223131303957048,0.173326902136392,5.27420039495646,2.7950063278899,1.2615938418493,11.114760278045,15.5485033342086,6.7783075726825,5.60210065894679,17.1341872155962,54.7580272778583,103.379805437854,0.112540031562463,0.000118063645745547,3.21487341590502e-15,6.94809982332394e-47,3.396800647103e-101,1.22225017533236e-125,3.35996167325268e-171,9.0416251214285e-242,5.83200078747363e-294,0,0],[0.0183145371012694,0.0810590378708528,0.114746366221843,7.8406385115229,1.58101785071975,9.74113046256103,7.73447262432392,21.5516089247487,19.6735093443481,10.9326397612375,33.6307262653646,35.6788366200505,173.679856626574,32.5477286109778,0.000137926627660028,0.000291560437433999,1.86503550215652e-20,1.16784077170683e-61,3.33153319853726e-125,3.15966055369521e-189,8.68589636979792e-235,2.33736650761443e-305,0,0,0],[5.46371790608061e-14,0.00156544109390664,0.391768890608564,0.174809755780992,0.947207909143201,0.94050219783639,1.22342771646921,1.4693477637399,1.42316136493423,35.2901577822598,12.8959652449013,80.083624452211,62.5203230335445,25.4902123808328,2.13066132872742e-13,3.6116825086464e-18,2.31029839643367e-34,1.44665357767729e-75,8.86745456829122e-142,5.32073165922859e-233,8.0801039527801e-314,0,0,0,0],[2.07018334603621e-34,6.01218207967719e-14,0.000586920952772285,0.341880527331539,0.0275521895579996,3.10792602079901,3.04164102766297,1.32325712423379,2.64315223146798,2.37262622949213,8.91164582025512,23.5726388552852,40.4295644376405,3.30189881755261e-07,8.55054483197026e-27,1.60995050158211e-47,1.02984303111872e-63,6.4486306518401e-105,3.95277350536774e-171,2.37177951909055e-262,0,0,0,0,0],[1.29797114044506e-62,3.18796249495068e-37,7.96682290966586e-11,0.00120141296279865,0.000187911553462326,0.0705187796944474,0.139260045818992,0.864868926874711,9.2963238124401,11.8397454384306,9.89169663346923,34.1722707570853,0.0131468025397678,1.94205841627293e-13,1.32064374488238e-42,2.59414079315244e-92,1.65194649487039e-108,1.03440936920735e-149,6.3405491321483e-216,3.80451461511647e-307,0,0,0,0,0],[1.06596553022166e-103,8.19107770937126e-50,1.26187877920995e-17,1.34923149531766e-08,2.74989961698861e-06,2.26902572993229,5.58328940397301,11.10589345289,13.4706245161531,17.7891902536444,6.21332211318778,13.4679068976828,1.11526974880758e-09,4.42678425872026e-35,2.95046939972641e-64,1.96656943303158e-118,9.53548755250944e-169,5.97089415117511e-210,3.65993859446509e-276,0,0,0,0,0,0],[2.96663609381448e-129,4.6687746278032e-72,7.86723096431397e-31,2.82663189681813e-05,0.119573083947091,0.280386182195738,7.55482431817573,22.5212708940595,24.996631367989,21.5857748738124,18.7006021064898,0.0436871519686031,2.93276674664801e-19,8.85697094026253e-56,2.37501360560028e-101,1.58440912529659e-155,1.03531861591253e-234,1.24024728078091e-285,0,0,0,0,0,0,0],[1.19088587740723e-166,2.2594931544527e-90,3.96152605008332e-38,3.81237676415745e-10,0.0772883268992502,0.617087957072518,1.04602069365237,16.2656936333102,12.7509883785303,16.5569731134752,12.5724157151897,6.16772867502993e-07,3.41232109852129e-33,2.43183567990306e-74,9.56683694101012e-139,4.60029631062233e-208,3.00910559407067e-287,0,0,0,0,0,0,0,0],[3.97772702478472e-187,3.46531299989978e-109,1.05641355372855e-55,2.79849356089075e-21,0.00277579001189641,0.0469541718712494,1.88756581827268,19.4999651040796,16.8669985343453,21.884675994784,0.0252934099896802,2.54838357969452e-14,4.42759826862906e-48,8.38564546090752e-101,7.13147474452167e-170,2.7449750328037e-259,0,0,0,0,0,0,0,0,0],[4.29512780865711e-220,4.40192296284141e-138,3.56693646888698e-70,2.83365940872439e-27,2.20362597726152e-09,0.00148958754658089,0.418428529325664,6.80492657404655,0.0094736858089005,0.514717848222702,8.79393966344065e-07,2.52526414136146e-30,3.25954978718268e-67,1.67645451106674e-128,3.18530201163605e-207,7.36773688750279e-306,0,0,0,0,0,0,0,0,0],[2.13722827193113e-252,1.7718512919954e-159,1.4379427205094e-91,1.14233599468941e-48,1.14947418660786e-30,1.55480102118755e-16,0.0015553153404764,0.000240798972993553,0.000407224861946067,0.057076128476888,6.81570692589234e-14,4.01822818347317e-46,1.19665126077353e-97,1.49213105752973e-160,1.96112004720686e-247,0,0,0,0,0,0,0,0,0,0]],"type":"surface","x":[40.498813,40.5160610416667,40.5333090833333,40.550557125,40.5678051666667,40.5850532083333,40.60230125,40.6195492916667,40.6367973333333,40.654045375,40.6712934166667,40.6885414583333,40.7057895,40.7230375416667,40.7402855833333,40.757533625,40.7747816666667,40.7920297083333,40.80927775,40.8265257916667,40.8437738333333,40.861021875,40.8782699166667,40.8955179583333,40.912766],"y":[73.701344,73.7243745,73.747405,73.7704355,73.793466,73.8164965,73.839527,73.8625575,73.885588,73.9086185,73.931649,73.9546795,73.97771,74.0007405,74.023771,74.0468015,74.069832,74.0928625,74.115893,74.1389235,74.161954,74.1849845,74.208015,74.2310455,74.254076],"frame":null}],"highlight":{"on":"plotly_click","persistent":false,"dynamic":false,"selectize":false,"opacityDim":0.2,"selected":{"opacity":1},"debounce":0},"shinyEvents":["plotly_hover","plotly_click","plotly_selected","plotly_relayout","plotly_brushed","plotly_brushing","plotly_clickannotation","plotly_doubleclick","plotly_deselect","plotly_afterplot","plotly_sunburstclick"],"base_url":"https://plot.ly"},"evals":[],"jsHooks":[]}</script>
+<pre class="r"><code>parking %&gt;% 
+  drop_na(borough) %&gt;% 
+  group_by(borough) %&gt;% 
+  summarise(ticket =
+              n()/nrow(parking)) %&gt;% 
+  arrange(desc(ticket)) %&gt;% 
+  pivot_wider(
+    names_from = borough,
+    values_from = ticket
+  ) %&gt;% 
+  knitr::kable()</code></pre>
+<table>
+<thead>
+<tr class="header">
+<th align="right">Manhattan</th>
+<th align="right">Brooklyn</th>
+<th align="right">Queens</th>
+<th align="right">Bronx</th>
+<th align="right">Staten Island</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="right">0.421</td>
+<td align="right">0.232</td>
+<td align="right">0.184</td>
+<td align="right">0.148</td>
+<td align="right">0.015</td>
+</tr>
+</tbody>
+</table>
+<p> We can see that most of the violation ticket issued is concentrated in Manhattan by a large margin, followed by Brooklyn at 23.2%. Staten Island has the least violation ticket issued.</p>
+<p> Once we have the distribution of the issued, we exploring its characteristics. Most of the issued ticket of 2020 by the latest data recording is centered at the 3rd quater, this very strange pattern in the normal time wouldn’t come to a surprise at 2020, as NY didn’t reopen until late May. Once it reopened, the violation issued increased exponentially.</p>
+<pre class="r"><code>parking %&gt;% 
+  mutate(month = lubridate::month(issue_date),
+         month = forcats::fct_reorder(as.factor(month),month)
+         ) %&gt;% 
+  drop_na(month,borough) %&gt;% 
+  group_by(borough,month) %&gt;% 
+  summarize(tickets = n()) %&gt;% 
+  ungroup() %&gt;%
+  mutate(borough = forcats::fct_reorder(borough,tickets,sum)) %&gt;% 
+  ggplot(aes(x = month, y = tickets, fill = borough,group = borough)) + 
+    geom_bar(stat = &quot;identity&quot;,position = &quot;dodge&quot;) +
+    labs(
+      x = &#39;Issuing Month&#39;,
+      y = &#39;counts&#39;,
+      title = &#39;The distribution of tickets quantities over month &#39;)</code></pre>
+<p><img src="Report_files/figure-html/bar_by_month-1.png" width="768" /></p>
+</div>
+</div>
+
+
+
+</div>
+</div>
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.header').parent('thead').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- tabsets -->
+
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+
+$(document).ready(function () {
+  $('.tabset-dropdown > .nav-tabs > li').click(function () {
+    $(this).parent().toggleClass('nav-tabs-open')
+  });
+});
+</script>
+
+<!-- code folding -->
+<script>
+$(document).ready(function () {
+  window.initializeCodeFolding("hide" === "show");
+});
+</script>
+
+<script>
+$(document).ready(function ()  {
+
+    // move toc-ignore selectors from section div to header
+    $('div.section.toc-ignore')
+        .removeClass('toc-ignore')
+        .children('h1,h2,h3,h4,h5').addClass('toc-ignore');
+
+    // establish options
+    var options = {
+      selectors: "h1,h2,h3",
+      theme: "bootstrap3",
+      context: '.toc-content',
+      hashGenerator: function (text) {
+        return text.replace(/[.\\/?&!#<>]/g, '').replace(/\s/g, '_');
+      },
+      ignoreSelector: ".toc-ignore",
+      scrollTo: 0
+    };
+    options.showAndHide = true;
+    options.smoothScroll = true;
+
+    // tocify
+    var toc = $("#TOC").tocify(options).data("toc-tocify");
+});
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>

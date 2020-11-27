@@ -8,7 +8,7 @@ navbar:
     - text: 'Data Exploration'
       href: figures.html
     - text: 'Data Analysis'
-      href: report.html
+      href: Report.html
     - text: 'Shiny'
       href: https://zl2974.shinyapps.io/Risky_Coffee/
     - text: 'Data source'
@@ -22,4 +22,4 @@ output:
     theme: cosmo
     toc : true
     toc_float: true
-    code_folding: show
+    code_folding: hide
