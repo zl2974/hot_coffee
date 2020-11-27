@@ -1,0 +1,70 @@
+---
+title: "Data Exploration"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+library(tidyverse)
+library(readxl)
+library(patchwork)
+library(plotly)
+library(leaflet)
+library(ggplot2)
+library(lubridate)
+
+knitr::opts_chunk$set(
+  fig.height = 6,
+  fig.width = 8,
+  message = T,
+  echo = T,
+  warning = T,
+  cache = F
+)
+
+theme_set(theme_minimal() + theme(legend.position = "bottom"))
+options(
+  ggplot2.continuous.colour = "viridis",
+  ggplot2.continuous.fill = "viridis",
+  digits = 3
+)
+
+scale_colour_discrete = scale_colour_viridis_d
+
+scale_fill_discrete = scale_fill_viridis_d
+
+```
+
+# Load data
+```{r load_data}
+cafe = read_csv(here::here("data/Sidewalk_Caf__Licenses_and_Applications_clean.csv"))
+
+parking = read_csv(
+  here::here("data/parking_vio2021_cleanv1.csv")) %>% 
+  filter(hour != 12.3) 
+
+```
+
+
+## Some plot/description/test about fine amount
+
+1. anova between fine amount and different boros
+
+There are significant difference in fine amount between different boroughs.
+```{r}
+boro_amount = parking %>% 
+  drop_na(fine_amount, borough)%>%
+  select(borough, fine_amount)%>%
+  group_by(borough) 
+
+aov_boro_amount = aov(fine_amount ~factor(borough), data = boro_amount)
+summary(aov_boro_amount)
+Tukey_comp<-TukeyHSD(res1)
+plot(Tukey_comp)
+```
+
+
+
+
+
+
+
