@@ -1,0 +1,57 @@
+---
+title: "Report"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+library(tidyverse)
+library(readxl)
+library(patchwork)
+library(plotly)
+library(leaflet)
+library(ggplot2)
+library(lubridate)
+
+knitr::opts_chunk$set(
+  fig.height = 6,
+  fig.width = 8,
+  message = T,
+  echo = T,
+  warning = T,
+  cache = F
+)
+
+theme_set(theme_minimal() + theme(legend.position = "bottom"))
+options(
+  ggplot2.continuous.colour = "viridis",
+  ggplot2.continuous.fill = "viridis",
+  digits = 3
+)
+
+scale_colour_discrete = scale_colour_viridis_d
+
+scale_fill_discrete = scale_fill_viridis_d
+
+```
+
+# Repot{.tabset}
+
+## Data Processing
+
+\ We set NYC Open Data as primary data source, and required:
+
+1. Open Parking and Camera Violations
+1. Parking Violations Issued - Fiscal Year 2021
+1. Sidewalk Café Licenses and Applications
+
+from NYC Open Data.
+
+\ With these data, we first clean all variable names and select target variables for comparison 
+between data, as well as changing variable types to reflecting their actual value.
+Then we focus on acquiring geometric information via available 
+information in the datasets. We wrote a function to pull geometric information 
+from [Geosearch](https://labs-geosearch-docs.netlify.app/). 
+Third, we identified violation in a certain range of area, and nest them to the
+ location we interested.
+ 
+## data exploration
