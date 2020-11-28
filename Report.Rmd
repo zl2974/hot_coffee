@@ -82,7 +82,7 @@ parking %>%
   layout(scene = list(
     yaixs = list(autorange = "reversed"),
     zaxis = list(
-      range = c(1, 150),
+      range = c(0.1, 150),
       title = "",
       showline = FALSE,
       showticklabels = FALSE,
@@ -133,7 +133,94 @@ parking %>%
       y = 'counts',
       title = 'The distribution of tickets quantities over month ')
 ```
-```{r hour_map}
 
+\ Trend of violation tickets issued can be seen via .... As shown, Violation 
+tickets mostly issued in the daytime. Two peaks are observed in the animation, 
+which is 8 am and 13pm, representing 
+`r parking %>% filter(hour==8) %>% nrow()*100/nrow(parking)`% and 
+`r parking %>% filter(hour==13) %>% nrow()*100/nrow(parking)`% tickets issued 
+of the day.
+
+```{r hour_map,cache=T}
+nyc =
+  parking %>%
+  drop_na(long, lat) %>%
+  summarise(
+    lon_max = max(long),
+    lon_min = min(long),
+    lat_max = max(lat),
+    lat_min = min(lat)
+  )
+
+nyc =
+  ggmap::get_map(location = c(
+    right = pull(nyc, lon_max),
+    left = pull(nyc, lon_min),
+    top = pull(nyc, lat_max),
+    bottom = pull(nyc, lat_min)
+  ))
+
+set.seed(1)
+parking %>%
+  filter(hour <= 24) %>%
+  drop_na(borough,lat,long,hour) %>% 
+  sample_n(1e+5) %>% 
+  plot_ly()  %>% 
+    add_markers(
+    y = ~ lat,
+    x = ~ long,
+    alpha = 0.02,
+    frame = ~ hour,
+    mode = "marker",
+    color = ~borough,
+    colors = viridis::viridis(4,option = "C")
+  ) %>%
+  layout(
+    images = list(
+      source = raster2uri(nyc),
+      xref = "x",
+      yref = "y",
+      y = 40.5,
+      x = -74.3	,
+      sizey = 0.4,
+      sizex = 0.6,
+      sizing = "stretch",
+      xanchor = "left",
+      yanchor = "bottom",
+      opacity = 0.4,
+      layer = "below"
+    )
+  )%>%
+  animation_opts(transition = 0,frame = 24)
+```
+
+\ Group by borough, we seen that these trends vary. As in Manhattan, the peaks 
+is similar to the global trend, but other boroughs have a earlier or no second 
+peak. This might reflect the nature of most business center is located in Manhattan, and thus has a larger lunch break group.
+
+```{r hour_borough, cache = T}
+parking %>% 
+  group_by(hour,borough) %>%
+  drop_na(hour,borough) %>% 
+  summarise(n = n()) %>% 
+  plot_ly(x = ~hour, y = ~n, type = 'scatter',mode = 'line', color= ~ borough) %>%
+  layout(
+    title = 'Violations per Hour',
+    xaxis = list(
+      type = 'category',
+      title = 'Hour',
+      range = c(0, 23)),
+    yaxis = list(
+      title = 'Count of violations'))
+```
+
+
+# Cluster Analysis
+\ Using the information gained from above, we agree that cluster analysis would 
+help reflect some of relationship in the data. We use k-means distants to 
+determines our clusters. To simplify our analysis but reserve the most information, we choose to limit our data to Viehical types to _PAS_ as passenger's vihecal
+
+```{r kmean, cache=T}
+set.seed(1)
 ```
 
