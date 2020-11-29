@@ -493,7 +493,7 @@ nearby_data %>%
 
 3. fine amount by weekday
 
-fine amount vs weekday
+(a) fine amount vs weekday
 ```{r}
 
 
@@ -514,7 +514,7 @@ parking %>%
   ) 
 ```
 
-fine amount vs weekday faceted by borough
+(b) fine amount vs weekday faceted by borough
 ```{r}
 parking %>%
   dplyr::select(issue_date, fine_amount, borough) %>% 
@@ -536,6 +536,43 @@ parking %>%
 4. Risk plot
 
 
+
+
+
+
+## hypothesis test
+
+1. Chi-Squared: 
+
+test whether the states that the probability of falling in the each week day is the same for each borough:
+
+```{r}
+chisq_boro_day = 
+  parking %>% 
+  mutate(day_week = weekdays(issue_date),
+         day_week = factor(day_week, levels = day_order)) %>% 
+  arrange(day_week) %>% 
+  count(borough, day_week) %>% 
+  drop_na(day_week, borough) %>% 
+  pivot_wider(names_from = day_week,
+              values_from = n) %>% 
+  subset(select = c(-borough)) %>% 
+  data.matrix() 
+
+ 
+
+
+rownames(chisq_boro_day) <- c("Bronx", "Brooklyn", "Manhattan", "Queens", "Staten Island")
+ 
+chisq_boro_day
+
+chisq.test(chisq_boro_day)
+
+x_crit = qchisq(0.95,24)
+x_crit   # x critical value
+```
+
+According to above chi-square test result,  We reject the null hypothesis and conclude that the proportions of violation counts for week days are different among boroughs at 0.05 significant level.
 
 
 
