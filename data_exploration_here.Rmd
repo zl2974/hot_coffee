@@ -490,7 +490,6 @@ nearby_data %>%
 ```
 
 
-
 3. fine amount by weekday
 
 (a) fine amount vs weekday
@@ -533,8 +532,30 @@ parking %>%
   ) 
 ```
 
-4. Risk plot
-
+4. Risk map (risk is given by rank)
+```{r}
+nearby_data %>% 
+  group_by(business_name) %>% 
+  summarize(mean_fine = mean(fine_amount)) %>% 
+  left_join(distinct(cafe), by = "business_name") %>% 
+  drop_na(mean_fine) %>%
+  mutate(percent_rank = rank(-mean_fine)/908,
+         top_risk = ceiling(percent_rank*100)) %>% 
+  arrange(desc(percent_rank))%>% 
+  mutate(pop =
+           str_c("<b>",business_name,"</b><br>",
+                 "Average fine amount:" ,round(mean_fine, digits = 1),"$","</b><br>",
+                 "Risk: top", top_risk, "%")) %>% 
+  leaflet() %>%
+  addProviderTiles(providers$CartoDB.Positron) %>%
+  addCircleMarkers(
+    ~ long,
+    ~ lat,
+    color = ~pal(mean_fine %>% log()),
+    radius = .1,
+    popup = ~ (pop)
+  )
+```
 
 
 
