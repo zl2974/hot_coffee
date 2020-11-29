@@ -62,11 +62,11 @@ Tukey_comp<-TukeyHSD(aov_boro_amount)
 plot(Tukey_comp)
 ```
 
-## hypothesis test
+## hypothesis test for violation counts
 
 1. Chi-Squared: 
 
-test whether the states that the probability of falling in the each week day is the same for each borough:
+a) test whether the states that the probability of falling in the each week day is the same for each borough:
 
 ```{r}
 
@@ -88,12 +88,45 @@ chisq_boro_day =
 rownames(chisq_boro_day) <- c("Bronx", "Brooklyn", "Manhattan", "Queens", "Staten Island")
  
 chisq_boro_day
+
 chisq.test(chisq_boro_day)
+
 x_crit = qchisq(0.95,24)
 x_crit   # x critical value
 ```
 
-According to above chi-square test result,  We reject the null hypothesis and conclude that the proportions of violation counts for week days are different among boroughs at 0.05 significant level.
+According to above chi-square test result,  We reject the null hypothesis and conclude that the proportions of violation counts for week days are different among boroughs at 0.05 significant level.  
+
+
+
+b) test whether the states that the probability of falling in the each hour is the same for each borough:
+
+```{r}
+
+
+chisq_boro_hour = 
+  parking %>% 
+  filter(hour != 12.3) %>% 
+  filter(hour < 24) %>% 
+  count(borough, hour) %>% 
+  drop_na(borough) %>% 
+  pivot_wider(names_from = hour,
+              values_from = n) %>% 
+  subset(select = c(-borough)) %>% 
+  data.matrix() 
+ 
+rownames(chisq_boro_hour) <- c("Bronx", "Brooklyn", "Manhattan", "Queens", "Staten Island")
+ 
+chisq_boro_hour
+
+chisq.test(chisq_boro_hour)
+
+x_crit = qchisq(0.95,92)
+x_crit   # x critical value
+```
+
+According to above chi-square test result,  We reject the null hypothesis and conclude that the proportions of violation counts for each hour are different among boroughs at 0.05 significant level.
+
 
 
 
