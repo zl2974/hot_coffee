@@ -493,6 +493,26 @@ nearby_data %>%
 
 3. fine amount by weekday
 
+```{r}
+
+
+day_order = c("Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday")
+
+parking %>%
+  dplyr::select(issue_date, fine_amount, borough) %>% 
+  drop_na(issue_date) %>% 
+  mutate(day_week = weekdays(issue_date),
+         day_week = factor(day_week, levels = day_order)) %>% 
+  arrange(day_week) %>% 
+  ggplot(aes(x = day_week, y = fine_amount, fill = day_week)) +
+  geom_boxplot() +
+  ylim(0,200) +
+  theme(
+    legend.position = "right",
+    legend.text = element_text(size = 8)
+  ) 
+```
+
 
 4. Risk plot
 
