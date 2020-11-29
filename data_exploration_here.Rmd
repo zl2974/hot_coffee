@@ -213,7 +213,7 @@ During a day, the parking tickets generating has two peaks-- around 8:00 am and 
 ```{r}
 vio_code = readxl::read_xlsx('data/ParkingViolationCodes_January2020.xlsx') %>% 
   janitor::clean_names() %>% 
-  select(violation_code, violation_description) %>% 
+  dplyr::select(violation_code, violation_description) %>% 
   mutate(violation_description = str_to_lower(violation_description))
 
 vio_count_boro = 
@@ -560,10 +560,12 @@ nearby_data %>%
 5. average fine amount distribution
 ```{r}
 nearby_data %>% 
-  group_by(business_name) %>% 
+  drop_na(borough) %>% 
+  group_by(borough, business_name) %>% 
   summarize(mean_fine = mean(fine_amount)) %>% 
-  ggplot(aes(x = mean_fine, fill = mean_fine))+
+  ggplot(aes(x = mean_fine, fill = borough)) +
   geom_density(alpha = .5)
+
 ```
 
 
