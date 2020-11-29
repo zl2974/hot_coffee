@@ -85,7 +85,7 @@ parking %>%
 
 ```{r, cache = T}
 parking %>%
-  select(long, lat, hour) %>%
+  dplyr::select(long, lat, hour) %>%
   mutate(long = abs(long)) %>%
   drop_na() %>%
   with(., MASS::kde2d(lat, long)) %>%
@@ -151,7 +151,7 @@ Conclusion: This dataset has nearly 39 million observations, most of which are r
 
 ```{r}
 parking_day = parking %>%
-  select(issue_date, summons_number, borough) %>% 
+  dplyr::select(issue_date, summons_number, borough) %>% 
   drop_na(borough)
 
 day_order = c("Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday")
@@ -474,8 +474,8 @@ boro_amount %>%
 nearby_data %>% 
   group_by(business_name) %>% 
   summarize(mean_fine = mean(fine_amount)) %>% 
-  left_join(distinct(cafe), by = "business_name")%>% 
-  drop_na(mean_fine)%>%
+  left_join(distinct(cafe), by = "business_name") %>% 
+  drop_na(mean_fine) %>%
   mutate(pop =
            str_c("<b>",business_name,"</b><br>","Average fine amount:" ,round(mean_fine, digits = 2),"$")) %>% 
   leaflet() %>%

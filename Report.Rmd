@@ -218,7 +218,7 @@ parking %>%
 # Cluster Analysis
 \ Using the information gained from above, we agree that cluster analysis would 
 help reflect some of relationship in the data. We use k-means distants to 
-determines our clusters. To simplify our analysis but reserve the most information, we choose to limit our data to Viehical types to _PAS_ as passenger's vihecal
+determines our clusters. To simplify our analysis but reserve the most information, we choose to limit our data to Viehical types to _PAS_ as passenger's vehical
 
 ```{r kmean, cache=T}
 set.seed(1)
