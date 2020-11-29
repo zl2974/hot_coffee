@@ -58,11 +58,42 @@ boro_amount = parking %>%
 
 aov_boro_amount = aov(fine_amount ~factor(borough), data = boro_amount)
 summary(aov_boro_amount)
-Tukey_comp<-TukeyHSD(res1)
+Tukey_comp<-TukeyHSD(aov_boro_amount)
 plot(Tukey_comp)
 ```
 
+## hypothesis test
 
+1. Chi-Squared: 
+
+test whether the states that the probability of falling in the each week day is the same for each borough:
+
+```{r}
+
+
+day_order = c("Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday")
+
+chisq_boro_day = 
+  parking %>% 
+  mutate(day_week = weekdays(issue_date),
+         day_week = factor(day_week, levels = day_order)) %>% 
+  arrange(day_week) %>% 
+  count(borough, day_week) %>% 
+  drop_na(day_week, borough) %>% 
+  pivot_wider(names_from = day_week,
+              values_from = n) %>% 
+  subset(select = c(-borough)) %>% 
+  data.matrix() 
+ 
+rownames(chisq_boro_day) <- c("Bronx", "Brooklyn", "Manhattan", "Queens", "Staten Island")
+ 
+chisq_boro_day
+chisq.test(chisq_boro_day)
+x_crit = qchisq(0.95,24)
+x_crit   # x critical value
+```
+
+According to above chi-square test result,  We reject the null hypothesis and conclude that the proportions of violation counts for week days are different among boroughs at 0.05 significant level.
 
 
 
