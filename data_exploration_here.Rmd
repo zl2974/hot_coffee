@@ -557,7 +557,14 @@ nearby_data %>%
   )
 ```
 
-
+5. average fine amount distribution
+```{r}
+nearby_data %>% 
+  group_by(business_name) %>% 
+  summarize(mean_fine = mean(fine_amount)) %>% 
+  ggplot(aes(x = mean_fine, fill = mean_fine))+
+  geom_density(alpha = .5)
+```
 
 
 
