@@ -35,7 +35,7 @@ scale_fill_discrete = scale_fill_viridis_d
 ```
 
 # Load data
-```{r load_data}
+```{r load_data,echo = FALSE, message=FALSE,warning = FALSE}
 cafe = read_csv(here::here("data/Sidewalk_Caf__Licenses_and_Applications_clean.csv"))
 
 parking = read_csv(
@@ -56,7 +56,7 @@ propose hypothesis that there's at least 1 pairs of boroughs' fine amount is
 different from others.
 
 
-```{r}
+```{r,echo = FALSE, message=FALSE,warning = FALSE}
 parking %>% 
   drop_na(fine_amount, borough)%>%
   select(borough, fine_amount)%>%
@@ -73,7 +73,7 @@ $H_0$ : there's no difference between boroughs
 
 $H_1$ : at least one borough is different from the other boroughs.
 
-```{r}
+```{r,echo = FALSE, message=FALSE,warning = FALSE}
 boro_amount = parking %>% 
   drop_na(fine_amount, borough)%>%
   select(borough, fine_amount)%>%
@@ -96,11 +96,19 @@ Staten Island and Bronx.
 
 ## hypothesis test for violation counts
 
-1. Chi-Squared: 
 
-a) test whether the states that the probability of falling in the each week day is the same for each borough:
+1. Chi-Squared test between violation counts generated in each weekdays and different boros
 
-```{r}
+From data exploration, we have noticed that the violation counts proportions in different weekdays among each boroughs are different.Thus, we assume there is no homogeneity in tickets counts proportionsin each weekdays among boroughs. 
+
+
+To do that, we performed Chi-squared test for multiple groups comparison. With:
+
+$H_0$ : the tickets proportion in weekdays among boroughs are equal.
+
+$H_1$ : not all proportions are equal
+
+```{r,echo = FALSE, message=FALSE,warning = FALSE}
 
 
 day_order = c("Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday")
@@ -119,7 +127,8 @@ chisq_boro_day =
  
 rownames(chisq_boro_day) <- c("Bronx", "Brooklyn", "Manhattan", "Queens", "Staten Island")
  
-chisq_boro_day
+chisq_boro_day%>% 
+  knitr::kable(caption = "Test Result")
 
 chisq.test(chisq_boro_day)
 
@@ -130,10 +139,15 @@ x_crit   # x critical value
 According to above chi-square test result,  We reject the null hypothesis and conclude that the proportions of violation counts for week days are different among boroughs at 0.05 significant level.  
 
 
+As the Chi- squared test result from above, we reject the Null at 95% confidence level 
+and conclude that there's at least one borough's percentage of tickets per weekday is different from others.
+
+
+
 
 b) test whether the states that the probability of falling in the each hour is the same for each borough:
 
-```{r}
+```{r,echo = FALSE, message=FALSE,warning = FALSE}
 
 
 chisq_boro_hour = 
