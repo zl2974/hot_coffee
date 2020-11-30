@@ -6,7 +6,11 @@ navbar:
     - text: "Map"
       href: map.html
     - text: 'Data Exploration'
-      href: figures.html
+      menu:
+       - text: 'Violation vs Time'
+         href: figures.html
+       - text: 'Violation Types'
+         href: figures1.html
     - text: 'Data Analysis'
       href: Report.html
     - text: 'Shiny'
