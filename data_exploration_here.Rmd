@@ -74,17 +74,20 @@ plot_cafe_map
 ##Geo vs ticket count
 ```{r}
 parking %>% 
+  drop_na(address) %>% 
   group_by(borough, lat, long) %>% 
   summarize(tickets_count = n()) %>% 
   mutate(text_label = str_c("Tickets count:", tickets_count, "Borough:", borough)) %>% 
   plot_ly(x = ~lat, y = ~long, z = ~tickets_count, text = ~ text_label) %>%
   add_markers(color = ~tickets_count,
               alpha = 0.0001) 
+
 ```
 
 
 ```{r map1, cache = T}
 parking %>%
+  drop_na(address) %>% 
   dplyr::select(long, lat, hour) %>%
   mutate(long = abs(long)) %>%
   drop_na() %>%

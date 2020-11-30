@@ -38,7 +38,9 @@ cafe = read_csv(here::here("data/Sidewalk_Caf__Licenses_and_Applications_clean.c
 
 parking = read_csv(
   here::here("data/parking_vio2021_cleanv1.csv")) %>% 
-  filter(hour != 12.3) 
+  filter(hour != 12.3) %>% 
+  filter(hour <= 23) %>% 
+  drop_na(address)
 
 ```
 
@@ -157,15 +159,17 @@ nyc =
     bottom = pull(nyc, lat_min)
   ))
 
-set.seed(1)
+set.seed(100)
 parking %>%
   filter(hour <= 24) %>%
   drop_na(borough,lat,long,hour) %>% 
   sample_n(1e+5) %>% 
+  mutate(text_label = str_c("borough:", borough, ",address:", address)) %>% 
   plot_ly()  %>% 
     add_markers(
     y = ~ lat,
     x = ~ long,
+    text = ~ text_label,
     alpha = 0.02,
     frame = ~ hour,
     mode = "marker",

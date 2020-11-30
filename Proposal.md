@@ -98,9 +98,9 @@ consumption.
 
 | date        | work                                                     | Assignment due |
 | :---------- | :------------------------------------------------------- | :------------- |
-| 11/4/2020   | Determine project theme and data source                  | NA             |
+| 44139       | Determine project theme and data source                  | NA             |
 | 11/5-11/7   | Complete proposal                                        | 11/7, 1pm      |
-| 11/7-11/8/  | Zoom meeting: draw a big picture on how to analysis data | NA             |
+| 11/7-11/8   | Zoom meeting: draw a big picture on how to analysis data | NA             |
 | 11/9-11/10  | complete final source collection                         | NA             |
 | 11/11-11/13 | Zoom meeting: determine detailed devision of labour      | NA             |
 | 11/14-11/15 | clean and tidy data                                      | NA             |
