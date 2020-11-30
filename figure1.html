@@ -11,7 +11,7 @@
 
 
 
-<title></title>
+<title>Violation Types</title>
 
 <script src="site_libs/jquery-1.11.3/jquery.min.js"></script>
 <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -19,10 +19,20 @@
 <script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
 <script src="site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
 <script src="site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
+<script src="site_libs/jqueryui-1.11.4/jquery-ui.min.js"></script>
+<link href="site_libs/tocify-1.9.1/jquery.tocify.css" rel="stylesheet" />
+<script src="site_libs/tocify-1.9.1/jquery.tocify.js"></script>
 <script src="site_libs/navigation-1.1/tabsets.js"></script>
 <script src="site_libs/navigation-1.1/codefolding.js"></script>
 <link href="site_libs/highlightjs-9.12.0/default.css" rel="stylesheet" />
 <script src="site_libs/highlightjs-9.12.0/highlight.js"></script>
+<script src="site_libs/htmlwidgets-1.5.1/htmlwidgets.js"></script>
+<script src="site_libs/plotly-binding-4.9.2.1/plotly.js"></script>
+<script src="site_libs/typedarray-0.1/typedarray.min.js"></script>
+<link href="site_libs/crosstalk-1.1.0.1/css/crosstalk.css" rel="stylesheet" />
+<script src="site_libs/crosstalk-1.1.0.1/js/crosstalk.min.js"></script>
+<link href="site_libs/plotly-htmlwidgets-css-1.52.2/plotly-htmlwidgets.css" rel="stylesheet" />
+<script src="site_libs/plotly-main-1.52.2/plotly-latest.min.js"></script>
 <link href="site_libs/font-awesome-5.1.0/css/all.css" rel="stylesheet" />
 <link href="site_libs/font-awesome-5.1.0/css/v4-shims.css" rel="stylesheet" />
 
@@ -254,6 +264,69 @@ $(document).ready(function () {
 
 
 
+<style type="text/css">
+
+#TOC {
+  margin: 25px 0px 20px 0px;
+}
+@media (max-width: 768px) {
+#TOC {
+  position: relative;
+  width: 100%;
+}
+}
+
+@media print {
+.toc-content {
+  /* see https://github.com/w3c/csswg-drafts/issues/4434 */
+  float: right;
+}
+}
+
+.toc-content {
+  padding-left: 30px;
+  padding-right: 40px;
+}
+
+div.main-container {
+  max-width: 1200px;
+}
+
+div.tocify {
+  width: 20%;
+  max-width: 260px;
+  max-height: 85%;
+}
+
+@media (min-width: 768px) and (max-width: 991px) {
+  div.tocify {
+    width: 25%;
+  }
+}
+
+@media (max-width: 767px) {
+  div.tocify {
+    width: 100%;
+    max-width: none;
+  }
+}
+
+.tocify ul, .tocify li {
+  line-height: 20px;
+}
+
+.tocify-subheader .tocify-item {
+  font-size: 0.90em;
+}
+
+.tocify .list-group-item {
+  border-radius: 0px;
+}
+
+
+</style>
+
+
 
 </head>
 
@@ -261,6 +334,16 @@ $(document).ready(function () {
 
 
 <div class="container-fluid main-container">
+
+
+<!-- setup 3col/9col grid for toc_float and main content  -->
+<div class="row-fluid">
+<div class="col-xs-12 col-sm-4 col-md-3">
+<div id="TOC" class="tocify">
+</div>
+</div>
+
+<div class="toc-content col-xs-12 col-sm-8 col-md-9">
 
 
 
@@ -294,7 +377,7 @@ $(document).ready(function () {
       <a href="figures.html">Violation vs Time</a>
     </li>
     <li>
-      <a href="figures1.html">Violation vs Borough</a>
+      <a href="figures1.html">Violation Types</a>
     </li>
   </ul>
 </li>
@@ -336,59 +419,32 @@ $(document).ready(function () {
 
 
 
+<h1 class="title toc-ignore">Violation Types</h1>
 
 </div>
 
 
-<style type="text/css">
-.container_video {
-    position: relative;
-    width: 90%;
-    height: 0;
-    padding-bottom: 56.25%;
-}
-.container_video iframe {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-}
-</style>
-<h1>
-<b>
+<h3>
 <center>
-Risky Coffee??
+Over View of Tickets Type generated in Year 2021
 </center>
-</b>
-</h1>
-<h2>
-<b>
+</h3>
+<p>Overall, there are 79 different types of violation happened in NYC. The most freqently violated are 'photo school zone spped violation', 'street cleaning parking violation', 'fail to display meter receipt', and offedning 'no-parking-day-time limits'.</p>
+<p><img src="figure1_files/figure-html/unnamed-chunk-3-1.png" width="768" /></p>
+<h3>
 <center>
-<pre><code> --A study regarding to parking tickets in NYC during 2020.</code></pre>
+Top 10 violation types in each borough
 </center>
-</b>
-</h2>
-<center>
-Zhuohui Liang, Chufeng Yang, Yiming Zhao, Yu Liu
-</center>
-<center>
-<div class="container_video">
-<iframe src="https://www.youtube.com/embed/i05gKtHWjGY" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen>
-</iframe>
+</h3>
+<p><img src="figure1_files/figure-html/unnamed-chunk-4-1.png" width="768" /><img src="figure1_files/figure-html/unnamed-chunk-4-2.png" width="768" /><img src="figure1_files/figure-html/unnamed-chunk-4-3.png" width="768" /><img src="figure1_files/figure-html/unnamed-chunk-4-4.png" width="768" /><img src="figure1_files/figure-html/unnamed-chunk-4-5.png" width="768" /></p>
+<p><b>A small finding</b>: According to the distribution of vehicle makes of the violation tickets dataset, we can roughly know the tops 10 vehicle make that are most popular among new yorkers.</p>
+<div id="htmlwidget-4b5a0215a9e3e7acbe61" style="width:768px;height:576px;" class="plotly html-widget"></div>
+<script type="application/json" data-for="htmlwidget-4b5a0215a9e3e7acbe61">{"x":{"visdat":{"31f077316584":["function () ","plotlyVisDat"]},"cur_data":"31f077316584","attrs":{"31f077316584":{"x":{},"y":{},"colors":"viridis","alpha_stroke":1,"sizes":[10,100],"spans":[1,20],"type":"bar"}},"layout":{"margin":{"b":40,"l":60,"t":25,"r":10},"xaxis":{"domain":[0,1],"automargin":true,"title":"vehicle_make","type":"category","categoryorder":"array","categoryarray":["HYUND","DODGE","JEEP","BMW","ME/BE","CHEVR","NISSA","FORD","TOYOT","HONDA"]},"yaxis":{"domain":[0,1],"automargin":true,"title":"n"},"hovermode":"closest","showlegend":false},"source":"A","config":{"showSendToCloud":false},"data":[{"x":["HONDA","TOYOT","FORD","NISSA","CHEVR","ME/BE","BMW","JEEP","DODGE","HYUND"],"y":[443761,427489,377752,361294,216450,179193,178464,171000,145412,115522],"type":"bar","marker":{"color":"rgba(31,119,180,1)","line":{"color":"rgba(31,119,180,1)"}},"error_y":{"color":"rgba(31,119,180,1)"},"error_x":{"color":"rgba(31,119,180,1)"},"xaxis":"x","yaxis":"y","frame":null}],"highlight":{"on":"plotly_click","persistent":false,"dynamic":false,"selectize":false,"opacityDim":0.2,"selected":{"opacity":1},"debounce":0},"shinyEvents":["plotly_hover","plotly_click","plotly_selected","plotly_relayout","plotly_brushed","plotly_brushing","plotly_clickannotation","plotly_doubleclick","plotly_deselect","plotly_afterplot","plotly_sunburstclick"],"base_url":"https://plot.ly"},"evals":[],"jsHooks":[]}</script>
+
+
+
 </div>
-</center>
-<br>
-<center>
-<div id="motivation" class="section level2">
-<h2>Motivation</h2>
-<p>You temporarily parked in front of your office building to buy a cup of coffee in a side-walk cafe. A parking ticket warrior walked to your car, raised her scanner, and fired an invisible beam of light at your registration. She handed you a NYC parking ticket and that beam of light cost you $115.</p>
-According to statistics, New Yorkers drink 6.7 times the amount of coffee compared to average, and the average price consumers are paying for a cup of coffee is $2.99, but consider the above, do you think you really only paid a few bucks on your coffee?
-</center>
 </div>
-
-
-
 
 </div>
 
@@ -426,6 +482,32 @@ $(document).ready(function () {
 });
 </script>
 
+<script>
+$(document).ready(function ()  {
+
+    // move toc-ignore selectors from section div to header
+    $('div.section.toc-ignore')
+        .removeClass('toc-ignore')
+        .children('h1,h2,h3,h4,h5').addClass('toc-ignore');
+
+    // establish options
+    var options = {
+      selectors: "h1,h2,h3",
+      theme: "bootstrap3",
+      context: '.toc-content',
+      hashGenerator: function (text) {
+        return text.replace(/[.\\/?&!#<>]/g, '').replace(/\s/g, '_');
+      },
+      ignoreSelector: ".toc-ignore",
+      scrollTo: 0
+    };
+    options.showAndHide = true;
+    options.smoothScroll = true;
+
+    // tocify
+    var toc = $("#TOC").tocify(options).data("toc-tocify");
+});
+</script>
 
 <!-- dynamically load mathjax for compatibility with self-contained -->
 <script>

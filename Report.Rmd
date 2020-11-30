@@ -211,57 +211,148 @@ parking %>%
       title = 'Count of violations'))
 ```
 
+\ Violation types in each borough also have different compositions. Speeding 
+through school area is the most common violation in all three borough. No 
+standing-day/time limit second common type of violation followed by no 
+parking-day/time. No parking street cleaning is the second common type of 
+violation in Brooklyn, Queen, Bronx. Fail to display muni meter recept is the 
+second most common violation in Stanen Island.
 
-# Cluster Analysis
-\ Using the information gained from above, we agree that cluster analysis would 
-help reflect some of relationship in the data. To simplify our analysis but reserve the most information, we choose to limit our data to Vehicle types to _PAS_ as passenger's vehicle, and month to _July_.
+### Violation type{.tabset}
 
+#### Manhattan
+```{r}
+vio_code = readxl::read_xlsx('data/ParkingViolationCodes_January2020.xlsx') %>% 
+  janitor::clean_names() %>% 
+  dplyr::select(violation_code, violation_description) %>% 
+  mutate(violation_description = str_to_lower(violation_description))
 
-```{r cluster_data, cache=T}
-set.seed(1)
-clus_df =
-  parking %>%
-  filter(lubridate::month(issue_date) == 7, hour <= 24) %>%
-  mutate(weekday = weekdays(issue_date)) %>% 
-  select(
-    hour,
-    weekday,
-    registration_state,
-    starts_with("violation"),
-    borough
-  ) %>%
-  mutate(across(where(is.character), as.factor)) %>%
-  drop_na() %>%
-  sample_n(1e+3) %>% 
-  cluster::daisy("gower") %>% 
-  as.matrix()
+vio_count_boro = 
+  parking %>% 
+  left_join(vio_code, by = 'violation_code')
 
-factoextra::fviz_nbclust(clus_df, FUNcluster = cluster::pam, method = "wss")
+Manhattan_vio = 
+  vio_count_boro %>% 
+  filter(borough == 'Manhattan') %>% 
+  group_by(violation_description) %>% 
+  summarize(n = n()) %>% 
+  mutate(violation_description = fct_reorder(violation_description, n)) %>% 
+  arrange(desc(n)) %>% 
+  head(10) %>% 
+  ggplot(aes(x = violation_description, y = n, fill = violation_description)) +
+  geom_bar(stat = "identity") + 
+  theme(
+    axis.text.x = element_text(angle = 90, vjust = .5, hjust = 1),
+    legend.position = "right",
+    legend.text = element_text(size = 8)
+  ) +
+  labs(
+    title = 'Top 10 violations in Manhattan') +
+    xlab("violation description") +
+    ylab('Count of tickets')  
 
-factoextra::eclust(clus_df, "pam", k = 9, k.max = 10)
+Queens_vio = 
+  vio_count_boro %>% 
+  filter(borough == 'Queens') %>% 
+  group_by(violation_description) %>% 
+  summarize(n = n()) %>% 
+  mutate(violation_description = fct_reorder(violation_description, n)) %>% 
+  arrange(desc(n)) %>% 
+  head(10) %>% 
+  ggplot(aes(x = violation_description, y = n, fill = violation_description)) +
+  geom_bar(stat = "identity") + 
+  theme(
+    axis.text.x = element_text(angle = 90, vjust = .5, hjust = 1),
+    legend.position = "right",
+    legend.text = element_text(size = 8)
+  ) +
+  labs(
+    title = 'Top 10 violations in Queens') +
+    xlab("violation description") +
+    ylab('Count of tickets') 
 
-#factoextra::fviz_nbclust(
-#  x = clus_df,
-#  FUNcluster = cluster::pam,
-#  method = "gap_stat",
-#  nboot = 10
-#) +
-#  labs(subtitle = "Gap Statistic Method")
+Bronx_vio = 
+  vio_count_boro %>% 
+  filter(borough == 'Bronx') %>% 
+  group_by(violation_description) %>% 
+  summarize(n = n()) %>% 
+  mutate(violation_description = fct_reorder(violation_description, n)) %>% 
+  arrange(desc(n)) %>% 
+  head(10) %>% 
+  ggplot(aes(x = violation_description, y = n, fill = violation_description)) +
+  geom_bar(stat = "identity") + 
+  theme(
+    axis.text.x = element_text(angle = 90, vjust = .5, hjust = 1),
+    legend.position = "right",
+    legend.text = element_text(size = 8)
+  ) +
+  labs(
+    title = 'Top 10 violations in Bronx') +
+    xlab("violation description") +
+    ylab('Count of tickets')  
 
-factoextra::fviz_cluster(
-  cluster::pam(clus_df, 9),
-  clus_df,
-  stand = TRUE,
-  geom = "point",
-  repel = TRUE
-)
+Brooklyn_vio = 
+  vio_count_boro %>% 
+  filter(borough == 'Brooklyn') %>% 
+  group_by(violation_description) %>% 
+  summarize(n = n()) %>% 
+  mutate(violation_description = fct_reorder(violation_description, n)) %>% 
+  arrange(desc(n)) %>% 
+  head(10) %>% 
+  ggplot(aes(x = violation_description, y = n, fill = violation_description)) +
+  geom_bar(stat = "identity") + 
+  theme(
+    axis.text.x = element_text(angle = 90, vjust = .5, hjust = 1),
+    legend.position = "right",
+    legend.text = element_text(size = 8)
+  ) +
+  labs(
+    title = 'Top 10 violations in Brooklyn') +
+    xlab("violation description") +
+    ylab('Count of tickets') 
+
+Staten_vio = 
+  vio_count_boro %>% 
+  filter(borough == 'Staten Island') %>% 
+  group_by(violation_description) %>% 
+  summarize(n = n()) %>% 
+  mutate(violation_description = fct_reorder(violation_description, n)) %>% 
+  arrange(desc(n)) %>% 
+  head(10) %>% 
+  ggplot(aes(x = violation_description, y = n, fill = violation_description)) +
+  geom_bar(stat = "identity") + 
+  theme(
+    axis.text.x = element_text(angle = 90, vjust = .5, hjust = 1),
+    legend.position = "right",
+    legend.text = element_text(size = 8)
+  ) +
+  labs(
+    title = 'Top 10 violations in Staten Island') +
+    xlab("violation description") +
+    ylab('Count of tickets')  
+
+Manhattan_vio
+```
+
+#### Queen
+```{r}
+Queens_vio 
+```
+
+#### Bronx
+```{r}
+Bronx_vio
+```
+
+#### Brooklyn
+```{r}
+Brooklyn_vio
+```
+
+#### Staten Island
+```{r}
+Staten_vio
 ```
 
 
-\ Categorical data is in this datasets, so Gower Distance is used to adapt 
-our data structure.
-```{r matrix ,cache=T}
-
-
-```
 
