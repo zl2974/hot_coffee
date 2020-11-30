@@ -84,13 +84,14 @@ summary(aov_boro_amount)
 Tukey_comp<-TukeyHSD(aov_boro_amount,conf.level = 0.99)
 Tukey_comp$`factor(borough)` %>% knitr::kable(caption = "Turkey Test at 99% confidence Level")
 ```
+
+
 As the ANOVA test result from above, we reject the Null at 99% confidence level 
 and conclude that there's at least one borough's mean of fine amount is different from others.
 
 To further investigate the difference between boroughs, we perform Tukey test 
 for pairwise comparison. We only failed to reject the null hypothesis for 
 Staten Island and Bronx. 
-
 
 
 ## hypothesis test for violation counts
