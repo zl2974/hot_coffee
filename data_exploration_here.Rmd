@@ -85,7 +85,7 @@ parking %>%
 
 ```{r, cache = T}
 parking %>%
-  select(long, lat, hour) %>%
+  dplyr::select(long, lat, hour) %>%
   mutate(long = abs(long)) %>%
   drop_na() %>%
   with(., MASS::kde2d(lat, long)) %>%
@@ -151,7 +151,7 @@ Conclusion: This dataset has nearly 39 million observations, most of which are r
 
 ```{r}
 parking_day = parking %>%
-  select(issue_date, summons_number, borough) %>% 
+  dplyr::select(issue_date, summons_number, borough) %>% 
   drop_na(borough)
 
 day_order = c("Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday")
@@ -213,7 +213,7 @@ During a day, the parking tickets generating has two peaks-- around 8:00 am and 
 ```{r}
 vio_code = readxl::read_xlsx('data/ParkingViolationCodes_January2020.xlsx') %>% 
   janitor::clean_names() %>% 
-  select(violation_code, violation_description) %>% 
+  dplyr::select(violation_code, violation_description) %>% 
   mutate(violation_description = str_to_lower(violation_description))
 
 vio_count_boro = 
@@ -474,8 +474,8 @@ boro_amount %>%
 nearby_data %>% 
   group_by(business_name) %>% 
   summarize(mean_fine = mean(fine_amount)) %>% 
-  left_join(distinct(cafe), by = "business_name")%>% 
-  drop_na(mean_fine)%>%
+  left_join(distinct(cafe), by = "business_name") %>% 
+  drop_na(mean_fine) %>%
   mutate(pop =
            str_c("<b>",business_name,"</b><br>","Average fine amount:" ,round(mean_fine, digits = 2),"$")) %>% 
   leaflet() %>%
@@ -490,13 +490,83 @@ nearby_data %>%
 ```
 
 
-
 3. fine amount by weekday
 
+(a) fine amount vs weekday
+```{r}
 
-4. Risk plot
 
+day_order = c("Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday")
 
+parking %>%
+  dplyr::select(issue_date, fine_amount, borough) %>% 
+  drop_na(issue_date) %>% 
+  mutate(day_week = weekdays(issue_date),
+         day_week = factor(day_week, levels = day_order)) %>% 
+  arrange(day_week) %>% 
+  ggplot(aes(x = day_week, y = fine_amount, fill = day_week)) +
+  geom_boxplot() +
+  ylim(0,200) +
+  theme(
+    legend.position = "right",
+    legend.text = element_text(size = 8)
+  ) 
+```
+
+(b) fine amount vs weekday faceted by borough
+```{r}
+parking %>%
+  dplyr::select(issue_date, fine_amount, borough) %>% 
+  drop_na(issue_date, borough) %>% 
+  mutate(day_week = weekdays(issue_date),
+         day_week = factor(day_week, levels = day_order)) %>% 
+  arrange(day_week) %>% 
+  ggplot(aes(x = day_week, y = fine_amount, fill = day_week)) +
+  geom_boxplot() +
+  facet_grid(~borough) +
+  ylim(0,200) +
+  theme(
+    legend.position = "right",
+    legend.text = element_text(size = 8),
+    axis.text.x = element_text(angle = 90, vjust = .5, hjust = 1)
+  ) 
+```
+
+4. Risk map (risk is given by rank)
+```{r}
+nearby_data %>% 
+  group_by(business_name) %>% 
+  summarize(mean_fine = mean(fine_amount)) %>% 
+  left_join(distinct(cafe), by = "business_name") %>% 
+  drop_na(mean_fine) %>%
+  mutate(percent_rank = rank(-mean_fine)/908,
+         top_risk = ceiling(percent_rank*100)) %>% 
+  arrange(desc(percent_rank))%>% 
+  mutate(pop =
+           str_c("<b>",business_name,"</b><br>",
+                 "Average fine amount:" ,round(mean_fine, digits = 1),"$","</b><br>",
+                 "Risk: top", top_risk, "%")) %>% 
+  leaflet() %>%
+  addProviderTiles(providers$CartoDB.Positron) %>%
+  addCircleMarkers(
+    ~ long,
+    ~ lat,
+    color = ~pal(mean_fine %>% log()),
+    radius = .1,
+    popup = ~ (pop)
+  )
+```
+
+5. average fine amount distribution
+```{r}
+nearby_data %>% 
+  drop_na(borough) %>% 
+  group_by(borough, business_name) %>% 
+  summarize(mean_fine = mean(fine_amount)) %>% 
+  ggplot(aes(x = mean_fine, fill = borough)) +
+  geom_density(alpha = .5)
+
+```
 
 
 

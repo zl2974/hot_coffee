@@ -48,7 +48,7 @@ parking = read_csv(
 
 ```
 
-<h3><center>Over View of Tickets Distribution Acorss Year 2021</center></h3>
+<h3><center>Over View of Tickets Distribution Across Year 2021</center></h3>
 
 This dataset contains nearly 39 million observations, most of which are recorded during June, July, August, and September. Among the five borough in NYC, Manhattan has the highest volume of tickets, followed by Brooklyn, Queens, Bronx and Staten Island.
 
