@@ -61,7 +61,9 @@ summary(aov_boro_amount)
 Tukey_comp<-TukeyHSD(aov_boro_amount)
 plot(Tukey_comp)
 ```
-
+  
+  
+  
 ## hypothesis test for violation counts
 
 1. Chi-Squared: 
