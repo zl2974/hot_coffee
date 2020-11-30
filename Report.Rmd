@@ -34,9 +34,6 @@ scale_colour_discrete = scale_colour_viridis_d
 
 scale_fill_discrete = scale_fill_viridis_d
 
-```
-
-```{r load_data,echo = F}
 cafe = read_csv(here::here("data/Sidewalk_Caf__Licenses_and_Applications_clean.csv"))
 
 parking = read_csv(
@@ -217,10 +214,54 @@ parking %>%
 
 # Cluster Analysis
 \ Using the information gained from above, we agree that cluster analysis would 
-help reflect some of relationship in the data. We use k-means distants to 
-determines our clusters. To simplify our analysis but reserve the most information, we choose to limit our data to Viehical types to _PAS_ as passenger's vehical
+help reflect some of relationship in the data. To simplify our analysis but reserve the most information, we choose to limit our data to Vehicle types to _PAS_ as passenger's vehicle, and month to _July_.
 
-```{r kmean, cache=T}
+
+```{r cluster_data, cache=T}
 set.seed(1)
+clus_df =
+  parking %>%
+  filter(lubridate::month(issue_date) == 7, hour <= 24) %>%
+  mutate(weekday = weekdays(issue_date)) %>% 
+  select(
+    hour,
+    weekday,
+    registration_state,
+    starts_with("violation"),
+    borough
+  ) %>%
+  mutate(across(where(is.character), as.factor)) %>%
+  drop_na() %>%
+  sample_n(1e+3) %>% 
+  cluster::daisy("gower") %>% 
+  as.matrix()
+
+factoextra::fviz_nbclust(clus_df, FUNcluster = cluster::pam, method = "wss")
+
+factoextra::eclust(clus_df, "pam", k = 9, k.max = 10)
+
+#factoextra::fviz_nbclust(
+#  x = clus_df,
+#  FUNcluster = cluster::pam,
+#  method = "gap_stat",
+#  nboot = 10
+#) +
+#  labs(subtitle = "Gap Statistic Method")
+
+factoextra::fviz_cluster(
+  cluster::pam(clus_df, 9),
+  clus_df,
+  stand = TRUE,
+  geom = "point",
+  repel = TRUE
+)
+```
+
+
+\ Categorical data is in this datasets, so Gower Distance is used to adapt 
+our data structure.
+```{r matrix ,cache=T}
+
+
 ```
 

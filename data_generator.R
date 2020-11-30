@@ -359,7 +359,7 @@ st_sample = #get ready for resample
         return()
     } else{
       data_2021_cleanv1 %>%
-        filter(!is.na(long)) %>%
+        filter(!is.na(long),!is.na(address)) %>%
         select(long, lat, borough) %>%
         sample_n(size = n, replace = TRUE) %>%
         return()
