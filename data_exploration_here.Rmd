@@ -83,7 +83,7 @@ parking %>%
 ```
 
 
-```{r, cache = T}
+```{r map1, cache = T}
 parking %>%
   dplyr::select(long, lat, hour) %>%
   mutate(long = abs(long)) %>%
@@ -533,7 +533,7 @@ parking %>%
 ```
 
 4. Risk map (risk is given by rank)
-```{r}
+```{r nearby, cache=T}
 nearby_data %>% 
   group_by(business_name) %>% 
   summarize(mean_fine = mean(fine_amount)) %>% 

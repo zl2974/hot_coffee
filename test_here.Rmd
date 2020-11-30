@@ -49,7 +49,30 @@ parking = read_csv(
 
 1. anova between fine amount and different boros
 
-There are significant difference in fine amount between different boroughs.
+From data exploration, we have notice that the violation code varies among 
+boroughs as well as the fine amount. We see from the table that the mean of 
+fine amount in Queen is different from the Manhattan by 10$, and thus, we 
+propose hypothesis that there's at least 1 pairs of boroughs' fine amount is 
+different from others.
+
+
+```{r}
+parking %>% 
+  drop_na(fine_amount, borough)%>%
+  select(borough, fine_amount)%>%
+  group_by(borough) %>% 
+  summarize(mean = mean(fine_amount),
+            standard_error = sd(fine_amount)) %>% 
+  knitr::kable(caption = "Fine Amount in borough")
+
+```
+
+To do that, we perform ANOVA test for multiple groups comparison. With:
+
+$H_0$ : there's no difference between boroughs
+
+$H_1$ : at least one borough is different from the other boroughs.
+
 ```{r}
 boro_amount = parking %>% 
   drop_na(fine_amount, borough)%>%
@@ -58,9 +81,17 @@ boro_amount = parking %>%
 
 aov_boro_amount = aov(fine_amount ~factor(borough), data = boro_amount)
 summary(aov_boro_amount)
-Tukey_comp<-TukeyHSD(aov_boro_amount)
-plot(Tukey_comp)
+Tukey_comp<-TukeyHSD(aov_boro_amount,conf.level = 0.99)
+Tukey_comp$`factor(borough)` %>% knitr::kable(caption = "Turkey Test at 99% confidence Level")
 ```
+As the ANOVA test result from above, we reject the Null at 99% confidence level 
+and conclude that there's at least one borough's mean of fine amount is different from others.
+
+To further investigate the difference between boroughs, we perform Tukey test 
+for pairwise comparison. We only failed to reject the null hypothesis for 
+Staten Island and Bronx. 
+
+
 
 ## hypothesis test for violation counts
 
