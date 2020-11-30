@@ -57,12 +57,18 @@ cafe =
          weekday = 
            forcats::fct_relevel(weekday,
                                 c("Monday","Tuesday","Wednesday","Thursday",
-                                  "Friday","Saturday","Sunday"))) %>% 
+                                  "Friday","Saturday","Sunday")),
+         ptile = ntile(ticket,3),
+         n_risk = case_when(
+           ptile == 1 ~"almost safe",
+           ptile == 2 ~"some risk",
+           ptile == 3 ~ "BURNING RISKY"
+         )) %>% 
   group_by(hour,weekday,borough) %>% 
   mutate(risk = n()) %>% 
   ungroup() %>% 
   distinct(business_name,hour,weekday,.keep_all = T) %>% 
-  select(-id,-issue_date,-weekday,-hour,-risk)
+  select(-id,-issue_date,-weekday,-hour,-risk,-ptile)
 
 write_csv(cafe,"data/map_data.csv")
 

@@ -5,4 +5,4 @@
 *.Rproj
 ~\$*
 ./data/*
-data_exploration_here.html
+*_cache

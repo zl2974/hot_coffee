@@ -19,6 +19,7 @@ library(shiny)
 library(httr)
 library(rvest)
 library(sf)
+library(shinyWidgets)
 
 knitr::opts_chunk$set(
   message = F,
@@ -80,6 +81,11 @@ get_location =
 if (file.exists("data/map_data.csv")){
   cafe = read_csv(here::here("data/map_data.csv"))
 } else {source("map_data.R")}
+
+cafe = cafe %>% 
+  mutate(n_risk = forcats::fct_relevel(n_risk,
+                                       "almost safe",
+                                       "some risk"))
 ```
 
 Column {.sidebar}
@@ -92,14 +98,12 @@ textInput(
   value = "Columbia University"
 )
 
-sliderInput(
+sliderTextInput(
   inputId = "tolerant",
   label = h3("Risk Willing to take"),
-  min =   cafe %>%
-    pull(ticket) %>% min(),
-  max =  cafe %>%
-    pull(ticket) %>% max(),
-  value = c(0,2000)
+  choice = cafe %>% distinct(n_risk) %>% arrange(n_risk) %>% pull(n_risk),
+  selected =
+    cafe %>% distinct(n_risk) %>% arrange(n_risk) %>% pull(n_risk) %>% first()
 )
 
 checkboxGroupInput(
@@ -122,8 +126,7 @@ Row {data-width=1000}
 renderLeaflet({
   plot_cafe_df =
     cafe  %>%
-    filter(between(ticket, input$tolerant[1] %>% as.numeric(),
-                   input$tolerant[2] %>% as.numeric()),
+    filter(as.integer(n_risk)<=which(input$tolerant==levels(n_risk)),
            borough %in% input$borough)
   
   if (!is.null(input$location)) {
