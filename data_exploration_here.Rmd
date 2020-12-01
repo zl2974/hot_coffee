@@ -539,22 +539,25 @@ parking %>%
 ```{r nearby, cache=T}
 nearby_data %>% 
   group_by(business_name) %>% 
-  summarize(mean_fine = mean(fine_amount)) %>% 
+  summarize(mean_fine = mean(fine_amount),
+            n_ticket = n()) %>% 
   left_join(distinct(cafe), by = "business_name") %>% 
   drop_na(mean_fine) %>%
-  mutate(percent_rank = rank(-mean_fine)/908,
-         top_risk = ceiling(percent_rank*100)) %>% 
+  mutate(percent_rank = rank(-(mean_fine*n_ticket))/908,
+         top_risk = ceiling(percent_rank*10)*10) %>% 
   arrange(desc(percent_rank))%>% 
   mutate(pop =
            str_c("<b>",business_name,"</b><br>",
                  "Average fine amount:" ,round(mean_fine, digits = 1),"$","</b><br>",
-                 "Risk: top", top_risk, "%")) %>% 
+                 "number of tickets:", n_ticket, "</b><br>",
+                 "Risk: top", top_risk, "%","</b><br>")
+         ) %>% 
   leaflet() %>%
   addProviderTiles(providers$CartoDB.Positron) %>%
   addCircleMarkers(
     ~ long,
     ~ lat,
-    color = ~pal(mean_fine %>% log()),
+    color = ~pal(mean_fine*n_ticket),
     radius = .1,
     popup = ~ (pop)
   )
