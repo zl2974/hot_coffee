@@ -4,19 +4,15 @@ navbar:
   title: "Overview"
   right:
     - text: "Map"
-      href: map.html
-    - text: 'Data Exploration'
-      menu:
-       - text: 'Violation vs Time'
-         href: figures.html
-       - text: 'Violation Types'
-         href: figures1.html
-    - text: 'Data Analysis'
-      href: Report.html
-    - text: 'Shiny'
       href: https://zl2974.shinyapps.io/Risky_Coffee/
+    - text: 'Data Exploration'
+      href: data_exploration_here.html
+    - text: 'Data Analysis'
+      href: test_here.html
     - text: 'Data source'
       href: data_source.html
+    - text: 'About'
+      href: Proposal.html
     - icon: fa-envelope fa-lg
       href: mailto:<liuyuzhust@163.com>
     - icon: fa-github fa-lg
