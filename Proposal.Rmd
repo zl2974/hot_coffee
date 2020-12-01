@@ -1,7 +1,7 @@
 ---
 title: "Project Proposal"
 author : Zhuohui Liang(zl2974), Chufeng Yang(cy2588), Yiming Zhao(yz3955), Yu Liu(yl4604)
-output: github_document
+output: html_document
 ---
 
 ```{r setup, include=FALSE}
