@@ -187,116 +187,121 @@ park21sec_geo_df =
 
 #>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 # get geo for house (you can try to run all this)
-
-while (T) {
-  output = list()
-  doit = function(output, i) {
-    cat(i, "\n")
-    pb = progress_estimated(length((1 + 500 * (i - 1)):500 * i))
-    output[[i]] = park21house_geo_df %>%
-      #arrange(desc(id)) %>%
-      slice((1 + 500 * (i - 1)):500 * i) %>%
-      mutate(geo = map(.x = address,  ~ get_location(.x, pb))) %>%
-      unnest(geo)
-    return(output[[i]])
+if (!file.exists("data/house_no_dic.csv")){
+  
+  if (nrow("data/cache.csv")==0){
+    write_csv(tibble(id = NA),"data/cache.csv")
   }
-  for (i in 1:nrow(park21house_geo_df) %/% 500 + 1) {
-    park21house_geo_df =
-      park21house_geo_df %>%
-      filter(!id %in% pull(read_csv(here::here(
-        "data/cache.csv"
-      )), id))
-    
-    if (length(output) >= i) {
-      if (!is.null(output[[i]])) {
-        next
-      }
-    }
-    output[[i]] = tryCatch(
-      doit(output, i),
-      error = function(cond)
-        return(NULL),
-      T
-    )
-    output %>%
-      bind_rows() %>%
-      bind_rows(read_csv(here::here("data/cache.csv"))) %>%
-      select(id:borough) %>%
-      write_csv(here::here("data/cache.csv"))
+  
+  while (T) {
     output = list()
-  }
-  if (i == nrow(park21house_geo_df) %/% 500 + 1) {
-    park21house_geo_df = bind_rows(output)
-    break
-  }
-}
-
-
-st =
-  read_csv(here::here("data/Centerline.csv")) %>%
-  janitor::clean_names() %>%
-  select(street_name = full_stree, geom = the_geom) %>%
-  mutate(
-    geom = str_extract_all(geom, "\\-.+,"),
-    geom = str_split(geom, ",\\s?"),
-    geom = map(geom, vec_to_df)
-  ) %>%
-  unnest(geom) %>%
-  separate(geo, into = c("long", "lat"), sep = " ") %>%
-  drop_na() %>%
-  mutate(across(c(long, lat), as.numeric))
-
-street_intersect =
-  function(street_1, street_2, .pd = NULL) {
-    if (!is.na(.pd)) {
-      .pd$tick()$print()
+    doit = function(output, i) {
+      cat(i, "\n")
+      pb = progress_estimated(length((1 + 500 * (i - 1)):500 * i))
+      output[[i]] = park21house_geo_df %>%
+        #arrange(desc(id)) %>%
+        slice((1 + 500 * (i - 1)):500 * i) %>%
+        mutate(geo = map(.x = address,  ~ get_location(.x, pb))) %>%
+        unnest(geo)
+      return(output[[i]])
     }
-    
-    street_1_df =
-      st %>%
-      filter(
-        street_name ==
-          agrep(
-            street_1,
-            st %>% pull(street_name),
-            value = T,
-            max = list(del = 0.4),
-            ignore.case = T
-          ) %>% first()
-      ) %>%
-      select(x = long, y = lat)
-    
-    street_2_df =
-      st %>%
-      filter(
-        street_name ==
-          agrep(
-            street_2,
-            st %>% pull(street_name),
-            value = T,
-            max = list(del = 0.4),
-            ignore.case = T
-          ) %>% first()
-      ) %>%
-      select(x = long, y = lat)
-    answer = tryCatch(
-      curve_intersect(street_1_df, street_2_df) %>% bind_rows(),
-      error = function(cond)
-        return(tibble(x = NA, y = NA)),
-      T
-    )
-    return(answer)
+    for (i in 1:nrow(park21house_geo_df) %/% 500 + 1) {
+      park21house_geo_df =
+        park21house_geo_df %>%
+        filter(!id %in% pull(read_csv(here::here(
+          "data/cache.csv"
+        )), id))
+      
+      if (length(output) >= i) {
+        if (!is.null(output[[i]])) {
+          next
+        }
+      }
+      output[[i]] = tryCatch(
+        doit(output, i),
+        error = function(cond)
+          return(NULL),
+        T
+      )
+      output %>%
+        bind_rows() %>%
+        bind_rows(read_csv(here::here("data/cache.csv"))) %>%
+        select(id:borough) %>%
+        write_csv(here::here("data/cache.csv"))
+      output = list()
+    }
+    if (i == nrow(park21house_geo_df) %/% 500 + 1) {
+      park21house_geo_df = bind_rows(output)
+      break
+    }
   }
-
-pb = progress_estimated(nrow(park21sec_geo_df))
-park21sec_geo_df =
-  park21sec_geo_df %>%
-  mutate(geo = map2(.x = street_name,
-                    .y = intersecting_street,
-                    ~ street_intersect(.x, .y, pb))) %>%
-  unnest(geo) %>%
-  rename(long = x, lat = y)
-
+  
+  
+  st =
+    read_csv(here::here("data/Centerline.csv")) %>%
+    janitor::clean_names() %>%
+    select(street_name = full_stree, geom = the_geom) %>%
+    mutate(
+      geom = str_extract_all(geom, "\\-.+,"),
+      geom = str_split(geom, ",\\s?"),
+      geom = map(geom, vec_to_df)
+    ) %>%
+    unnest(geom) %>%
+    separate(geo, into = c("long", "lat"), sep = " ") %>%
+    drop_na() %>%
+    mutate(across(c(long, lat), as.numeric))
+  
+  street_intersect =
+    function(street_1, street_2, .pd = NULL) {
+      if (!is.na(.pd)) {
+        .pd$tick()$print()
+      }
+      
+      street_1_df =
+        st %>%
+        filter(
+          street_name ==
+            agrep(
+              street_1,
+              st %>% pull(street_name),
+              value = T,
+              max = list(del = 0.4),
+              ignore.case = T
+            ) %>% first()
+        ) %>%
+        select(x = long, y = lat)
+      
+      street_2_df =
+        st %>%
+        filter(
+          street_name ==
+            agrep(
+              street_2,
+              st %>% pull(street_name),
+              value = T,
+              max = list(del = 0.4),
+              ignore.case = T
+            ) %>% first()
+        ) %>%
+        select(x = long, y = lat)
+      answer = tryCatch(
+        curve_intersect(street_1_df, street_2_df) %>% bind_rows(),
+        error = function(cond)
+          return(tibble(x = NA, y = NA)),
+        T
+      )
+      return(answer)
+    }
+  
+  pb = progress_estimated(nrow(park21sec_geo_df))
+  park21sec_geo_df =
+    park21sec_geo_df %>%
+    mutate(geo = map2(.x = street_name,
+                      .y = intersecting_street,
+                      ~ street_intersect(.x, .y, pb))) %>%
+    unnest(geo) %>%
+    rename(long = x, lat = y)
+}
 
 #>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 # clean the parking_violation issued-fiscal_year_2021 data, and add geographic information to it
@@ -304,7 +309,13 @@ park21sec_geo_df =
 
 house_no_dic =
   read_csv("./data/house_no_dic.csv") %>%
-  subset(select = -c(id, geo))
+  subset(select = -c(id, geo)) %>% 
+  mutate(borough =
+           if_else(between(lat,40.75,40.78)& borough == "Bronx",
+                   "Manhattan",borough),
+         borough =
+           if_else(lat < 40.75 & borough == "Bronx",
+                   "Brooklyn",borough))
 
 
 data_2021_cleanv1 =
@@ -384,7 +395,8 @@ data_2021_cleanv1 =
   mutate(
     long = if_else(is.na(long), long_d, long),
     lat = if_else(is.na(lat), lat_d, lat),
-    borough = if_else(is.na(borough), borough_d, borough)
+    borough = if_else(is.na(borough), borough_d, borough),
+    hour = if_else(hour<=24,as.integer(hour),NA)
   ) %>%
   select(id:borough)
 
