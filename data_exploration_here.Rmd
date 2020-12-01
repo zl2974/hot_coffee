@@ -411,56 +411,27 @@ parking %>%
 
 According to the distribution of vehicle make of the parking ticket dataset, we can roughly know the tops 10 vehicle make that are most popular among new yorkers.
 
-## Some plot/description/test about fine amount
-Generate data near by cafe
-```{r}
-get_nearby_area =
-  function(p_long = 0, p_lat = 0,area=100) {
-    return(
-      tibble(
-        long_lwr = p_long - area / (6378137 * cos(pi * p_lat / 180)) * 180 / pi,
-        long_upr = p_long + area / (6378137 * cos(pi * p_lat / 180)) * 180 /
-          pi,
-        lat_lwr = p_lat - area / 6378137 * 180 / pi,
-        lat_upr = p_lat + area / 6378137 * 180 / pi
-      )
-    )
-  }
+## Fine Amount
 
-get_data =
-  function(area) {
-    data =
-      parking %>%
-      bind_cols(area) %>%
-      filter(long < long_upr,
-             long > long_lwr,
-             lat < lat_upr,
-             lat > lat_lwr) %>% 
-  select(summons_number, issue_date, violation_code,hour, vehicle_color, fine_amount)
-    
-    return(data)
-  }
-
-nearby_data = 
-  cafe %>%
-  select(business_name, business_name2, lat, long, borough)%>%
-  mutate(
-    nearby = map2(.x = long, .y = lat, ~ get_nearby_area(.x, .y)),
-    nearby = map(.x = nearby,  ~ get_data(.x),
-    ticket_n = map_dbl(nearby, nrow))) %>% 
-  unnest(nearby)
-```
-
-1. fine amount by boro
+\ As we were motivated by the trouble that New Yorker can get an expensive 
+coffee taxed by the Parking ticket, we need to look at the fine amounts. 
+The Manhattan has the highest mean and the widest variance. Queens and Brooklyn 
+at the first look seems like to have similar ditributions. Further analysis is 
+needed to see if parking violation in Queens may receive a similar fine amount 
+in Brooklyn and etc.
 ```{r}
 boro_amount = parking %>% 
   drop_na(fine_amount, borough)%>%
   select(borough, fine_amount)%>%
   group_by(borough) 
 
-boro_amount %>%
-  summarize(mean = mean(fine_amount)) %>% 
-  knitr::kable()
+parking %>% 
+  drop_na(fine_amount, borough)%>%
+  select(borough, fine_amount)%>%
+  group_by(borough) %>% 
+  summarize(mean = mean(fine_amount),
+            standard_error = sd(fine_amount)) %>% 
+  knitr::kable(caption = "Fine Amount in borough")
 
 boro_amount %>%
   ggplot(aes(x = borough, y = fine_amount, fill = borough)) +
@@ -472,48 +443,36 @@ boro_amount %>%
   ) 
 ```
 
-2. fine amount near cafe
+\ Total amount of fine are similar across weekdays in all five boroughs, and 
+see a steep drop on weekend on all borough. Across all boroughs, Manhattan has 
+the highest total fine, Staten Island has the lowest total fine. We see that 
+the proportion of total fine in a day doesn't change across a week, we need 
+further analysis to see if Monday in Brooklyn have higher total fine than any 
+other day and etc.
 ```{r}
-nearby_data %>% 
-  group_by(business_name) %>% 
-  summarize(mean_fine = mean(fine_amount)) %>% 
-  left_join(distinct(cafe), by = "business_name") %>% 
-  drop_na(mean_fine) %>%
-  mutate(pop =
-           str_c("<b>",business_name,"</b><br>","Average fine amount:" ,round(mean_fine, digits = 2),"$")) %>% 
-  leaflet() %>%
-  addProviderTiles(providers$CartoDB.Positron) %>%
-  addCircleMarkers(
-    ~ long,
-    ~ lat,
-    color = ~pal(mean_fine %>% log()),
-    radius = .1,
-    popup = ~ (pop)
-  )
-```
-
-
-3. fine amount by weekday
-
-(a) fine amount vs weekday
-```{r}
-
-
 day_order = c("Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday")
 
 parking %>%
   dplyr::select(issue_date, fine_amount, borough) %>% 
-  drop_na(issue_date) %>% 
+  drop_na(issue_date,fine_amount) %>% 
   mutate(day_week = weekdays(issue_date),
-         day_week = factor(day_week, levels = day_order)) %>% 
-  arrange(day_week) %>% 
-  ggplot(aes(x = day_week, y = fine_amount, fill = day_week)) +
-  geom_boxplot() +
-  ylim(0,200) +
-  theme(
-    legend.position = "right",
-    legend.text = element_text(size = 8)
-  ) 
+         day_week = forcats::fct_relevel(day_week,day_order),
+         borough = fct_reorder(.f = borough,
+                               .x = fine_amount,
+                                .fun = sum)) %>% 
+  group_by(day_week,borough) %>% 
+  summarise(fine_amount = sum(fine_amount,na.rm = T)) %>% 
+  plot_ly() %>% 
+  add_bars(
+    x = ~day_week,
+    y = ~fine_amount,
+    color = ~borough,
+    colors = "viridis"
+  ) %>% 
+  layout(
+    yaxis = list(type = "log"),
+    title = "Fine amount"
+  )
 ```
 
 (b) fine amount vs weekday faceted by borough
@@ -535,34 +494,6 @@ parking %>%
   ) 
 ```
 
-4. Risk map (risk is given by rank)
-```{r nearby, cache=T}
-nearby_data %>% 
-  group_by(business_name) %>% 
-  summarize(mean_fine = mean(fine_amount),
-            n_ticket = n()) %>% 
-  left_join(distinct(cafe), by = "business_name") %>% 
-  drop_na(mean_fine) %>%
-  mutate(percent_rank = rank(-(mean_fine*n_ticket))/908,
-         top_risk = ceiling(percent_rank*10)*10) %>% 
-  arrange(desc(percent_rank))%>% 
-  mutate(pop =
-           str_c("<b>",business_name,"</b><br>",
-                 "Average fine amount:" ,round(mean_fine, digits = 1),"$","</b><br>",
-                 "number of tickets:", n_ticket, "</b><br>",
-                 "Risk: top", top_risk, "%","</b><br>")
-         ) %>% 
-  leaflet() %>%
-  addProviderTiles(providers$CartoDB.Positron) %>%
-  addCircleMarkers(
-    ~ long,
-    ~ lat,
-    color = ~pal(mean_fine*n_ticket),
-    radius = .1,
-    popup = ~ (pop)
-  )
-```
-
 5. average fine amount distribution
 ```{r}
 nearby_data %>% 
@@ -573,20 +504,5 @@ nearby_data %>%
   geom_density(alpha = .5)
 
 ```
-
-
-
-
-### Initial Design about how to study the correlation of tickets and cafe.
-
-- problem: we have location information(lat, long) for both tickets and cafe. but we cannot define their correlation because they are continuous
-
-- solution: 
--- discrete the NYC district by euqally distribute it into smaller boxes with same area.  
--- consider the cafe and tickets are correlated if their location fall into same box
-
-- some special case:
--- new york is not a square: we simply choose a square big enough to cover the whole new york.
--- if N tickets and M cafe are in the same box: distribute the correlation coefficient averagely.
 
 
