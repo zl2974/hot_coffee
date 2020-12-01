@@ -95,12 +95,12 @@ To further investigate the difference between boroughs, we perform Tukey test fo
 ## hypothesis test for violation counts
 
 
-1. Chi-Squared test between violation counts generated in each weekdays and different boros
+1. Chi-Squared test between violation counts generated in each weekdays and different boroughs
 
-From data exploration, we have noticed that the violation counts proportions in different weekdays among each boroughs are different.Thus, we assume there is no homogeneity in tickets counts proportionsin each weekdays among boroughs. 
+From data exploration, we have noticed that the violation counts proportions in different weekdays among each boroughs are different.Thus, we assume there is no homogeneity in tickets counts proportions in each weekdays among boroughs. 
 
 
-To do that, we performed Chi-squared test for multiple groups comparison. With:
+To verify that, we performed Chi-squared test for multiple groups comparison. With:
 
 $H_0$ : the tickets proportion in weekdays among boroughs are equal.
 
@@ -134,11 +134,9 @@ x_crit = qchisq(0.95,24)
 x_crit   # x critical value
 ```
 
-According to above chi-square test result,  We reject the null hypothesis and conclude that the proportions of violation counts for week days are different among boroughs at 0.05 significant level.  
+According to above chi-square test result,  We reject the null hypothesis and conclude that there's at least one borough's proportions of violation counts for week days is different from others at 0.05 significant level.  
 
 
-As the Chi- squared test result from above, we reject the Null at 95% confidence level 
-and conclude that there's at least one borough's percentage of tickets per weekday is different from others.
 
 
 
@@ -169,7 +167,7 @@ x_crit = qchisq(0.95,92)
 x_crit   # x critical value
 ```
 
-According to above chi-square test result,  We reject the null hypothesis and conclude that the proportions of violation counts for each hour are different among boroughs at 0.05 significant level.
+According to above chi-square test result,  We reject the null hypothesis and conclude that there's at least one borough's proportions of violation counts for 24 hours is different from others at 0.05 significant level.  
 
 
 

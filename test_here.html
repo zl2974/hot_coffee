@@ -548,10 +548,10 @@ div.tocify {
 <div id="hypothesis-test-for-violation-counts" class="section level2">
 <h2>hypothesis test for violation counts</h2>
 <ol style="list-style-type: decimal">
-<li>Chi-Squared test between violation counts generated in each weekdays and different boros</li>
+<li>Chi-Squared test between violation counts generated in each weekdays and different boroughs</li>
 </ol>
-<p>From data exploration, we have noticed that the violation counts proportions in different weekdays among each boroughs are different.Thus, we assume there is no homogeneity in tickets counts proportionsin each weekdays among boroughs.</p>
-<p>To do that, we performed Chi-squared test for multiple groups comparison. With:</p>
+<p>From data exploration, we have noticed that the violation counts proportions in different weekdays among each boroughs are different.Thus, we assume there is no homogeneity in tickets counts proportions in each weekdays among boroughs.</p>
+<p>To verify that, we performed Chi-squared test for multiple groups comparison. With:</p>
 <p><span class="math inline">\(H_0\)</span> : the tickets proportion in weekdays among boroughs are equal.</p>
 <p><span class="math inline">\(H_1\)</span> : not all proportions are equal</p>
 <table>
@@ -627,8 +627,7 @@ div.tocify {
 ## data:  chisq_boro_day
 ## X-squared = 2867, df = 24, p-value &lt;2e-16</code></pre>
 <pre><code>## [1] 36.4</code></pre>
-<p>According to above chi-square test result, We reject the null hypothesis and conclude that the proportions of violation counts for week days are different among boroughs at 0.05 significant level.</p>
-<p>As the Chi- squared test result from above, we reject the Null at 95% confidence level and conclude that there’s at least one borough’s percentage of tickets per weekday is different from others.</p>
+<p>According to above chi-square test result, We reject the null hypothesis and conclude that there’s at least one borough’s proportions of violation counts for week days is different from others at 0.05 significant level.</p>
 <ol start="2" style="list-style-type: lower-alpha">
 <li>test whether the states that the probability of falling in the each hour is the same for each borough:</li>
 </ol>
@@ -656,7 +655,7 @@ div.tocify {
 ## data:  chisq_boro_hour
 ## X-squared = 36780, df = 92, p-value &lt;2e-16</code></pre>
 <pre><code>## [1] 115</code></pre>
-<p>According to above chi-square test result, We reject the null hypothesis and conclude that the proportions of violation counts for each hour are different among boroughs at 0.05 significant level.</p>
+<p>According to above chi-square test result, We reject the null hypothesis and conclude that there’s at least one borough’s proportions of violation counts for 24 hours is different from others at 0.05 significant level.</p>
 </div>
 </div>
 
