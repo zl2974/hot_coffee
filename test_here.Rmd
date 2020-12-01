@@ -69,9 +69,9 @@ parking %>%
 
 To do that, we perform ANOVA test for multiple groups comparison. With:
 
-$H_0$ : there's no difference between boroughs
+$H_0$ : there's no difference of fine amount means between boroughs
 
-$H_1$ : at least one borough is different from the other boroughs.
+$H_1$ : at least two fine amount means of boroughs are not equal
 
 ```{r,echo = FALSE, message=FALSE,warning = FALSE}
 boro_amount = parking %>% 
@@ -89,9 +89,7 @@ Tukey_comp$`factor(borough)` %>% knitr::kable(caption = "Turkey Test at 99% conf
 As the ANOVA test result from above, we reject the Null at 99% confidence level 
 and conclude that there's at least one borough's mean of fine amount is different from others.
 
-To further investigate the difference between boroughs, we perform Tukey test 
-for pairwise comparison. We only failed to reject the null hypothesis for 
-Staten Island and Bronx. 
+To further investigate the difference between boroughs, we perform Tukey test for pairwise comparison. From the Tukey test result, we are 95% confident that the true mean difference of fine amount between Staten Island and Bronx is between -0.238 and 0.55. Since CI of other comparisons are not including "0",  we only failed to reject the null hypothesis for Staten Island and Bronx, and conclude that each two fine amount means of boroughs are not equal except for Staten Island and Bronx.
 
 
 ## hypothesis test for violation counts

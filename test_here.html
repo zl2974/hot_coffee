@@ -356,29 +356,20 @@ div.tocify {
         
       </ul>
       <ul class="nav navbar-nav navbar-right">
-        <li class="dropdown">
-  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
-    Data Exploration
-     
-    <span class="caret"></span>
-  </a>
-  <ul class="dropdown-menu" role="menu">
-    <li>
-      <a href="figures.html">Violation vs Time</a>
-    </li>
-    <li>
-      <a href="figures1.html">Violation Types</a>
-    </li>
-  </ul>
+        <li>
+  <a href="https://zl2974.shinyapps.io/Risky_Coffee/">Map</a>
 </li>
 <li>
-  <a href="Report.html">Data Analysis</a>
+  <a href="data_exploration.html">Data Exploration</a>
 </li>
 <li>
-  <a href="https://zl2974.shinyapps.io/Risky_Coffee/">Shiny</a>
+  <a href="test_here.html">Data Analysis</a>
 </li>
 <li>
   <a href="data_source.html">Data source</a>
+</li>
+<li>
+  <a href="Proposal.html">About</a>
 </li>
 <li>
   <a href="mailto:&lt;liuyuzhust@163.com&gt;">
@@ -421,7 +412,7 @@ div.tocify {
 <ol style="list-style-type: decimal">
 <li>anova between fine amount and different boros</li>
 </ol>
-<p>From data exploration, we have notice that the violation code varies among boroughs as well as the fine amount. We see from the table that the mean of fine amount in Queen is different from the Manhattan by 10$, and thus, we propose hypothesis that there's at least 1 pairs of boroughs' fine amount is different from others.</p>
+<p>From data exploration, we have notice that the violation code varies among boroughs as well as the fine amount. We see from the table that the mean of fine amount in Queen is different from the Manhattan by 10$, and thus, we propose hypothesis that there’s at least 1 pairs of boroughs’ fine amount is different from others.</p>
 <table>
 <caption>Fine Amount in borough</caption>
 <thead>
@@ -460,8 +451,8 @@ div.tocify {
 </tbody>
 </table>
 <p>To do that, we perform ANOVA test for multiple groups comparison. With:</p>
-<p><span class="math inline">\(H_0\)</span> : there's no difference between boroughs</p>
-<p><span class="math inline">\(H_1\)</span> : at least one borough is different from the other boroughs.</p>
+<p><span class="math inline">\(H_0\)</span> : there’s no difference of fine amount means between boroughs</p>
+<p><span class="math inline">\(H_1\)</span> : at least two fine amount means of boroughs are not equal</p>
 <pre><code>##                      Df   Sum Sq  Mean Sq F value Pr(&gt;F)    
 ## factor(borough)       4 4.85e+07 12136448   14365 &lt;2e-16 ***
 ## Residuals       3837091 3.24e+09      845                   
@@ -551,8 +542,8 @@ div.tocify {
 </tr>
 </tbody>
 </table>
-<p>As the ANOVA test result from above, we reject the Null at 99% confidence level and conclude that there's at least one borough's mean of fine amount is different from others.</p>
-<p>To further investigate the difference between boroughs, we perform Tukey test for pairwise comparison. We only failed to reject the null hypothesis for Staten Island and Bronx.</p>
+<p>As the ANOVA test result from above, we reject the Null at 99% confidence level and conclude that there’s at least one borough’s mean of fine amount is different from others.</p>
+<p>To further investigate the difference between boroughs, we perform Tukey test for pairwise comparison. From the Tukey test result, we are 95% confident that the true mean difference of fine amount between Staten Island and Bronx is between -0.238 and 0.55. Since CI of other comparisons are not including “0”, we only failed to reject the null hypothesis for Staten Island and Bronx, and conclude that each two fine amount means of boroughs are not equal except for Staten Island and Bronx.</p>
 </div>
 <div id="hypothesis-test-for-violation-counts" class="section level2">
 <h2>hypothesis test for violation counts</h2>
@@ -637,7 +628,7 @@ div.tocify {
 ## X-squared = 2867, df = 24, p-value &lt;2e-16</code></pre>
 <pre><code>## [1] 36.4</code></pre>
 <p>According to above chi-square test result, We reject the null hypothesis and conclude that the proportions of violation counts for week days are different among boroughs at 0.05 significant level.</p>
-<p>As the Chi- squared test result from above, we reject the Null at 95% confidence level and conclude that there's at least one borough's percentage of tickets per weekday is different from others.</p>
+<p>As the Chi- squared test result from above, we reject the Null at 95% confidence level and conclude that there’s at least one borough’s percentage of tickets per weekday is different from others.</p>
 <ol start="2" style="list-style-type: lower-alpha">
 <li>test whether the states that the probability of falling in the each hour is the same for each borough:</li>
 </ol>
