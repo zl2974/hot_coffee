@@ -219,7 +219,8 @@ parking_day %>%
 
 \ According to the figure above, we can see the most obvious pattern is that there are more tickets generated during work days than during weekends . This could be attibuted to two reasons:    
 
-\ 1. the overall demand for parking in NYC are smaller during weekend than during weekdays
+\ 1. the overall demand for parking in NYC are smaller during weekend than during weekdays      
+
 \ 2. Many parking spots are designed to be free parking during weekends.
 
 \ All the five boroughs in NYC--Manhattan, Bronx, Brooklyn, Queens and Staten Island have the same trend in the term of parking tickets generating across a week. Manhattan always has the highest parking tickets volume, and follows with Brooklyn, Queens, Bronx and Staten Island.
