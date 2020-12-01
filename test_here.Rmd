@@ -141,7 +141,7 @@ According to above chi-square test result,  We reject the null hypothesis and co
 
 
 
-b) test whether the states that the probability of falling in the each hour is the same for each borough:
+b) test whether the the probability of falling in the each hour is the same for each borough:
 
 ```{r,echo = FALSE, message=FALSE,warning = FALSE}
 
@@ -169,7 +169,7 @@ x_crit   # x critical value
 
 According to above chi-square test result,  We reject the null hypothesis and conclude that there's at least one borough's proportions of violation counts for 24 hours is different from others at 0.05 significant level.  
 
-
+Sine 526.14 million square feet of office space existed in Manhattan in 2020. Manhattan’s office space is located in 3,830 commercial buildings in the major markets of Midtown, Midtown South, Lower Manhattan and Uptown[Statistics](https://www.statista.com/statistics/605882/size-of-office-area-manhattan-by-submarket/). At any given time most of this office space is rented. Manhattan becomes the well deserved business center in NYC. Due to the unequal active status of commerce among boroughs and expensive costs of keeping a car in NYC, the active area of life and work for people who own a ca rconcentrates upon Manhattan. This is one of reasonable explanations of chi-square test result.
 
 
 
