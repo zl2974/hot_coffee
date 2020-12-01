@@ -13,7 +13,6 @@ library(plotly)
 library(leaflet)
 library(ggplot2)
 library(lubridate)
-
 knitr::opts_chunk$set(
   fig.height = 6,
   fig.width = 8,
@@ -22,26 +21,20 @@ knitr::opts_chunk$set(
   warning = F,
   cache = F
 )
-
 theme_set(theme_minimal() + theme(legend.position = "bottom"))
 options(
   ggplot2.continuous.colour = "viridis",
   ggplot2.continuous.fill = "viridis",
   digits = 3
 )
-
 scale_colour_discrete = scale_colour_viridis_d
-
 scale_fill_discrete = scale_fill_viridis_d
-
 cafe = read_csv(here::here("data/Sidewalk_Caf__Licenses_and_Applications_clean.csv"))
-
 parking = read_csv(
   here::here("data/parking_vio2021_cleanv1.csv")) %>% 
   filter(hour != 12.3) %>% 
   filter(hour <= 23) %>% 
   drop_na(address)
-
 ```
 
 # Report{.tabset}
@@ -63,6 +56,40 @@ information in the datasets. We wrote a function to pull geometric information
 from [Geosearch](https://labs-geosearch-docs.netlify.app/). 
 Third, we identified violation in a certain range of area, and nest them to the
  location we interested.
+ 
+## Data description
+
+Our analysis is mainly based on two files, **Sidewalk_Caf__Licenses_and_Applications_clean.csv** and **parking_vio2021_cleanv1.csv** 
+
+#### Violation data
+
+The resulting data file of **parking_vio2021_cleanv1** contains a single dataframe df with `r nrow(cafe)` rows of data on `r ncol(cafe)` variables, the list below is our variables of interest:
+
+  * `summons_number`. Unique identifier of summons.
+  * `issue_date`. Issue date
+  * `violation_code`. Type of violation.
+  * `vehicle_make`. Make of car written on summons.
+  * `hour`. Time(hour) violation occurred.
+  * `violation_county`. County of violation.
+  * `house_number`. Address number of violation.
+  * `street_name`. Street name of summons issued.
+  * `intersecting_street`. Violation near intersecting street.
+  * `vehicle_color`. Color of car written on summons.
+  * `vehicle_year`. Year of car written on summons.
+  * `long`. Longitude violation occurred.
+  * `lat`. Latitude violation occurred.
+  * `borough`. Borough of violation.
+  * `fine_amount`. Fine amount.
+  
+#### Cafe data
+
+  The resulting data file of **Sidewalk_Caf__Licenses_and_Applications_clean.csv** contains a single dataframe df with `r nrow(parking)` rows of data on `r ncol(parking)` variables, the list below is our variables of interest:
+
+  * `business_name`. The legal business name as filed with the New York State Secretary of State or County Clerk
+  * `business_name2`. If applicable, the Doing-Business-As (DBA)/trade name.
+  * `lat`. Latitude of cafe.
+  * `long`. Longitude of cafe.
+
  
 ## data exploration
 
@@ -93,7 +120,6 @@ parking %>%
     )),
     showlegend = FALSE
   ))
-
 parking %>% 
   drop_na(borough) %>% 
   group_by(borough) %>% 
@@ -150,7 +176,6 @@ nyc =
     lat_max = max(lat),
     lat_min = min(lat)
   )
-
 nyc =
   ggmap::get_map(location = c(
     right = pull(nyc, lon_max),
@@ -158,7 +183,6 @@ nyc =
     top = pull(nyc, lat_max),
     bottom = pull(nyc, lat_min)
   ))
-
 set.seed(100)
 parking %>%
   filter(hour <= 24) %>%
@@ -230,11 +254,9 @@ vio_code = readxl::read_xlsx('data/ParkingViolationCodes_January2020.xlsx') %>%
   janitor::clean_names() %>% 
   dplyr::select(violation_code, violation_description) %>% 
   mutate(violation_description = str_to_lower(violation_description))
-
 vio_count_boro = 
   parking %>% 
   left_join(vio_code, by = 'violation_code')
-
 Manhattan_vio = 
   vio_count_boro %>% 
   filter(borough == 'Manhattan') %>% 
@@ -254,7 +276,6 @@ Manhattan_vio =
     title = 'Top 10 violations in Manhattan') +
     xlab("violation description") +
     ylab('Count of tickets')  
-
 Queens_vio = 
   vio_count_boro %>% 
   filter(borough == 'Queens') %>% 
@@ -274,7 +295,6 @@ Queens_vio =
     title = 'Top 10 violations in Queens') +
     xlab("violation description") +
     ylab('Count of tickets') 
-
 Bronx_vio = 
   vio_count_boro %>% 
   filter(borough == 'Bronx') %>% 
@@ -294,7 +314,6 @@ Bronx_vio =
     title = 'Top 10 violations in Bronx') +
     xlab("violation description") +
     ylab('Count of tickets')  
-
 Brooklyn_vio = 
   vio_count_boro %>% 
   filter(borough == 'Brooklyn') %>% 
@@ -314,7 +333,6 @@ Brooklyn_vio =
     title = 'Top 10 violations in Brooklyn') +
     xlab("violation description") +
     ylab('Count of tickets') 
-
 Staten_vio = 
   vio_count_boro %>% 
   filter(borough == 'Staten Island') %>% 
@@ -334,7 +352,6 @@ Staten_vio =
     title = 'Top 10 violations in Staten Island') +
     xlab("violation description") +
     ylab('Count of tickets')  
-
 Manhattan_vio
 ```
 
