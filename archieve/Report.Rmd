@@ -38,27 +38,432 @@ parking = read_csv(
 
 # Report{.tabset}
 
-## Data Processing
+## Motivation
+
+![Tweets]<img src="./file/tweets.png" style="width:65%"> 
+
+\ You temporarily parked in front of your office building to buy a cup of coffee in a side-walk cafe. A parking ticket warrior walked to your car, raised her scanner, and fired an invisible beam of light at your registration. She handed you a NYC parking ticket and that beam of light cost you $115.
+
+\ According to statistics, New Yorkers drink 6.7 times the amount of coffee compared to average, and the average price consumers are paying for a cup of coffee is $2.99, but consider the above, do you think you really only paid a few bucks on your coffee? 
+
+## Related work
+
+
+## Initial questions
+
+
+## Data
+
+All data was downloaded from [NYC Open Data](https://opendata.cityofnewyork.us/).  
+
+* For parking violation information: 
+
+[Parking Violations Issued - Fiscal Year 2021](https://data.cityofnewyork.us/City-Government/Parking-Violations-Issued-Fiscal-Year-2021/pvqr-7yc4)
+
+This dataset contains 380 million violations issued during the 2021 fiscal year.Data is provided by the Department of Finance (DOF).Each record represents a single violation issued. Information on summond number, issue date, violation code and issue street, house number,ect. are recorded. The Issuance datasets are not updated to reflect violation status, the information only represents the violation(s) at the time they are issued.
+
+A ParkingViolation Code excel is attached to this dataset, which records corresponding violation information of each violation code.
+
+* For café in NYC:
+
+[Sidewalk Café Licenses and Applications](https://data.cityofnewyork.us/Business/Sidewalk-Caf-Licenses-and-Applications/qcdj-rwhu)
+
+This dataset features detailed information about sidewalk café license applications and, if applicable, issued licenses. Data is provided by the Department of Consumer Affairs (DCA). There are total of 1124 cafe information,each record represents a single sidewalk café. Location information, such as street number and house humber are recorded.
+
+
+
+## Data Processing and Cleaning
 
 \ We set NYC Open Data as primary data source, and required:
 
-1. Open Parking and Camera Violations
 1. Parking Violations Issued - Fiscal Year 2021
 1. Sidewalk Café Licenses and Applications
 
 from NYC Open Data.
 
-\ With these data, we first clean all variable names and select target variables for comparison 
-between data, as well as changing variable types to reflecting their actual value.
-Then we focus on acquiring geometric information via available 
-information in the datasets. We wrote a function to pull geometric information 
-from [Geosearch](https://labs-geosearch-docs.netlify.app/). 
-Third, we identified violation in a certain range of area, and nest them to the
- location we interested.
- 
+\ First we focus on acquiring our own geographic information via available information in the datasets.  
+\ We wrote a function to pull geographic information 
+from [Geosearch](https://labs-geosearch-docs.netlify.app/). We got longitude and latitude information
+of each violation through that function and will write them in our resulting dataset.
+
+```{r eval=FALSE}
+###select variables we need
+data_2021 =
+  read_csv("./data/Parking_Violations_Issued_-_Fiscal_Year_2021.csv") %>%
+  janitor::clean_names() %>%
+  mutate(
+    borough =
+      case_when(
+        violation_county %in% c("BK", "K") ~ "Brooklyn",
+        violation_county %in% c("MN", "NY") ~ "Manhattan",
+        violation_county %in% c("Q", "QN") ~ "Queens",
+        violation_county %in% c("BX") ~ "Bronx"
+      ),
+    borough = replace_na(borough, "Staten Island")
+  ) %>% 
+  select(
+    summons_number,
+    issue_date,
+    house_number,
+    street_name,
+    intersecting_street,
+    violation_time,
+    violation_code
+    violation_code,
+    borough
+  )
+
+###pull out house number(without NA) +street number
+park21house_geo_df =
+  data_2021 %>%
+  subset(select = c(house_number, street_name)) %>%
+  drop_na(house_number) %>%
+  unite("address",
+        house_number:street_name,
+        sep = ",",
+        remove = FALSE) %>%
+  distinct(address, .keep_all = TRUE) %>%
+  rowid_to_column("id")
+
+###pull out street number +intersect street(without NA)
+park21sec_geo_df =
+  data_2021 %>%
+  subset(select = c(house_number, street_name, intersecting_street)) %>%
+  mutate(house_number = replace_na(house_number, "0")) %>%
+  filter(house_number == "0") %>%
+  drop_na(intersecting_street) %>%
+  unite("address",
+        street_name:intersecting_street,
+        sep = ",",
+        remove = FALSE) %>%
+  distinct(address, .keep_all = TRUE) %>%
+  rowid_to_column("id") %>%
+  select(-house_number)
+
+get_location =
+  function(location_name = "Columbia University",
+           .pd = NA) {
+    if (!is.na(.pd)) {
+      .pd$tick()$print()
+    }
+    
+    location_name = str_c(
+      "https://geosearch.planninglabs.nyc/v1/search?text=",
+      location_name,
+      ", New York, NY&size=2"
+    )
+    
+    url =
+      URLencode(location_name)
+    
+    df = read_sf(GET(url) %>% content("text"))
+    
+    if (nrow(df) == 0) {
+      return(tibble(
+        long = NA,
+        lat = NA,
+        borough = NA
+      ))
+    }
+    
+    geometry = df %>%
+      pull(geometry) %>%
+      as.tibble() %>%
+      mutate(geometry = as.character(geometry),
+             geometry = str_replace_all(geometry, "c|[\\(\\)]", "")) %>%
+      separate(geometry, into = c("long", "lat"), sep = ",") %>%
+      mutate_all(as.numeric) %>%
+      summarise(long = mean(long),
+                lat = mean(lat)) %>%
+      mutate(borough =
+               df %>%
+               slice(1)
+             %>% pull(borough))
+    
+    return(geometry)
+  }
+
+if (!file.exists("data/house_no_dic.csv")){
+  
+  if (nrow("data/cache.csv")==0){
+    write_csv(tibble(id = NA),"data/cache.csv")
+  }
+  
+  while (T) {
+    output = list()
+    doit = function(output, i) {
+      cat(i, "\n")
+      pb = progress_estimated(length((1 + 500 * (i - 1)):500 * i))
+      output[[i]] = park21house_geo_df %>%
+        #arrange(desc(id)) %>%
+        slice((1 + 500 * (i - 1)):500 * i) %>%
+        mutate(geo = map(.x = address,  ~ get_location(.x, pb))) %>%
+        unnest(geo)
+      return(output[[i]])
+    }
+    for (i in 1:nrow(park21house_geo_df) %/% 500 + 1) {
+      park21house_geo_df =
+        park21house_geo_df %>%
+        filter(!id %in% pull(read_csv(here::here(
+          "data/cache.csv"
+        )), id))
+      
+      if (length(output) >= i) {
+        if (!is.null(output[[i]])) {
+          next
+        }
+      }
+      output[[i]] = tryCatch(
+        doit(output, i),
+        error = function(cond)
+          return(NULL),
+        T
+      )
+      output %>%
+        bind_rows() %>%
+        bind_rows(read_csv(here::here("data/cache.csv"))) %>%
+        select(id:borough) %>%
+        write_csv(here::here("data/cache.csv"))
+      output = list()
+    }
+    if (i == nrow(park21house_geo_df) %/% 500 + 1) {
+      park21house_geo_df = bind_rows(output)
+      break
+    }
+  }
+  
+  
+  st =
+    read_csv(here::here("data/Centerline.csv")) %>%
+    janitor::clean_names() %>%
+    select(street_name = full_stree, geom = the_geom) %>%
+    mutate(
+      geom = str_extract_all(geom, "\\-.+,"),
+      geom = str_split(geom, ",\\s?"),
+      geom = map(geom, vec_to_df)
+    ) %>%
+    unnest(geom) %>%
+    separate(geo, into = c("long", "lat"), sep = " ") %>%
+    drop_na() %>%
+    mutate(across(c(long, lat), as.numeric))
+  
+  street_intersect =
+    function(street_1, street_2, .pd = NULL) {
+      if (!is.na(.pd)) {
+        .pd$tick()$print()
+      }
+      
+      street_1_df =
+        st %>%
+        filter(
+          street_name ==
+            agrep(
+              street_1,
+              st %>% pull(street_name),
+              value = T,
+              max = list(del = 0.4),
+              ignore.case = T
+            ) %>% first()
+        ) %>%
+        select(x = long, y = lat)
+      
+      street_2_df =
+        st %>%
+        filter(
+          street_name ==
+            agrep(
+              street_2,
+              st %>% pull(street_name),
+              value = T,
+              max = list(del = 0.4),
+              ignore.case = T
+            ) %>% first()
+        ) %>%
+        select(x = long, y = lat)
+      answer = tryCatch(
+        curve_intersect(street_1_df, street_2_df) %>% bind_rows(),
+        error = function(cond)
+          return(tibble(x = NA, y = NA)),
+        T
+      )
+      return(answer)
+    }
+  
+  pb = progress_estimated(nrow(park21sec_geo_df))
+  park21sec_geo_df =
+    park21sec_geo_df %>%
+    mutate(geo = map2(.x = street_name,
+                      .y = intersecting_street,
+                      ~ street_intersect(.x, .y, pb))) %>%
+    unnest(geo) %>%
+    rename(long = x, lat = y)
+}
+```
+
+\ For the cafe data, we generate geographic information according to zip code, the following code was used to create the resulting dataset:
+```{r eval=FALSE}
+cafe =
+  paging("https://data.cityofnewyork.us/resource/qcdj-rwhu.csv") %>%
+  left_join(read_csv(here::here("data/zipcode.csv"))) %>%
+  rename(long = longitude,
+         lat = latitude,
+         street_name = street)
+
+cafe =
+  cafe %>%
+  filter(business_name != "MULBERRY STREET BAR LLC") %>%
+  rbind(
+    cafe %>%
+      filter(business_name == "MULBERRY STREET BAR LLC") %>%
+      select(-long,-lat,-borough) %>%
+      unite("search_query", building, street_name, remove = F) %>%
+      mutate(geo = map(search_query, get_location)) %>%
+      unnest(geo) %>%
+      select(-search_query)
+  )
+
+cafe %>%
+  write_csv(here::here("data", "Sidewalk_Caf__Licenses_and_Applications_clean.csv"))
+```
+
+\ Then, clean the parking_violation issued-fiscal_year_2021 data, and add geographic information to it.
+```{r eval=FALSE}
+house_no_dic =
+  read_csv("./data/house_no_dic.csv") %>%
+  subset(select = -c(id, geo)) %>% 
+  mutate(borough =
+           if_else(between(lat,40.75,40.78)& borough == "Bronx",
+                   "Manhattan",borough),
+         borough =
+           if_else(lat < 40.75 & borough == "Bronx",
+                   "Brooklyn",borough))
+
+
+data_2021_cleanv1 =
+  read_csv("./data/Parking_Violations_Issued_-_Fiscal_Year_2021.csv") %>%
+  janitor::clean_names() %>%
+  rowid_to_column("id") %>%
+  subset(
+    select = c(
+      id,
+      summons_number,
+      registration_state,
+      issue_date,
+      violation_code,
+      vehicle_make,
+      violation_time,
+      violation_county,
+      house_number,
+      street_name,
+      intersecting_street,
+      vehicle_color,
+      vehicle_year
+    )
+  ) %>%
+  left_join(house_no_dic, by = c("house_number", "street_name")) %>% 
+  separate(violation_time,
+           into = c('hour', 'min', 'am_pm'),
+           sep = c(2, 4)) %>%
+  mutate(
+    am_pm = recode(am_pm, `P` = 12, `A` = 0),
+    hour = as.numeric(hour),
+    hour = ifelse((hour == 12 &
+                     am_pm == 12), hour, (hour + am_pm)),
+    issue_date = as.Date(issue_date, tryFormats = "%m/%d/%Y")
+  ) %>%
+  subset(select = c(-am_pm)) %>%
+  unite("time", hour:min, remove = F, sep = ":") %>%
+  unite("issue_date",
+        c(issue_date, time),
+        remove = T,
+        sep = "T") %>%
+  mutate(issue_date = lubridate::ymd_hm(issue_date)) %>% 
+  mutate(
+    borough =
+      case_when(
+        violation_county %in% c("BK", "K") ~ "Brooklyn",
+        violation_county %in% c("MN", "NY") ~ "Manhattan",
+        violation_county %in% c("Q", "QN") ~ "Queens",
+        violation_county %in% c("BX") ~ "Bronx"
+      ),
+    borough = replace_na(borough, "Staten Island")
+  )
+
+st_sample = #get ready for resample
+  function(st_name, n = 1) {
+    cat("\r", st_name)
+    a = data_2021_cleanv1 %>%
+      filter(!is.na(long), street_name == st_name)
+    if (nrow(a) > 0) {
+      a %>% 
+      select(long, lat, borough) %>%
+        sample_n(size = n, replace = TRUE) %>%
+        return()
+    } else{
+      data_2021_cleanv1 %>%
+        filter(!is.na(long),!is.na(address)) %>%
+        select(long, lat, borough) %>%
+        sample_n(size = n, replace = TRUE) %>%
+        return()
+    }
+  }
+
+set.seed(1) # resample for intersection
+dic = data_2021_cleanv1 %>%
+  filter(!is.na(street_name), is.na(long)) %>%
+  select(summons_number, street_name) %>%
+  nest(summons_number) %>%
+  mutate(n = map(data, nrow),
+         geo =
+           map2(.x = street_name, .y = n, ~ st_sample(st_name = .x, n = .y))) %>% 
+  unnest(c(data,geo)) %>% 
+  select(-n) %>% 
+  distinct(summons_number,.keep_all = T)
+
+data_2021_cleanv1 =
+  data_2021_cleanv1 %>% #putting sample data into the main data
+  left_join(dic, by = "summons_number", suffix = c("", "_d")) %>%
+  mutate(
+    long = if_else(is.na(long), long_d, long),
+    lat = if_else(is.na(lat), lat_d, lat),
+    borough = if_else(is.na(borough), borough_d, borough),
+    hour = if_else(hour<=24,as.integer(hour),NA)
+  ) %>%
+  select(id:borough)
+```
+
+\ Finally, we generate the fine_amount variable based on geographic variables and violation code. Since the fine amount is different in 
+Manhattan 96th St. & below, we select them by 96th St. geographic variables, and acquire fine amount acording to the attached ParkingViolation Code excel.
+```{r eval=FALSE}
+st_96 = lm(lat~long,read_csv("data/96th.csv"))
+
+fine_data = read_excel("data/ParkingViolationCodes_January2020.xlsx") %>%
+  janitor::clean_names() %>%
+  select(-violation_description) %>% 
+  pivot_longer(
+    manhattan_96th_st_below_fine_amount:all_other_areas_fine_amount,
+    names_to = "below_96",
+    values_to = "fine_amount"
+  ) %>% 
+  mutate(below_96_m = 
+           case_when(below_96 == "manhattan_96th_st_below_fine_amount" ~T,
+                     below_96 != "manhattan_96th_st_below_fine_amount" ~F)) %>% 
+  select(-below_96)
+
+data_2021_cleanv1 = data_2021_cleanv1 %>%
+  mutate(below_96 =
+           lat < predict(st_96,
+                         tibble(long = data_2021_cleanv1$long)),
+         below_96_m = ifelse(borough == "Manhattan" & below_96 == TRUE, T, F)
+         ) %>% 
+  left_join(fine_data, by = c("violation_code","below_96_m")) %>% 
+  select(-below_96, -below_96_m) 
+```
+\ Thus, for now, we could get all our required information without acquiring a excessively large dataset(around 14 GB).
+
 ## Data description
 
-Our analysis is mainly based on two files, `Sidewalk_Caf__Licenses_and_Applications_clean` and `parking_vio2021_cleanv1` 
+As we discussed above, our analysis is mainly based on two files, `Sidewalk_Caf__Licenses_and_Applications_clean` and `parking_vio2021_cleanv1` 
 
 #### Violation data
 
