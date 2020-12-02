@@ -30,6 +30,7 @@ options(
   ggplot2.continuous.fill = "viridis",
   digits = 3
 )
+
 scale_colour_discrete = scale_colour_viridis_d
 scale_fill_discrete = scale_fill_viridis_d
 cafe = read_csv(here::here("data/Sidewalk_Caf__Licenses_and_Applications_clean.csv"))

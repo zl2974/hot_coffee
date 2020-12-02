@@ -405,18 +405,12 @@ div.tocify {
 </div>
 
 
-<<<<<<< HEAD
 <div id="hypothesis-test-about-fine-amount" class="section level2">
 <h2>Hypothesis test about fine amount</h2>
 <ol style="list-style-type: decimal">
 <li>Anova between fine amount and different boros</li>
 </ol>
-<p>From data exploration, we have notice that the violation code varies among boroughs as well as the fine amount. We see from the table that the mean of fine amount in Queen is different from the Manhattan by 10$, and thus, we propose hypothesis that there's at least 1 pairs of boroughs' fine amount is different from others.</p>
-=======
-<div id="fine-amount-and-different-boros" class="section level1">
-<h1>fine amount and different boros</h1>
 <p>From data exploration, we have notice that the violation code varies among boroughs as well as the fine amount. We see from the table that the mean of fine amount in Queen is different from the Manhattan by 10$, and thus, we propose hypothesis that there’s at least 1 pairs of boroughs’ fine amount is different from others.</p>
->>>>>>> cbe0ae553e687d546375022a47205f5c4edfb16a
 <table>
 <caption>Fine Amount in borough</caption>
 <thead>
@@ -455,7 +449,7 @@ div.tocify {
 </tbody>
 </table>
 <p>To do that, we perform ANOVA test for multiple groups comparison. With:</p>
-<p><span class="math inline">\(H_0\)</span> : there's no difference of fine amount means between boroughs</p>
+<p><span class="math inline">\(H_0\)</span> : there’s no difference of fine amount means between boroughs</p>
 <p><span class="math inline">\(H_1\)</span> : at least two fine amount means of boroughs are not equal</p>
 <pre><code>##                      Df   Sum Sq  Mean Sq F value Pr(&gt;F)    
 ## factor(borough)       4 9.24e+07 23100424   19955 &lt;2e-16 ***
@@ -546,24 +540,14 @@ div.tocify {
 </tr>
 </tbody>
 </table>
-<<<<<<< HEAD
-<p>As the ANOVA test result from above, we reject the Null at 99% confidence level and conclude that there's at least one borough's mean of fine amount is different from others.</p>
-<p>To further investigate the difference between boroughs, we perform Tukey test for pairwise comparison. From the Tukey test result, we are 95% confident that the true mean difference of fine amount between Staten Island and Bronx is between -0.238 and 0.55. Since CI of other comparisons are not including &quot;0&quot;, we only failed to reject the null hypothesis for Staten Island and Bronx, and conclude that each two fine amount means of boroughs are not equal except for Staten Island and Bronx.</p>
+<p>As the ANOVA test result from above, we reject the Null at 99% confidence level and conclude that there’s at least one borough’s mean of fine amount is different from others.</p>
+<p>To further investigate the difference between boroughs, we perform Tukey test for pairwise comparison. Notice that all paris are different from each other in the setting of our data. Given the large amount of data, according to the law of large number, the estimate of mean fine amount close to the true mean of the fine amount in different borough. Under this setting, we have 99% confidence that Manhattan have different mean of fine amount than other borough. So if you unfortunately get a RISKY coffee, it is much burning than in other boroughs.</p>
 </div>
 <div id="hypothesis-test-about-violation-counts" class="section level2">
 <h2>Hypothesis test about violation counts</h2>
 <ol style="list-style-type: lower-alpha">
 <li>Chi-Squared test between violation counts generated in each weekdays and different boroughs</li>
 </ol>
-=======
-<p>As the ANOVA test result from above, we reject the Null at 99% confidence level and conclude that there’s at least one borough’s mean of fine amount is different from others.</p>
-<p>To further investigate the difference between boroughs, we perform Tukey test for pairwise comparison. Notice that all paris are different from each other in the setting of our data. Given the large amount of data, according to the law of large number, the estimate of mean fine amount close to the true mean of the fine amount in different borough. Under this setting, we have 99% confidence that Manhattan have different mean of fine amount than other borough. So if you unfortunately get a RISKY coffee, it is much burning than in other boroughs.</p>
-</div>
-<div id="hypothesis-test-for-violation-counts" class="section level1">
-<h1>Hypothesis Test for Violation Counts</h1>
-<div id="chi-squared-test-between-violation-counts-generated-in-each-weekdays-and-different-boroughs" class="section level2">
-<h2>Chi-Squared test between violation counts generated in each weekdays and different boroughs</h2>
->>>>>>> cbe0ae553e687d546375022a47205f5c4edfb16a
 <p>From data exploration, we have noticed that the violation counts proportions in different weekdays among each boroughs are different.Thus, we assume there is no homogeneity in tickets counts proportions in each weekdays among boroughs.</p>
 <p>To verify that, we performed Chi-squared test for multiple groups comparison. With:</p>
 <p><span class="math inline">\(H_0\)</span> : the tickets proportion in weekdays among boroughs are equal.</p>
@@ -641,24 +625,13 @@ div.tocify {
 ## data:  chisq_boro_day
 ## X-squared = 4607, df = 24, p-value &lt;2e-16</code></pre>
 <pre><code>## [1] 36.4</code></pre>
-<<<<<<< HEAD
-<p>According to above chi-square test result, We reject the null hypothesis and conclude that there's at least one borough's proportions of violation counts for week days is different from others at 0.05 significant level.</p>
+<p>According to above chi-square test result, We reject the null hypothesis and conclude that there’s at least one borough’s proportions of violation counts for week days is different from others at 0.05 significant level.</p>
 <ol start="2" style="list-style-type: lower-alpha">
 <li>Chi-Squared test between violation counts generated in each hour and different boroughs:</li>
 </ol>
 <table style="width:100%;">
 <colgroup>
-<col width="8%" />
-=======
-<p>According to above chi-square test result, We reject the null hypothesis and conclude that there’s at least one borough’s proportions of violation counts for week days is different from others at 0.05 significant level.</p>
-</div>
-<div id="test-whether-the-the-probability-of-falling-in-the-each-hour-is-the-same-for-each-borough" class="section level2">
-<h2>Test whether the the probability of falling in the each hour is the same for each borough:</h2>
-<table style="width:100%;">
-<caption>Distribution of ticket in a day</caption>
-<colgroup>
 <col width="9%" />
->>>>>>> cbe0ae553e687d546375022a47205f5c4edfb16a
 <col width="3%" />
 <col width="3%" />
 <col width="3%" />
@@ -851,7 +824,6 @@ div.tocify {
 </tr>
 </tbody>
 </table>
-<<<<<<< HEAD
 <table>
 <thead>
 <tr class="header">
@@ -863,7 +835,58 @@ div.tocify {
 </thead>
 <tbody>
 <tr class="odd">
-<<<<<<< HEAD
+<td align="right">110942</td>
+<td align="right">0</td>
+<td align="right">92</td>
+<td align="left">Pearson’s Chi-squared test</td>
+</tr>
+</tbody>
+</table>
+<pre><code>## [1] 115</code></pre>
+<p>According to above chi-square test result, We reject the null hypothesis and conclude that there’s at least one borough’s proportions of violation counts for 24 hours is different from others at 0.05 significant level.</p>
+<p>Sine 526.14 million square feet of office space existed in Manhattan in 2020. Manhattan’s office space is located in 3,830 commercial buildings in the major markets of Midtown, Midtown South, Lower Manhattan and Uptown [<a href="https://www.statista.com/statistics/605882/size-of-office-area-manhattan-by-submarket/">Statistics</a>]. At any given time most of this office space is rented. Manhattan becomes the well deserved business center in NYC. Due to the unequal active status of commerce among boroughs and expensive costs of keeping a car in NYC, the active area of life and work for people who own a car concentrates upon Manhattan. This is one of reasonable explanations of chi-square test result. But this situation might be changed since the commercial areas tend to extend to other boroughs. Some data in the report shows that the Bronx office market and the Staten Island office market have seen increased investor interest over the past 10 years [<a href="https://www.metro-manhattan.com/blog/market-report-a-look-at-nyc-office-sales-activity-from-2010-to-2020/">click here to get more detailed information</a>].</p>
+</div>
+<div id="regression" class="section level2">
+<h2>Regression</h2>
+<pre class="r"><code>boro_daytime_violation = 
+  parking %&gt;%  
+  mutate(
+    daytime = if_else(hour %in% 8:20,&quot;1&quot;,&quot;0&quot;),
+    day_week = weekdays(issue_date),
+    day_week = factor(day_week, levels = day_order),
+    workday_weekend = if_else(day_week %in% c(&quot;Monday&quot;, &quot;Tuesday&quot;, &quot;Wednesday&quot;,&quot;Thursday&quot;, &quot;Friday&quot;),&quot;1&quot;,&quot;0&quot;),
+    month = lubridate::month(issue_date),
+    month = forcats::fct_reorder(as.factor(month),month)
+  ) %&gt;% 
+  drop_na(vehicle_color, street_name) %&gt;% 
+  group_by(borough,month,workday_weekend,daytime) %&gt;%
+  summarise(
+    violation_number = mean(n()),
+    street_name = street_name,
+    vehicle_color = vehicle_color,
+    street_name = street_name,
+    month = as.factor(month)
+  )</code></pre>
+<pre><code>## `summarise()` regrouping output by &#39;borough&#39;, &#39;month&#39;, &#39;workday_weekend&#39;, &#39;daytime&#39; (override with `.groups` argument)</code></pre>
+<pre class="r"><code>fit1 = 
+  lm(violation_number ~ borough + factor(workday_weekend) + factor(daytime) + factor(month), data = boro_daytime_violation) 
+
+fit1 %&gt;% 
+  broom::tidy() %&gt;% 
+  knitr::kable(caption = &quot;Linar Regression Result&quot;)</code></pre>
+<table>
+<caption>Linar Regression Result</caption>
+<thead>
+<tr class="header">
+<th align="left">term</th>
+<th align="right">estimate</th>
+<th align="right">std.error</th>
+<th align="right">statistic</th>
+<th align="right">p.value</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
 <td align="left">(Intercept)</td>
 <td align="right">-221757</td>
 <td align="right">9504.9</td>
@@ -993,30 +1016,10 @@ div.tocify {
 </table>
 <p>brief notes for how to analysis this regression result:<br />
 1. stay at home order since March to June 8th.<br />
-2. <a href="https://patch.com/new-york/midtown-nyc/nyc-extends-alternate-side-parking-suspension">alternate side parking regulations</a> (<a href="https://www1.nyc.gov/html/dot/html/pr2020/pr20-037.shtml" class="uri">https://www1.nyc.gov/html/dot/html/pr2020/pr20-037.shtml</a>)<br />
+2. <a href="https://patch.com/new-york/midtown-nyc/nyc-extends-alternate-side-parking-suspension">alternate side parking regulations</a> [regulation] (<a href="https://www1.nyc.gov/html/dot/html/pr2020/pr20-037.shtml" class="uri">https://www1.nyc.gov/html/dot/html/pr2020/pr20-037.shtml</a>)<br />
 3. Pandemic becomes worse since OCT. The second Covid-19 outbreak happened all over the U.S. since Oct<br />
 4. <a href="https://newyorkparkingticket.com/parking-rules-holidays-sundays/">free parking on major Legal Holidays and Sundays:</a>. This explain why p-value of “factor(daytime)1” is below 0.05. That means workday factor is significant. Comparing with weekend, there are more parking violation on workdays than weenend due to NYC free parking rules on Sunday.<br />
 5. Junly and August are usually summer holiday for students all over the world. Due to that NYC is a tourist attraction, the number of tourists should be increased in July and August. Tourists who aren’t familiar with the NYC parking rules may easily receive parking tickets.</p>
-</div>
-=======
-<td align="right">110937</td>
-<td align="right">0</td>
-<td align="right">92</td>
-<td align="left">Pearson's Chi-squared test</td>
-</tr>
-</tbody>
-</table>
-=======
-<pre><code>## 
-##  Pearson&#39;s Chi-squared test
-## 
-## data:  chisq_boro_hour
-## X-squared = 1e+05, df = 92, p-value &lt;2e-16</code></pre>
->>>>>>> cbe0ae553e687d546375022a47205f5c4edfb16a
-<pre><code>## [1] 115</code></pre>
-<p>According to above chi-square test result, We reject the null hypothesis and conclude that there's at least one borough's proportions of violation counts for 24 hours is different from others at 0.05 significant level.</p>
-<p>Sine 526.14 million square feet of office space existed in Manhattan in 2020. Manhattan’s office space is located in 3,830 commercial buildings in the major markets of Midtown, Midtown South, Lower Manhattan and Uptown [<a href="https://www.statista.com/statistics/605882/size-of-office-area-manhattan-by-submarket/">Statistics</a>]. At any given time most of this office space is rented. Manhattan becomes the well deserved business center in NYC. Due to the unequal active status of commerce among boroughs and expensive costs of keeping a car in NYC, the active area of life and work for people who own a car concentrates upon Manhattan. This is one of reasonable explanations of chi-square test result. But this situation might be changed since the commercial areas tend to extend to other boroughs. Some data in the report shows that the Bronx office market and the Staten Island office market have seen increased investor interest over the past 10 years [<a href="https://www.metro-manhattan.com/blog/market-report-a-look-at-nyc-office-sales-activity-from-2010-to-2020/">click here to get more detailed information</a>].</p>
->>>>>>> 214a846450c6b27ddbc8c5c0751f20cb6187d99b
 </div>
 
 

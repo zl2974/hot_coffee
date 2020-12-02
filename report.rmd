@@ -6,7 +6,33 @@ output: html_document
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse)
+library(readxl)
+library(patchwork)
+library(plotly)
+library(leaflet)
+library(ggplot2)
+library(lubridate)
+
+knitr::opts_chunk$set(
+  fig.height = 6,
+  fig.width = 8,
+  message = F,
+  echo = T,
+  warning = F,
+  cache = F
+)
+theme_set(theme_minimal() + theme(legend.position = "bottom"))
+options(
+  ggplot2.continuous.colour = "viridis",
+  ggplot2.continuous.fill = "viridis",
+  digits = 3
+)
+
+scale_colour_discrete = scale_colour_viridis_d
+scale_fill_discrete = scale_fill_viridis_d
 ```
+
 
 ## Motivation
 
@@ -497,14 +523,39 @@ The resulting data file of `parking_vio2021_cleanv1` contains a single dataframe
   * `business_name2`. If applicable, the Doing-Business-As (DBA)/trade name.
   * `lat`. Latitude of cafe.
   * `long`. Longitude of cafe.
+```{r}
+cafe = read_csv(here::here("data/Sidewalk_Caf__Licenses_and_Applications_clean.csv"))
 
-##Exploratory Analysis
+```
+
+
+## Exploratory Analysis
 
 \ In this part, we explore the basic patterns and characteristics of parking tickets rates and types among different time periods and boroughs. Then we connect the location of coffee shops and parking tickets to see the potential linkage between coffee shop and parking violations.
 
 \ First, To get the most comprehesive understanding of the distribution of violation tickets among NYC, we mapped all violation to a 3D surface.
 
-```{r map,eval=FALSE}
+```{r map}
+parking = read_csv(here::here("data/parking_vio2021_cleanv1.csv")) %>%
+  filter(hour != 12.3, hour <= 24) %>%
+  left_join(
+    read_csv("./data/Parking_Violations_Issued_-_Fiscal_Year_2021.csv") %>%
+      janitor::clean_names() %>%
+      select(summons_number, violation_county)
+  ) %>%
+  mutate(
+    borough =
+      case_when(
+        violation_county %in% c("BK", "K") ~ "Brooklyn",
+        violation_county %in% c("MN", "NY") ~ "Manhattan",
+        violation_county %in% c("Q", "QN") ~ "Queens",
+        violation_county %in% c("BX") ~ "Bronx"
+      ),
+    borough = replace_na(borough, "Staten Island")
+  ) %>% 
+  drop_na(address) %>% 
+  filter(issue_date <= as.Date("2020-11-16"))
+
 read_csv(here::here("data/parking_vio2021_cleanv1.csv")) %>%
   drop_na(address) %>% 
   filter(hour != 12.3) %>%
@@ -530,6 +581,7 @@ read_csv(here::here("data/parking_vio2021_cleanv1.csv")) %>%
     )),
     showlegend = FALSE
   ))
+
 parking %>% 
   drop_na(borough) %>% 
   group_by(borough) %>% 
@@ -550,7 +602,8 @@ parking %>%
 \ To explore the pattern of parking tickets rate change over different time unit, and study the differences between boroughs, we made five plots.
 
   * A bar plot shows the total parking tickets during each month in each brorough
-```{r bar_by_month,eval=FALSE}
+```{r bar_by_month}
+
 parking %>% 
   mutate(month = lubridate::month(issue_date),
          month = forcats::fct_reorder(as.factor(month),month)
@@ -569,7 +622,7 @@ parking %>%
 ```
   * A shiny plot shows the change of parking tickets rate during a day(with respect to five boroughs, respectively)
 
-```{r hour_map,eval=FALSE}
+```{r hour_map}
 nyc =
   parking %>%
   drop_na(long, lat) %>%
@@ -625,7 +678,7 @@ read_csv(here::here("data/parking_vio2021_cleanv1.csv")) %>%
 ```
   * A line plot shows the pattern of tickets rate change during one day for each borough.
   
-```{r hour_borough, eval=FALSE}
+```{r hour_borough}
 parking %>% 
   group_by(hour,borough) %>%
   drop_na(hour,borough) %>% 
@@ -643,7 +696,7 @@ parking %>%
   
   * A line plot shows the pattern of tickets rate change during one week for each borough
 
-```{r,eval=FALSE}
+```{r}
 parking_day = parking %>%
   select(issue_date, summons_number, borough) %>% 
   drop_na(borough)
@@ -686,7 +739,7 @@ All the five boroughs in NYC–Manhattan, Bronx, Brooklyn, Queens and Staten Isl
 
 \ We want to know the most common reason for getting tickets in NYC, and whether there are differences between the five boroughs.We made bar plots of the top 10 most frequent parking tickets type in each boroughs.
 
-```{r, eval=FALSE}
+```{r}
 vio_code = readxl::read_xlsx('data/ParkingViolationCodes_January2020.xlsx') %>% 
   janitor::clean_names() %>% 
   dplyr::select(violation_code, violation_description) %>% 
@@ -815,7 +868,7 @@ coffee taxed by the Parking ticket, we need to look at the fine amounts.
 
   * Toal fine amount of each five boroughs in each weekdays.
 
-```{r, eval=FALSE}
+```{r}
 day_order = c("Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday")
 
 parking %>%
@@ -843,7 +896,7 @@ parking %>%
 
   * A density plot shows the density of total fine amount of the areas where coffee shops are within 100 meter in each borough.
   
-```{r, eval=FALSE}
+```{r}
 get_nearby_area =
   function(p_long = 0, p_lat = 0,area=100) {
     return(
@@ -882,7 +935,7 @@ nearby_data =
 ```
 
 
-```{r, eval=FALSE}
+```{r}
 nearby_data %>% 
   drop_na(borough) %>% 
   group_by(borough, business_name) %>% 
