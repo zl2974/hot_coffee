@@ -206,14 +206,17 @@ boro_daytime_violation =
     street_name = street_name,
     vehicle_color = vehicle_color,
     street_name = street_name,
-    month = month
+    month = as.factor(month)
   )
 ```
 
 
 ```{r}
-fit1 = lm(violation_number ~ borough + factor(workday_weekend) + factor(daytime) + month, data = boro_daytime_violation) 
+fit1 = 
+  lm(violation_number ~ borough + factor(workday_weekend) + factor(daytime) + factor(month), data = boro_daytime_violation) 
 
-summary(fit1)
+fit1 %>% 
+  broom::tidy() %>% 
+  knitr::kable(caption = "Linar Regression Result")
 ```
 

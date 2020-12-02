@@ -849,47 +849,155 @@ div.tocify {
     street_name = street_name,
     vehicle_color = vehicle_color,
     street_name = street_name,
-    month = month
+    month = as.factor(month)
   )</code></pre>
 <pre><code>## `summarise()` regrouping output by &#39;borough&#39;, &#39;month&#39;, &#39;workday_weekend&#39;, &#39;daytime&#39; (override with `.groups` argument)</code></pre>
-<pre class="r"><code>fit1 = lm(violation_number ~ borough + factor(workday_weekend) + factor(daytime) + month, data = boro_daytime_violation) 
+<pre class="r"><code>fit1 = 
+  lm(violation_number ~ borough + factor(workday_weekend) + factor(daytime) + factor(month), data = boro_daytime_violation) 
 
-summary(fit1)</code></pre>
-<pre><code>## 
-## Call:
-## lm(formula = violation_number ~ borough + factor(workday_weekend) + 
-##     factor(daytime) + month, data = boro_daytime_violation)
-## 
-## Residuals:
-##     Min      1Q  Median      3Q     Max 
-## -174867  -18716   -4154   33928  311048 
-## 
-## Coefficients:
-##                           Estimate Std. Error t value Pr(&gt;|t|)    
-## (Intercept)              -221753.0     9505.0  -23.33  &lt; 2e-16 ***
-## boroughBrooklyn            40554.0       90.0  450.78  &lt; 2e-16 ***
-## boroughManhattan          129825.4       83.2 1560.97  &lt; 2e-16 ***
-## boroughQueens              35014.3       91.3  383.66  &lt; 2e-16 ***
-## boroughStaten Island      -49150.6      248.5 -197.80  &lt; 2e-16 ***
-## factor(workday_weekend)1  121140.3       82.4 1469.96  &lt; 2e-16 ***
-## factor(daytime)1          107531.5       73.9 1455.02  &lt; 2e-16 ***
-## month2                    -16943.6    11156.5   -1.52   0.1288    
-## month3                    -16309.2    10328.4   -1.58   0.1143    
-## month4                     -7328.2    11346.0   -0.65   0.5184    
-## month5                    -40142.9     9714.4   -4.13  3.6e-05 ***
-## month6                    -11784.5     9506.0   -1.24   0.2151    
-## month7                     39074.2     9504.8    4.11  3.9e-05 ***
-## month8                    106558.9     9504.7   11.21  &lt; 2e-16 ***
-## month9                     98901.3     9504.8   10.41  &lt; 2e-16 ***
-## month10                    14850.5    11896.6    1.25   0.2119    
-## month11                    34088.9    16801.9    2.03   0.0425 *  
-## month12                    38124.4    13083.1    2.91   0.0036 ** 
-## ---
-## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
-## 
-## Residual standard error: 39200 on 2232031 degrees of freedom
-## Multiple R-squared:  0.829,  Adjusted R-squared:  0.829 
-## F-statistic: 6.38e+05 on 17 and 2232031 DF,  p-value: &lt;2e-16</code></pre>
+fit1 %&gt;% 
+  broom::tidy() %&gt;% 
+  knitr::kable(caption = &quot;Linar Regression Result&quot;)</code></pre>
+<table>
+<caption>Linar Regression Result</caption>
+<thead>
+<tr class="header">
+<th align="left">term</th>
+<th align="right">estimate</th>
+<th align="right">std.error</th>
+<th align="right">statistic</th>
+<th align="right">p.value</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">(Intercept)</td>
+<td align="right">-221753</td>
+<td align="right">9505.0</td>
+<td align="right">-23.330</td>
+<td align="right">0.000</td>
+</tr>
+<tr class="even">
+<td align="left">boroughBrooklyn</td>
+<td align="right">40554</td>
+<td align="right">90.0</td>
+<td align="right">450.783</td>
+<td align="right">0.000</td>
+</tr>
+<tr class="odd">
+<td align="left">boroughManhattan</td>
+<td align="right">129825</td>
+<td align="right">83.2</td>
+<td align="right">1560.967</td>
+<td align="right">0.000</td>
+</tr>
+<tr class="even">
+<td align="left">boroughQueens</td>
+<td align="right">35014</td>
+<td align="right">91.3</td>
+<td align="right">383.657</td>
+<td align="right">0.000</td>
+</tr>
+<tr class="odd">
+<td align="left">boroughStaten Island</td>
+<td align="right">-49151</td>
+<td align="right">248.5</td>
+<td align="right">-197.800</td>
+<td align="right">0.000</td>
+</tr>
+<tr class="even">
+<td align="left">factor(workday_weekend)1</td>
+<td align="right">121140</td>
+<td align="right">82.4</td>
+<td align="right">1469.958</td>
+<td align="right">0.000</td>
+</tr>
+<tr class="odd">
+<td align="left">factor(daytime)1</td>
+<td align="right">107531</td>
+<td align="right">73.9</td>
+<td align="right">1455.022</td>
+<td align="right">0.000</td>
+</tr>
+<tr class="even">
+<td align="left">factor(month)2</td>
+<td align="right">-16944</td>
+<td align="right">11156.5</td>
+<td align="right">-1.519</td>
+<td align="right">0.129</td>
+</tr>
+<tr class="odd">
+<td align="left">factor(month)3</td>
+<td align="right">-16309</td>
+<td align="right">10328.4</td>
+<td align="right">-1.579</td>
+<td align="right">0.114</td>
+</tr>
+<tr class="even">
+<td align="left">factor(month)4</td>
+<td align="right">-7328</td>
+<td align="right">11346.0</td>
+<td align="right">-0.646</td>
+<td align="right">0.518</td>
+</tr>
+<tr class="odd">
+<td align="left">factor(month)5</td>
+<td align="right">-40143</td>
+<td align="right">9714.4</td>
+<td align="right">-4.132</td>
+<td align="right">0.000</td>
+</tr>
+<tr class="even">
+<td align="left">factor(month)6</td>
+<td align="right">-11784</td>
+<td align="right">9506.0</td>
+<td align="right">-1.240</td>
+<td align="right">0.215</td>
+</tr>
+<tr class="odd">
+<td align="left">factor(month)7</td>
+<td align="right">39074</td>
+<td align="right">9504.8</td>
+<td align="right">4.111</td>
+<td align="right">0.000</td>
+</tr>
+<tr class="even">
+<td align="left">factor(month)8</td>
+<td align="right">106559</td>
+<td align="right">9504.7</td>
+<td align="right">11.211</td>
+<td align="right">0.000</td>
+</tr>
+<tr class="odd">
+<td align="left">factor(month)9</td>
+<td align="right">98901</td>
+<td align="right">9504.8</td>
+<td align="right">10.405</td>
+<td align="right">0.000</td>
+</tr>
+<tr class="even">
+<td align="left">factor(month)10</td>
+<td align="right">14851</td>
+<td align="right">11896.6</td>
+<td align="right">1.248</td>
+<td align="right">0.212</td>
+</tr>
+<tr class="odd">
+<td align="left">factor(month)11</td>
+<td align="right">34089</td>
+<td align="right">16801.9</td>
+<td align="right">2.029</td>
+<td align="right">0.042</td>
+</tr>
+<tr class="even">
+<td align="left">factor(month)12</td>
+<td align="right">38124</td>
+<td align="right">13083.1</td>
+<td align="right">2.914</td>
+<td align="right">0.004</td>
+</tr>
+</tbody>
+</table>
 </div>
 </div>
 
