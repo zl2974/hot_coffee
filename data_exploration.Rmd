@@ -52,7 +52,8 @@ parking = read_csv(here::here("data/parking_vio2021_cleanv1.csv")) %>%
       ),
     borough = replace_na(borough, "Staten Island")
   ) %>% 
-  drop_na(address)
+  drop_na(address) %>% 
+  filter(issue_date <= as.Date("2020-11-16"))
 ```
 
 To get the most comprehesive understanding the distribution of violation tickets
