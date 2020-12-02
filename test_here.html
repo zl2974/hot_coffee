@@ -830,6 +830,67 @@ div.tocify {
 <p>According to above chi-square test result, We reject the null hypothesis and conclude that there’s at least one borough’s proportions of violation counts for 24 hours is different from others at 0.05 significant level.</p>
 <p>Sine 526.14 million square feet of office space existed in Manhattan in 2020. Manhattan’s office space is located in 3,830 commercial buildings in the major markets of Midtown, Midtown South, Lower Manhattan and Uptown [<a href="https://www.statista.com/statistics/605882/size-of-office-area-manhattan-by-submarket/">Statistics</a>]. At any given time most of this office space is rented. Manhattan becomes the well deserved business center in NYC. Due to the unequal active status of commerce among boroughs and expensive costs of keeping a car in NYC, the active area of life and work for people who own a car concentrates upon Manhattan. This is one of reasonable explanations of chi-square test result. But this situation might be changed since the commercial areas tend to extend to other boroughs. Some data in the report shows that the Bronx office market and the Staten Island office market have seen increased investor interest over the past 10 years [<a href="https://www.metro-manhattan.com/blog/market-report-a-look-at-nyc-office-sales-activity-from-2010-to-2020/">click here to get more detailed information</a>].</p>
 </div>
+<div id="regression" class="section level2">
+<h2>Regression</h2>
+<pre class="r"><code>boro_daytime_violation = 
+  parking %&gt;%  
+  mutate(
+    daytime = if_else(hour %in% 8:20,&quot;1&quot;,&quot;0&quot;),
+    day_week = weekdays(issue_date),
+    day_week = factor(day_week, levels = day_order),
+    workday_weekend = if_else(day_week %in% c(&quot;Monday&quot;, &quot;Tuesday&quot;, &quot;Wednesday&quot;,&quot;Thursday&quot;, &quot;Friday&quot;),&quot;1&quot;,&quot;0&quot;),
+    month = lubridate::month(issue_date),
+    month = forcats::fct_reorder(as.factor(month),month)
+  ) %&gt;% 
+  drop_na(vehicle_color, street_name) %&gt;% 
+  group_by(borough,month,workday_weekend,daytime) %&gt;%
+  summarise(
+    violation_number = mean(n()),
+    street_name = street_name,
+    vehicle_color = vehicle_color,
+    street_name = street_name,
+    month = month
+  )</code></pre>
+<pre><code>## `summarise()` regrouping output by &#39;borough&#39;, &#39;month&#39;, &#39;workday_weekend&#39;, &#39;daytime&#39; (override with `.groups` argument)</code></pre>
+<pre class="r"><code>fit1 = lm(violation_number ~ borough + factor(workday_weekend) + factor(daytime) + month, data = boro_daytime_violation) 
+
+summary(fit1)</code></pre>
+<pre><code>## 
+## Call:
+## lm(formula = violation_number ~ borough + factor(workday_weekend) + 
+##     factor(daytime) + month, data = boro_daytime_violation)
+## 
+## Residuals:
+##     Min      1Q  Median      3Q     Max 
+## -174867  -18716   -4154   33928  311048 
+## 
+## Coefficients:
+##                           Estimate Std. Error t value Pr(&gt;|t|)    
+## (Intercept)              -221753.0     9505.0  -23.33  &lt; 2e-16 ***
+## boroughBrooklyn            40554.0       90.0  450.78  &lt; 2e-16 ***
+## boroughManhattan          129825.4       83.2 1560.97  &lt; 2e-16 ***
+## boroughQueens              35014.3       91.3  383.66  &lt; 2e-16 ***
+## boroughStaten Island      -49150.6      248.5 -197.80  &lt; 2e-16 ***
+## factor(workday_weekend)1  121140.3       82.4 1469.96  &lt; 2e-16 ***
+## factor(daytime)1          107531.5       73.9 1455.02  &lt; 2e-16 ***
+## month2                    -16943.6    11156.5   -1.52   0.1288    
+## month3                    -16309.2    10328.4   -1.58   0.1143    
+## month4                     -7328.2    11346.0   -0.65   0.5184    
+## month5                    -40142.9     9714.4   -4.13  3.6e-05 ***
+## month6                    -11784.5     9506.0   -1.24   0.2151    
+## month7                     39074.2     9504.8    4.11  3.9e-05 ***
+## month8                    106558.9     9504.7   11.21  &lt; 2e-16 ***
+## month9                     98901.3     9504.8   10.41  &lt; 2e-16 ***
+## month10                    14850.5    11896.6    1.25   0.2119    
+## month11                    34088.9    16801.9    2.03   0.0425 *  
+## month12                    38124.4    13083.1    2.91   0.0036 ** 
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+## 
+## Residual standard error: 39200 on 2232031 degrees of freedom
+## Multiple R-squared:  0.829,  Adjusted R-squared:  0.829 
+## F-statistic: 6.38e+05 on 17 and 2232031 DF,  p-value: &lt;2e-16</code></pre>
+</div>
 </div>
 
 
