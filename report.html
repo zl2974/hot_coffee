@@ -1,0 +1,1412 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+
+
+
+<title>Project Report</title>
+
+<script src="site_libs/jquery-1.11.3/jquery.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="site_libs/bootstrap-3.3.5/css/cosmo.min.css" rel="stylesheet" />
+<script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
+<script src="site_libs/jqueryui-1.11.4/jquery-ui.min.js"></script>
+<link href="site_libs/tocify-1.9.1/jquery.tocify.css" rel="stylesheet" />
+<script src="site_libs/tocify-1.9.1/jquery.tocify.js"></script>
+<script src="site_libs/navigation-1.1/tabsets.js"></script>
+<script src="site_libs/navigation-1.1/codefolding.js"></script>
+<link href="site_libs/highlightjs-9.12.0/default.css" rel="stylesheet" />
+<script src="site_libs/highlightjs-9.12.0/highlight.js"></script>
+<link href="site_libs/font-awesome-5.1.0/css/all.css" rel="stylesheet" />
+<link href="site_libs/font-awesome-5.1.0/css/v4-shims.css" rel="stylesheet" />
+
+<style type="text/css">code{white-space: pre;}</style>
+<style type="text/css">
+  pre:not([class]) {
+    background-color: white;
+  }
+</style>
+<script type="text/javascript">
+if (window.hljs) {
+  hljs.configure({languages: []});
+  hljs.initHighlightingOnLoad();
+  if (document.readyState && document.readyState === "complete") {
+    window.setTimeout(function() { hljs.initHighlighting(); }, 0);
+  }
+}
+</script>
+
+
+
+<style type="text/css">
+h1 {
+  font-size: 34px;
+}
+h1.title {
+  font-size: 38px;
+}
+h2 {
+  font-size: 30px;
+}
+h3 {
+  font-size: 24px;
+}
+h4 {
+  font-size: 18px;
+}
+h5 {
+  font-size: 16px;
+}
+h6 {
+  font-size: 12px;
+}
+.table th:not([align]) {
+  text-align: left;
+}
+</style>
+
+
+
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+code {
+  color: inherit;
+  background-color: rgba(0, 0, 0, 0.04);
+}
+img {
+  max-width:100%;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+.html-widget {
+  margin-bottom: 20px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+summary {
+  display: list-item;
+}
+</style>
+
+
+<style type="text/css">
+/* padding for bootstrap navbar */
+body {
+  padding-top: 51px;
+  padding-bottom: 40px;
+}
+/* offset scroll position for anchor links (for fixed navbar)  */
+.section h1 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.section h2 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.section h3 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.section h4 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.section h5 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.section h6 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.dropdown-submenu {
+  position: relative;
+}
+.dropdown-submenu>.dropdown-menu {
+  top: 0;
+  left: 100%;
+  margin-top: -6px;
+  margin-left: -1px;
+  border-radius: 0 6px 6px 6px;
+}
+.dropdown-submenu:hover>.dropdown-menu {
+  display: block;
+}
+.dropdown-submenu>a:after {
+  display: block;
+  content: " ";
+  float: right;
+  width: 0;
+  height: 0;
+  border-color: transparent;
+  border-style: solid;
+  border-width: 5px 0 5px 5px;
+  border-left-color: #cccccc;
+  margin-top: 5px;
+  margin-right: -10px;
+}
+.dropdown-submenu:hover>a:after {
+  border-left-color: #ffffff;
+}
+.dropdown-submenu.pull-left {
+  float: none;
+}
+.dropdown-submenu.pull-left>.dropdown-menu {
+  left: -100%;
+  margin-left: 10px;
+  border-radius: 6px 0 6px 6px;
+}
+</style>
+
+<script>
+// manage active state of menu based on current page
+$(document).ready(function () {
+  // active menu anchor
+  href = window.location.pathname
+  href = href.substr(href.lastIndexOf('/') + 1)
+  if (href === "")
+    href = "index.html";
+  var menuAnchor = $('a[href="' + href + '"]');
+
+  // mark it active
+  menuAnchor.parent().addClass('active');
+
+  // if it's got a parent navbar menu mark it active as well
+  menuAnchor.closest('li.dropdown').addClass('active');
+});
+</script>
+
+<!-- tabsets -->
+
+<style type="text/css">
+.tabset-dropdown > .nav-tabs {
+  display: inline-table;
+  max-height: 500px;
+  min-height: 44px;
+  overflow-y: auto;
+  background: white;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs > li.active:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
+  content: "&#xe258;";
+  border: none;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs > li.active {
+  display: block;
+}
+
+.tabset-dropdown > .nav-tabs > li > a,
+.tabset-dropdown > .nav-tabs > li > a:focus,
+.tabset-dropdown > .nav-tabs > li > a:hover {
+  border: none;
+  display: inline-block;
+  border-radius: 4px;
+  background-color: transparent;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li {
+  display: block;
+  float: none;
+}
+
+.tabset-dropdown > .nav-tabs > li {
+  display: none;
+}
+</style>
+
+<!-- code folding -->
+<style type="text/css">
+.code-folding-btn { margin-bottom: 4px; }
+</style>
+
+
+
+<style type="text/css">
+
+#TOC {
+  margin: 25px 0px 20px 0px;
+}
+@media (max-width: 768px) {
+#TOC {
+  position: relative;
+  width: 100%;
+}
+}
+
+@media print {
+.toc-content {
+  /* see https://github.com/w3c/csswg-drafts/issues/4434 */
+  float: right;
+}
+}
+
+.toc-content {
+  padding-left: 30px;
+  padding-right: 40px;
+}
+
+div.main-container {
+  max-width: 1200px;
+}
+
+div.tocify {
+  width: 20%;
+  max-width: 260px;
+  max-height: 85%;
+}
+
+@media (min-width: 768px) and (max-width: 991px) {
+  div.tocify {
+    width: 25%;
+  }
+}
+
+@media (max-width: 767px) {
+  div.tocify {
+    width: 100%;
+    max-width: none;
+  }
+}
+
+.tocify ul, .tocify li {
+  line-height: 20px;
+}
+
+.tocify-subheader .tocify-item {
+  font-size: 0.90em;
+}
+
+.tocify .list-group-item {
+  border-radius: 0px;
+}
+
+
+</style>
+
+
+
+</head>
+
+<body>
+
+
+<div class="container-fluid main-container">
+
+
+<!-- setup 3col/9col grid for toc_float and main content  -->
+<div class="row-fluid">
+<div class="col-xs-12 col-sm-4 col-md-3">
+<div id="TOC" class="tocify">
+</div>
+</div>
+
+<div class="toc-content col-xs-12 col-sm-8 col-md-9">
+
+
+
+
+<div class="navbar navbar-default  navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="index.html">Overview</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        <li>
+  <a href="data_exploration.html">Data Exploration</a>
+</li>
+<li>
+  <a href="test_here.html">Data Analysis</a>
+</li>
+<li>
+  <a href="https://zl2974.shinyapps.io/Risky_Coffee/">Map</a>
+</li>
+<li>
+  <a href="data_source.html">Data</a>
+</li>
+<li>
+  <a href="Proposal.html">About</a>
+</li>
+<li>
+  <a href="mailto:&lt;liuyuzhust@163.com&gt;">
+    <span class="fa fa-envelope fa-lg"></span>
+     
+  </a>
+</li>
+<li>
+  <a href="https://github.com/zl2974/hot_coffee">
+    <span class="fa fa-github fa-lg"></span>
+     
+  </a>
+</li>
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div><!--/.container -->
+</div><!--/.navbar -->
+
+<div class="fluid-row" id="header">
+
+<div class="btn-group pull-right">
+<button type="button" class="btn btn-default btn-xs dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><span>Code</span> <span class="caret"></span></button>
+<ul class="dropdown-menu" style="min-width: 50px;">
+<li><a id="rmd-show-all-code" href="#">Show All Code</a></li>
+<li><a id="rmd-hide-all-code" href="#">Hide All Code</a></li>
+</ul>
+</div>
+
+
+
+<h1 class="title toc-ignore">Project Report</h1>
+
+</div>
+
+
+<div id="motivation" class="section level2">
+<h2>Motivation</h2>
+<p> If you live in NYC, you might encounter this awkward situation someday:</p>
+<p> You temporarily parked in front of your office building to buy a cup of coffee in a side-walk cafe. A parking ticket warrior walked to your car, raised her scanner, and fired an invisible beam of light at your registration. She handed you a NYC parking ticket and that beam of light cost you $115.</p>
+<p> According to statistics, New Yorkers drink 6.7 times the amount of coffee compared to average, and the average price consumers are paying for a cup of coffee is $2.99, but consider the above, we might have pay way more than few bucks for the coffee.</p>
+<p> This is also hot topic on twitter</p>
+<p><img src="file/tweets.png" style="width:65%"></p>
+<p><b>related work</b></p>
+<p>The following resources are a sample of what inspired this project:</p>
+<p> 1.The Real Cost of Parking Tickets: 16 U.S. Cities Make Over $1.4 Billion in Annual Parking Ticket Revenue. <a href="https://www.carrentals.com/blog/parking-tickets-cost-americans/">link</a></p>
+<p> 2.Red Zone, Blue Zone: Discovering Parking Ticket Trends in New York City. <a href="https://newyorkparkingticket.com/wp-content/uploads/2016/11/NYC-Parking-Ticket-Report_parking_Samuel_Ackerman5.pdf">link</a></p>
+</div>
+<div id="questions" class="section level2">
+<h2>Questions</h2>
+<p> At very first, we wanted to focus on the parking tickets rate and coffee shops, with the assumption that in the locations where registered coffee shops are nearby, the overall parking tickets would be more than other locations. Also, the total fine amount of parking tickets would be significant in these areas. After deep dive into the dataset, our questions extended more to the characteristics of the parking tickets issued in 2021.</p>
+<p> 1. Is there any relationship between coffee shop and parking tickets rate?</p>
+<p> 2. Was the total parking tickets fine amount within 100 meters of coffee shops higher?</p>
+<p> 3. How have the distribution of parking tickets rate vary across the year of 2021? And was there any pattern for the tickets rate to change within one day and one week?</p>
+<p> 4. How was the geographic distribution of parking tickets in NYC? Are the tickets rate change with the same pattern in all the five boroughs?</p>
+<p> 5. What are the most commonly issured parking tickets type? Are they being different in different boroughs?</p>
+</div>
+<div id="data" class="section level2">
+<h2>Data</h2>
+<div id="data-sorce" class="section level3">
+<h3>Data Sorce</h3>
+<p>All data was downloaded from <a href="https://opendata.cityofnewyork.us/">NYC Open Data</a>.</p>
+<ul>
+<li>For parking violation information:</li>
+</ul>
+<p><a href="https://data.cityofnewyork.us/City-Government/Parking-Violations-Issued-Fiscal-Year-2021/pvqr-7yc4">Parking Violations Issued - Fiscal Year 2021</a></p>
+<p>This dataset contains 380 million violations issued during the 2021 fiscal year.Data is provided by the Department of Finance (DOF).Each record represents a single violation issued. Information on summond number, issue date, violation code and issue street, house number,ect. are recorded. The Issuance datasets are not updated to reflect violation status, the information only represents the violation(s) at the time they are issued.</p>
+<p>A ParkingViolation Code excel is attached to this dataset, which records corresponding violation information of each violation code.</p>
+<ul>
+<li>For café in NYC:</li>
+</ul>
+<p><a href="https://data.cityofnewyork.us/Business/Sidewalk-Caf-Licenses-and-Applications/qcdj-rwhu">Sidewalk Café Licenses and Applications</a></p>
+<p>This dataset features detailed information about sidewalk café license applications and, if applicable, issued licenses. Data is provided by the Department of Consumer Affairs (DCA). There are total of 1124 cafe information,each record represents a single sidewalk café. Location information, such as street number and house humber are recorded.</p>
+</div>
+<div id="data-processing-and-cleaning" class="section level3">
+<h3>Data Processing and Cleaning</h3>
+<p> We set NYC Open Data as primary data source, and required:</p>
+<ol style="list-style-type: decimal">
+<li>Parking Violations Issued - Fiscal Year 2021</li>
+<li>Sidewalk Café Licenses and Applications</li>
+</ol>
+<p> First we focus on acquiring our own geographic information via available information in the datasets.<br />
+ We wrote a function to pull geographic information from <a href="https://labs-geosearch-docs.netlify.app/">Geosearch</a>. We got longitude and latitude information of each violation through that function and will write them in our resulting dataset.</p>
+<pre class="r"><code>###select variables we need
+data_2021 =
+  read_csv(&quot;./data/Parking_Violations_Issued_-_Fiscal_Year_2021.csv&quot;) %&gt;%
+  janitor::clean_names() %&gt;%
+  mutate(
+    borough =
+      case_when(
+        violation_county %in% c(&quot;BK&quot;, &quot;K&quot;) ~ &quot;Brooklyn&quot;,
+        violation_county %in% c(&quot;MN&quot;, &quot;NY&quot;) ~ &quot;Manhattan&quot;,
+        violation_county %in% c(&quot;Q&quot;, &quot;QN&quot;) ~ &quot;Queens&quot;,
+        violation_county %in% c(&quot;BX&quot;) ~ &quot;Bronx&quot;
+      ),
+    borough = replace_na(borough, &quot;Staten Island&quot;)
+  ) %&gt;% 
+  select(
+    summons_number,
+    issue_date,
+    house_number,
+    street_name,
+    intersecting_street,
+    violation_time,
+    violation_code
+    violation_code,
+    borough
+  )
+
+###pull out house number(without NA) +street number
+park21house_geo_df =
+  data_2021 %&gt;%
+  subset(select = c(house_number, street_name)) %&gt;%
+  drop_na(house_number) %&gt;%
+  unite(&quot;address&quot;,
+        house_number:street_name,
+        sep = &quot;,&quot;,
+        remove = FALSE) %&gt;%
+  distinct(address, .keep_all = TRUE) %&gt;%
+  rowid_to_column(&quot;id&quot;)
+
+###pull out street number +intersect street(without NA)
+park21sec_geo_df =
+  data_2021 %&gt;%
+  subset(select = c(house_number, street_name, intersecting_street)) %&gt;%
+  mutate(house_number = replace_na(house_number, &quot;0&quot;)) %&gt;%
+  filter(house_number == &quot;0&quot;) %&gt;%
+  drop_na(intersecting_street) %&gt;%
+  unite(&quot;address&quot;,
+        street_name:intersecting_street,
+        sep = &quot;,&quot;,
+        remove = FALSE) %&gt;%
+  distinct(address, .keep_all = TRUE) %&gt;%
+  rowid_to_column(&quot;id&quot;) %&gt;%
+  select(-house_number)
+
+get_location =
+  function(location_name = &quot;Columbia University&quot;,
+           .pd = NA) {
+    if (!is.na(.pd)) {
+      .pd$tick()$print()
+    }
+    
+    location_name = str_c(
+      &quot;https://geosearch.planninglabs.nyc/v1/search?text=&quot;,
+      location_name,
+      &quot;, New York, NY&amp;size=2&quot;
+    )
+    
+    url =
+      URLencode(location_name)
+    
+    df = read_sf(GET(url) %&gt;% content(&quot;text&quot;))
+    
+    if (nrow(df) == 0) {
+      return(tibble(
+        long = NA,
+        lat = NA,
+        borough = NA
+      ))
+    }
+    
+    geometry = df %&gt;%
+      pull(geometry) %&gt;%
+      as.tibble() %&gt;%
+      mutate(geometry = as.character(geometry),
+             geometry = str_replace_all(geometry, &quot;c|[\\(\\)]&quot;, &quot;&quot;)) %&gt;%
+      separate(geometry, into = c(&quot;long&quot;, &quot;lat&quot;), sep = &quot;,&quot;) %&gt;%
+      mutate_all(as.numeric) %&gt;%
+      summarise(long = mean(long),
+                lat = mean(lat)) %&gt;%
+      mutate(borough =
+               df %&gt;%
+               slice(1)
+             %&gt;% pull(borough))
+    
+    return(geometry)
+  }
+
+if (!file.exists(&quot;data/house_no_dic.csv&quot;)){
+  
+  if (nrow(&quot;data/cache.csv&quot;)==0){
+    write_csv(tibble(id = NA),&quot;data/cache.csv&quot;)
+  }
+  
+  while (T) {
+    output = list()
+    doit = function(output, i) {
+      cat(i, &quot;\n&quot;)
+      pb = progress_estimated(length((1 + 500 * (i - 1)):500 * i))
+      output[[i]] = park21house_geo_df %&gt;%
+        #arrange(desc(id)) %&gt;%
+        slice((1 + 500 * (i - 1)):500 * i) %&gt;%
+        mutate(geo = map(.x = address,  ~ get_location(.x, pb))) %&gt;%
+        unnest(geo)
+      return(output[[i]])
+    }
+    for (i in 1:nrow(park21house_geo_df) %/% 500 + 1) {
+      park21house_geo_df =
+        park21house_geo_df %&gt;%
+        filter(!id %in% pull(read_csv(here::here(
+          &quot;data/cache.csv&quot;
+        )), id))
+      
+      if (length(output) &gt;= i) {
+        if (!is.null(output[[i]])) {
+          next
+        }
+      }
+      output[[i]] = tryCatch(
+        doit(output, i),
+        error = function(cond)
+          return(NULL),
+        T
+      )
+      output %&gt;%
+        bind_rows() %&gt;%
+        bind_rows(read_csv(here::here(&quot;data/cache.csv&quot;))) %&gt;%
+        select(id:borough) %&gt;%
+        write_csv(here::here(&quot;data/cache.csv&quot;))
+      output = list()
+    }
+    if (i == nrow(park21house_geo_df) %/% 500 + 1) {
+      park21house_geo_df = bind_rows(output)
+      break
+    }
+  }
+  
+  
+  st =
+    read_csv(here::here(&quot;data/Centerline.csv&quot;)) %&gt;%
+    janitor::clean_names() %&gt;%
+    select(street_name = full_stree, geom = the_geom) %&gt;%
+    mutate(
+      geom = str_extract_all(geom, &quot;\\-.+,&quot;),
+      geom = str_split(geom, &quot;,\\s?&quot;),
+      geom = map(geom, vec_to_df)
+    ) %&gt;%
+    unnest(geom) %&gt;%
+    separate(geo, into = c(&quot;long&quot;, &quot;lat&quot;), sep = &quot; &quot;) %&gt;%
+    drop_na() %&gt;%
+    mutate(across(c(long, lat), as.numeric))
+  
+  street_intersect =
+    function(street_1, street_2, .pd = NULL) {
+      if (!is.na(.pd)) {
+        .pd$tick()$print()
+      }
+      
+      street_1_df =
+        st %&gt;%
+        filter(
+          street_name ==
+            agrep(
+              street_1,
+              st %&gt;% pull(street_name),
+              value = T,
+              max = list(del = 0.4),
+              ignore.case = T
+            ) %&gt;% first()
+        ) %&gt;%
+        select(x = long, y = lat)
+      
+      street_2_df =
+        st %&gt;%
+        filter(
+          street_name ==
+            agrep(
+              street_2,
+              st %&gt;% pull(street_name),
+              value = T,
+              max = list(del = 0.4),
+              ignore.case = T
+            ) %&gt;% first()
+        ) %&gt;%
+        select(x = long, y = lat)
+      answer = tryCatch(
+        curve_intersect(street_1_df, street_2_df) %&gt;% bind_rows(),
+        error = function(cond)
+          return(tibble(x = NA, y = NA)),
+        T
+      )
+      return(answer)
+    }
+  
+  pb = progress_estimated(nrow(park21sec_geo_df))
+  park21sec_geo_df =
+    park21sec_geo_df %&gt;%
+    mutate(geo = map2(.x = street_name,
+                      .y = intersecting_street,
+                      ~ street_intersect(.x, .y, pb))) %&gt;%
+    unnest(geo) %&gt;%
+    rename(long = x, lat = y)
+}</code></pre>
+<p> For the cafe data, we generate geographic information according to zip code, the following code was used to create the resulting dataset:</p>
+<pre class="r"><code>cafe =
+  paging(&quot;https://data.cityofnewyork.us/resource/qcdj-rwhu.csv&quot;) %&gt;%
+  left_join(read_csv(here::here(&quot;data/zipcode.csv&quot;))) %&gt;%
+  rename(long = longitude,
+         lat = latitude,
+         street_name = street)
+
+cafe =
+  cafe %&gt;%
+  filter(business_name != &quot;MULBERRY STREET BAR LLC&quot;) %&gt;%
+  rbind(
+    cafe %&gt;%
+      filter(business_name == &quot;MULBERRY STREET BAR LLC&quot;) %&gt;%
+      select(-long,-lat,-borough) %&gt;%
+      unite(&quot;search_query&quot;, building, street_name, remove = F) %&gt;%
+      mutate(geo = map(search_query, get_location)) %&gt;%
+      unnest(geo) %&gt;%
+      select(-search_query)
+  )
+
+cafe %&gt;%
+  write_csv(here::here(&quot;data&quot;, &quot;Sidewalk_Caf__Licenses_and_Applications_clean.csv&quot;))</code></pre>
+<p> Then, clean the parking_violation issued-fiscal_year_2021 data, and add geographic information to it.</p>
+<pre class="r"><code>house_no_dic =
+  read_csv(&quot;./data/house_no_dic.csv&quot;) %&gt;%
+  subset(select = -c(id, geo)) %&gt;% 
+  mutate(borough =
+           if_else(between(lat,40.75,40.78)&amp; borough == &quot;Bronx&quot;,
+                   &quot;Manhattan&quot;,borough),
+         borough =
+           if_else(lat &lt; 40.75 &amp; borough == &quot;Bronx&quot;,
+                   &quot;Brooklyn&quot;,borough))
+
+
+data_2021_cleanv1 =
+  read_csv(&quot;./data/Parking_Violations_Issued_-_Fiscal_Year_2021.csv&quot;) %&gt;%
+  janitor::clean_names() %&gt;%
+  rowid_to_column(&quot;id&quot;) %&gt;%
+  subset(
+    select = c(
+      id,
+      summons_number,
+      registration_state,
+      issue_date,
+      violation_code,
+      vehicle_make,
+      violation_time,
+      violation_county,
+      house_number,
+      street_name,
+      intersecting_street,
+      vehicle_color,
+      vehicle_year
+    )
+  ) %&gt;%
+  left_join(house_no_dic, by = c(&quot;house_number&quot;, &quot;street_name&quot;)) %&gt;% 
+  separate(violation_time,
+           into = c(&#39;hour&#39;, &#39;min&#39;, &#39;am_pm&#39;),
+           sep = c(2, 4)) %&gt;%
+  mutate(
+    am_pm = recode(am_pm, `P` = 12, `A` = 0),
+    hour = as.numeric(hour),
+    hour = ifelse((hour == 12 &amp;
+                     am_pm == 12), hour, (hour + am_pm)),
+    issue_date = as.Date(issue_date, tryFormats = &quot;%m/%d/%Y&quot;)
+  ) %&gt;%
+  subset(select = c(-am_pm)) %&gt;%
+  unite(&quot;time&quot;, hour:min, remove = F, sep = &quot;:&quot;) %&gt;%
+  unite(&quot;issue_date&quot;,
+        c(issue_date, time),
+        remove = T,
+        sep = &quot;T&quot;) %&gt;%
+  mutate(issue_date = lubridate::ymd_hm(issue_date)) %&gt;% 
+  mutate(
+    borough =
+      case_when(
+        violation_county %in% c(&quot;BK&quot;, &quot;K&quot;) ~ &quot;Brooklyn&quot;,
+        violation_county %in% c(&quot;MN&quot;, &quot;NY&quot;) ~ &quot;Manhattan&quot;,
+        violation_county %in% c(&quot;Q&quot;, &quot;QN&quot;) ~ &quot;Queens&quot;,
+        violation_county %in% c(&quot;BX&quot;) ~ &quot;Bronx&quot;
+      ),
+    borough = replace_na(borough, &quot;Staten Island&quot;)
+  )
+
+st_sample = #get ready for resample
+  function(st_name, n = 1) {
+    cat(&quot;\r&quot;, st_name)
+    a = data_2021_cleanv1 %&gt;%
+      filter(!is.na(long), street_name == st_name)
+    if (nrow(a) &gt; 0) {
+      a %&gt;% 
+      select(long, lat, borough) %&gt;%
+        sample_n(size = n, replace = TRUE) %&gt;%
+        return()
+    } else{
+      data_2021_cleanv1 %&gt;%
+        filter(!is.na(long),!is.na(address)) %&gt;%
+        select(long, lat, borough) %&gt;%
+        sample_n(size = n, replace = TRUE) %&gt;%
+        return()
+    }
+  }
+
+set.seed(1) # resample for intersection
+dic = data_2021_cleanv1 %&gt;%
+  filter(!is.na(street_name), is.na(long)) %&gt;%
+  select(summons_number, street_name) %&gt;%
+  nest(summons_number) %&gt;%
+  mutate(n = map(data, nrow),
+         geo =
+           map2(.x = street_name, .y = n, ~ st_sample(st_name = .x, n = .y))) %&gt;% 
+  unnest(c(data,geo)) %&gt;% 
+  select(-n) %&gt;% 
+  distinct(summons_number,.keep_all = T)
+
+data_2021_cleanv1 =
+  data_2021_cleanv1 %&gt;% #putting sample data into the main data
+  left_join(dic, by = &quot;summons_number&quot;, suffix = c(&quot;&quot;, &quot;_d&quot;)) %&gt;%
+  mutate(
+    long = if_else(is.na(long), long_d, long),
+    lat = if_else(is.na(lat), lat_d, lat),
+    borough = if_else(is.na(borough), borough_d, borough),
+    hour = if_else(hour&lt;=24,as.integer(hour),NA)
+  ) %&gt;%
+  select(id:borough)</code></pre>
+<p> Finally, we generate the fine_amount variable based on geographic variables and violation code. Since the fine amount is different in Manhattan 96th St. &amp; below, we select them by 96th St. geographic variables, and acquire fine amount acording to the attached ParkingViolation Code excel.</p>
+<pre class="r"><code>st_96 = lm(lat~long,read_csv(&quot;data/96th.csv&quot;))
+
+fine_data = read_excel(&quot;data/ParkingViolationCodes_January2020.xlsx&quot;) %&gt;%
+  janitor::clean_names() %&gt;%
+  select(-violation_description) %&gt;% 
+  pivot_longer(
+    manhattan_96th_st_below_fine_amount:all_other_areas_fine_amount,
+    names_to = &quot;below_96&quot;,
+    values_to = &quot;fine_amount&quot;
+  ) %&gt;% 
+  mutate(below_96_m = 
+           case_when(below_96 == &quot;manhattan_96th_st_below_fine_amount&quot; ~T,
+                     below_96 != &quot;manhattan_96th_st_below_fine_amount&quot; ~F)) %&gt;% 
+  select(-below_96)
+
+data_2021_cleanv1 = data_2021_cleanv1 %&gt;%
+  mutate(below_96 =
+           lat &lt; predict(st_96,
+                         tibble(long = data_2021_cleanv1$long)),
+         below_96_m = ifelse(borough == &quot;Manhattan&quot; &amp; below_96 == TRUE, T, F)
+         ) %&gt;% 
+  left_join(fine_data, by = c(&quot;violation_code&quot;,&quot;below_96_m&quot;)) %&gt;% 
+  select(-below_96, -below_96_m) </code></pre>
+<p> Thus, for now, we could get all our required information without acquiring a excessively large dataset(around 14 GB).</p>
+</div>
+<div id="data-description" class="section level3">
+<h3>Data description</h3>
+<p>As we discussed above, our analysis is mainly based on two files, <code>Sidewalk_Caf__Licenses_and_Applications_clean</code> and <code>parking_vio2021_cleanv1</code></p>
+<div id="violation-data" class="section level5">
+<h5>Violation data</h5>
+<p>The resulting data file of <code>parking_vio2021_cleanv1</code> contains a single dataframe df with 2236062 rows of data on 48 variables, the list below is our variables of interest:</p>
+<ul>
+<li><code>summons_number</code>. Unique identifier of summons.</li>
+<li><code>issue_date</code>. Issue date</li>
+<li><code>violation_code</code>. Type of violation.</li>
+<li><code>vehicle_make</code>. Make of car written on summons.</li>
+<li><code>hour</code>. Time(hour) violation occurred.</li>
+<li><code>violation_county</code>. County of violation.</li>
+<li><code>house_number</code>. Address number of violation.</li>
+<li><code>street_name</code>. Street name of summons issued.</li>
+<li><code>intersecting_street</code>. Violation near intersecting street.</li>
+<li><code>vehicle_color</code>. Color of car written on summons.</li>
+<li><code>vehicle_year</code>. Year of car written on summons.</li>
+<li><code>long</code>. Longitude violation occurred.</li>
+<li><code>lat</code>. Latitude violation occurred.</li>
+<li><code>borough</code>. Borough of violation.</li>
+<li><code>fine_amount</code>. Fine amount.</li>
+</ul>
+</div>
+<div id="cafe-data" class="section level5">
+<h5>Cafe data</h5>
+<p>The resulting data file of <code>Sidewalk_Caf__Licenses_and_Applications_clean</code> contains a single dataframe df with 1156 rows of data on 19 variables, the list below is our variables of interest:</p>
+<ul>
+<li><code>business_name</code>. The legal business name as filed with the New York State Secretary of State or County Clerk</li>
+<li><code>business_name2</code>. If applicable, the Doing-Business-As (DBA)/trade name.</li>
+<li><code>lat</code>. Latitude of cafe.</li>
+<li><code>long</code>. Longitude of cafe.</li>
+</ul>
+</div>
+</div>
+</div>
+<div id="exploratory-analysis" class="section level2">
+<h2>Exploratory Analysis</h2>
+<p> In this part, we explore the basic patterns and characteristics of parking tickets rates and types among different time periods and boroughs. Then we connect the location of coffee shops and parking tickets to see the potential linkage between coffee shop and parking violations.</p>
+<p> First, To get the most comprehesive understanding of the distribution of violation tickets among NYC, we mapped all violation to a 3D surface.</p>
+<pre class="r"><code>read_csv(here::here(&quot;data/parking_vio2021_cleanv1.csv&quot;)) %&gt;%
+  drop_na(address) %&gt;% 
+  filter(hour != 12.3) %&gt;%
+  select(long, lat, hour) %&gt;%
+  mutate(long = abs(long)) %&gt;%
+  drop_na() %&gt;%
+  with(., MASS::kde2d(lat, long)) %&gt;%
+  as_tibble() %&gt;%
+  plot_ly() %&gt;%
+  add_surface(x = ~ x, y = ~ y, z = ~ z) %&gt;%
+  layout(scene = list(
+    yaixs = list(autorange = &quot;reversed&quot;),
+    zaxis = list(
+      range = c(0.1, 150),
+      title = &quot;&quot;,
+      showline = FALSE,
+      showticklabels = FALSE,
+      showline = FALSE,
+      showgrid = FALSE
+    ),
+    camera = list(eye = list(
+      x = -1.25, y = 1.25, z = 1.25
+    )),
+    showlegend = FALSE
+  ))
+parking %&gt;% 
+  drop_na(borough) %&gt;% 
+  group_by(borough) %&gt;% 
+  summarise(ticket =
+              n()/nrow(parking)) %&gt;% 
+  arrange(desc(ticket)) %&gt;% 
+  pivot_wider(
+    names_from = borough,
+    values_from = ticket
+  ) %&gt;% 
+  knitr::kable()</code></pre>
+<p> Then, we made plots of tickets rate across time periods, tickets types in boroughs, and fine amount</p>
+<div id="prking-tickets-rate-vs-time" class="section level3">
+<h3>Prking Tickets Rate vs Time</h3>
+<p> To explore the pattern of parking tickets rate change over different time unit, and study the differences between boroughs, we made five plots.</p>
+<ul>
+<li>A bar plot shows the total parking tickets during each month in each brorough</li>
+</ul>
+<pre class="r"><code>parking %&gt;% 
+  mutate(month = lubridate::month(issue_date),
+         month = forcats::fct_reorder(as.factor(month),month)
+         ) %&gt;% 
+  drop_na(month,borough) %&gt;% 
+  group_by(borough,month) %&gt;% 
+  summarize(tickets = n()) %&gt;% 
+  ungroup() %&gt;%
+  mutate(borough = forcats::fct_reorder(borough,tickets,sum)) %&gt;% 
+  ggplot(aes(x = month, y = tickets, fill = borough,group = borough)) + 
+    geom_bar(stat = &quot;identity&quot;,position = &quot;dodge&quot;) +
+    labs(
+      x = &#39;Issuing Month&#39;,
+      y = &#39;counts&#39;,
+      title = &#39;The distribution of tickets quantities over month &#39;)</code></pre>
+<ul>
+<li>A shiny plot shows the change of parking tickets rate during a day(with respect to five boroughs, respectively)</li>
+</ul>
+<pre class="r"><code>nyc =
+  parking %&gt;%
+  drop_na(long, lat) %&gt;%
+  summarise(
+    lon_max = max(long),
+    lon_min = min(long),
+    lat_max = max(lat),
+    lat_min = min(lat)
+  )
+nyc =
+  ggmap::get_map(location = c(
+    right = pull(nyc, lon_max),
+    left = pull(nyc, lon_min),
+    top = pull(nyc, lat_max),
+    bottom = pull(nyc, lat_min)
+  ))
+set.seed(100)
+read_csv(here::here(&quot;data/parking_vio2021_cleanv1.csv&quot;)) %&gt;%
+  drop_na(address) %&gt;% 
+  filter(hour != 12.3) %&gt;%
+  filter(hour &lt;= 24) %&gt;%
+  drop_na(borough,lat,long,hour) %&gt;% 
+  sample_n(1e+5) %&gt;% 
+  mutate(text_label = str_c(&quot;borough:&quot;, borough, &quot;,address:&quot;, address)) %&gt;% 
+  plot_ly()  %&gt;% 
+    add_markers(
+    y = ~ lat,
+    x = ~ long,
+    text = ~ text_label,
+    alpha = 0.02,
+    frame = ~ hour,
+    mode = &quot;marker&quot;,
+    color = ~borough,
+    colors = viridis::viridis(4,option = &quot;C&quot;)
+  ) %&gt;%
+  layout(
+    images = list(
+      source = raster2uri(nyc),
+      xref = &quot;x&quot;,
+      yref = &quot;y&quot;,
+      y = 40.5,
+      x = -74.28    ,
+      sizey = 0.4,
+      sizex = 0.58,
+      sizing = &quot;stretch&quot;,
+      xanchor = &quot;left&quot;,
+      yanchor = &quot;bottom&quot;,
+      opacity = 0.4,
+      layer = &quot;below&quot;
+    )
+  )%&gt;%
+  animation_opts(transition = 0,frame = 24)</code></pre>
+<ul>
+<li>A line plot shows the pattern of tickets rate change during one day for each borough.</li>
+</ul>
+<pre class="r"><code>parking %&gt;% 
+  group_by(hour,borough) %&gt;%
+  drop_na(hour,borough) %&gt;% 
+  summarise(n = n()) %&gt;% 
+  plot_ly(x = ~hour, y = ~n, type = &#39;scatter&#39;,mode = &#39;line&#39;, color= ~ borough) %&gt;%
+  layout(
+    title = &#39;Violations per Hour&#39;,
+    xaxis = list(
+      type = &#39;category&#39;,
+      title = &#39;Hour&#39;,
+      range = c(0, 23)),
+    yaxis = list(
+      title = &#39;Count of violations&#39;))</code></pre>
+<ul>
+<li>A line plot shows the pattern of tickets rate change during one week for each borough</li>
+</ul>
+<pre class="r"><code>parking_day = parking %&gt;%
+  select(issue_date, summons_number, borough) %&gt;% 
+  drop_na(borough)
+
+day_order = c(&quot;Monday&quot;, &quot;Tuesday&quot;, &quot;Wednesday&quot;, &quot;Thursday&quot;, &quot;Friday&quot;, &quot;Saturday&quot;, &quot;Sunday&quot;)
+
+parking_day %&gt;% 
+  mutate(day_week = weekdays(issue_date)) %&gt;%
+  group_by(day_week, borough) %&gt;% 
+  summarize(n = n()) %&gt;%
+  mutate(day_week = factor(day_week, levels = day_order)) %&gt;% 
+  arrange(day_week) %&gt;% 
+  plot_ly(x = ~ day_week, y = ~ n, type = &#39;scatter&#39;, mode = &quot;line&quot;, color = ~borough) %&gt;%
+  layout(
+    title = &#39;Violations by weekday&#39;,
+    xaxis = list(
+      type = &#39;category&#39;,
+      title = &#39;Weekday&#39;),
+    yaxis = list(
+      title = &#39;Count of violations&#39;))</code></pre>
+<p> Most of the issued ticket of 2020 by the latest data recording is centered at the 3rd quater, this very strange pattern in the normal time wouldn’t come to a surprise at 2020, as NYC didn’t reopen until late May. Once it reopened, the violation issued increased exponentially. Then the tickets issue started to fall in Sep.</p>
+<p>  Trend of violation tickets issued during a day can be seen via the animation below. Violation tickets mostly issued in the daytime. Two peaks are observed in the animation, which is 8 am and 13pm, representing 12.319% and 10.754% tickets issued of the day.</p>
+<p>  Group by borough, we seen that these trends vary. As in Manhattan, the peaks is similar to the global trend, but other boroughs have a earlier or no second peak. This might reflect the nature of most business center is located in Manhattan, and thus has a larger lunch break group.</p>
+<p> The most obvious pattern in a week is that there are more tickets generated during work days than during weekends . This could be attibuted to two reasons:</p>
+<ol style="list-style-type: decimal">
+<li><p>the overall demand for parking in NYC are smaller during weekend than during weekdays</p></li>
+<li><p>Many parking spots are designed to be free parking during weekends.</p></li>
+</ol>
+<p>All the five boroughs in NYC–Manhattan, Bronx, Brooklyn, Queens and Staten Island have the same trend in the term of parking tickets generating across a week. Manhattan always has the highest parking tickets volume, and follows with Brooklyn, Queens, Bronx and Staten Island</p>
+</div>
+<div id="parking-ticktes-types-in-boroughs" class="section level3">
+<h3>Parking Ticktes Types in Boroughs</h3>
+<p> We want to know the most common reason for getting tickets in NYC, and whether there are differences between the five boroughs.We made bar plots of the top 10 most frequent parking tickets type in each boroughs.</p>
+<pre class="r"><code>vio_code = readxl::read_xlsx(&#39;data/ParkingViolationCodes_January2020.xlsx&#39;) %&gt;% 
+  janitor::clean_names() %&gt;% 
+  dplyr::select(violation_code, violation_description) %&gt;% 
+  mutate(violation_description = str_to_lower(violation_description))
+vio_count_boro = 
+  parking %&gt;% 
+  left_join(vio_code, by = &#39;violation_code&#39;)
+Manhattan_vio = 
+  vio_count_boro %&gt;% 
+  filter(borough == &#39;Manhattan&#39;) %&gt;% 
+  group_by(violation_description) %&gt;% 
+  summarize(n = n()) %&gt;% 
+  mutate(violation_description = fct_reorder(violation_description, n)) %&gt;% 
+  arrange(desc(n)) %&gt;% 
+  head(10) %&gt;% 
+  ggplot(aes(x = violation_description, y = n, fill = violation_description)) +
+  geom_bar(stat = &quot;identity&quot;) + 
+  theme(
+    axis.text.x = element_text(angle = 90, vjust = .5, hjust = 1),
+    legend.position = &quot;right&quot;,
+    legend.text = element_text(size = 8)
+  ) +
+  labs(
+    title = &#39;Top 10 violations in Manhattan&#39;) +
+    xlab(&quot;violation description&quot;) +
+    ylab(&#39;Count of tickets&#39;)  
+Queens_vio = 
+  vio_count_boro %&gt;% 
+  filter(borough == &#39;Queens&#39;) %&gt;% 
+  group_by(violation_description) %&gt;% 
+  summarize(n = n()) %&gt;% 
+  mutate(violation_description = fct_reorder(violation_description, n)) %&gt;% 
+  arrange(desc(n)) %&gt;% 
+  head(10) %&gt;% 
+  ggplot(aes(x = violation_description, y = n, fill = violation_description)) +
+  geom_bar(stat = &quot;identity&quot;) + 
+  theme(
+    axis.text.x = element_text(angle = 90, vjust = .5, hjust = 1),
+    legend.position = &quot;right&quot;,
+    legend.text = element_text(size = 8)
+  ) +
+  labs(
+    title = &#39;Top 10 violations in Queens&#39;) +
+    xlab(&quot;violation description&quot;) +
+    ylab(&#39;Count of tickets&#39;) 
+Bronx_vio = 
+  vio_count_boro %&gt;% 
+  filter(borough == &#39;Bronx&#39;) %&gt;% 
+  group_by(violation_description) %&gt;% 
+  summarize(n = n()) %&gt;% 
+  mutate(violation_description = fct_reorder(violation_description, n)) %&gt;% 
+  arrange(desc(n)) %&gt;% 
+  head(10) %&gt;% 
+  ggplot(aes(x = violation_description, y = n, fill = violation_description)) +
+  geom_bar(stat = &quot;identity&quot;) + 
+  theme(
+    axis.text.x = element_text(angle = 90, vjust = .5, hjust = 1),
+    legend.position = &quot;right&quot;,
+    legend.text = element_text(size = 8)
+  ) +
+  labs(
+    title = &#39;Top 10 violations in Bronx&#39;) +
+    xlab(&quot;violation description&quot;) +
+    ylab(&#39;Count of tickets&#39;)  
+Brooklyn_vio = 
+  vio_count_boro %&gt;% 
+  filter(borough == &#39;Brooklyn&#39;) %&gt;% 
+  group_by(violation_description) %&gt;% 
+  summarize(n = n()) %&gt;% 
+  mutate(violation_description = fct_reorder(violation_description, n)) %&gt;% 
+  arrange(desc(n)) %&gt;% 
+  head(10) %&gt;% 
+  ggplot(aes(x = violation_description, y = n, fill = violation_description)) +
+  geom_bar(stat = &quot;identity&quot;) + 
+  theme(
+    axis.text.x = element_text(angle = 90, vjust = .5, hjust = 1),
+    legend.position = &quot;right&quot;,
+    legend.text = element_text(size = 8)
+  ) +
+  labs(
+    title = &#39;Top 10 violations in Brooklyn&#39;) +
+    xlab(&quot;violation description&quot;) +
+    ylab(&#39;Count of tickets&#39;) 
+Staten_vio = 
+  vio_count_boro %&gt;% 
+  filter(borough == &#39;Staten Island&#39;) %&gt;% 
+  group_by(violation_description) %&gt;% 
+  summarize(n = n()) %&gt;% 
+  mutate(violation_description = fct_reorder(violation_description, n)) %&gt;% 
+  arrange(desc(n)) %&gt;% 
+  head(10) %&gt;% 
+  ggplot(aes(x = violation_description, y = n, fill = violation_description)) +
+  geom_bar(stat = &quot;identity&quot;) + 
+  theme(
+    axis.text.x = element_text(angle = 90, vjust = .5, hjust = 1),
+    legend.position = &quot;right&quot;,
+    legend.text = element_text(size = 8)
+  ) +
+  labs(
+    title = &#39;Top 10 violations in Staten Island&#39;) +
+    xlab(&quot;violation description&quot;) +
+    ylab(&#39;Count of tickets&#39;)  
+Manhattan_vio
+Queens_vio
+Bronx_vio
+Brooklyn_vio
+Staten_vio</code></pre>
+<p> Violation types in each borough also have different compositions. No standing-day/time limit most common type of violation in Manhattan, followed by no parking-day/time. No parking street cleaning is the most common type of violation in Brooklyn, Queen, Bronx, then followed by Fail to display muni meter recept. Noticed that in Brooklyn, Queens and Bronx, the first two types of Violation composist of much higher proportion of violation issued than the rest, whileas the ditribution is more spread out in Manhattan and Staten Island.</p>
+</div>
+<div id="fine-amount" class="section level3">
+<h3>Fine Amount</h3>
+<p> It is also necessary to have a overview of the mean of fined in different boroughs, it might give us rough idea about which area is more risky in the term of getting expensive ticket.</p>
+<p> As we were motivated by the trouble that New Yorker can get an expensive coffee taxed by the Parking ticket, we need to look at the fine amounts.</p>
+<p> In this part, we drew 2 plots.</p>
+<ul>
+<li>Toal fine amount of each five boroughs in each weekdays.</li>
+</ul>
+<pre class="r"><code>day_order = c(&quot;Monday&quot;, &quot;Tuesday&quot;, &quot;Wednesday&quot;, &quot;Thursday&quot;, &quot;Friday&quot;, &quot;Saturday&quot;, &quot;Sunday&quot;)
+
+parking %&gt;%
+  dplyr::select(issue_date, fine_amount, borough) %&gt;% 
+  drop_na(issue_date,fine_amount) %&gt;% 
+  mutate(day_week = weekdays(issue_date),
+         day_week = forcats::fct_relevel(day_week,day_order),
+         borough = fct_reorder(.f = borough,
+                               .x = fine_amount,
+                                .fun = sum)) %&gt;% 
+  group_by(day_week,borough) %&gt;% 
+  summarise(fine_amount = sum(fine_amount,na.rm = T)) %&gt;% 
+  plot_ly() %&gt;% 
+  add_bars(
+    x = ~day_week,
+    y = ~fine_amount,
+    color = ~borough,
+    colors = &quot;viridis&quot;
+  ) %&gt;% 
+  layout(
+    yaxis = list(type = &quot;log&quot;),
+    title = &quot;Fine amount&quot;
+  )</code></pre>
+<ul>
+<li>A density plot shows the density of total fine amount of the areas where coffee shops are within 100 meter in each borough.</li>
+</ul>
+<pre class="r"><code>get_nearby_area =
+  function(p_long = 0, p_lat = 0,area=100) {
+    return(
+      tibble(
+        long_lwr = p_long - area / (6378137 * cos(pi * p_lat / 180)) * 180 / pi,
+        long_upr = p_long + area / (6378137 * cos(pi * p_lat / 180)) * 180 /
+          pi,
+        lat_lwr = p_lat - area / 6378137 * 180 / pi,
+        lat_upr = p_lat + area / 6378137 * 180 / pi
+      )
+    )
+  }
+
+get_data =
+  function(area) {
+    data =
+      parking %&gt;%
+      bind_cols(area) %&gt;%
+      filter(long &lt; long_upr,
+             long &gt; long_lwr,
+             lat &lt; lat_upr,
+             lat &gt; lat_lwr) %&gt;% 
+  select(summons_number, issue_date, violation_code,hour, vehicle_color, fine_amount)
+    
+    return(data)
+  }
+
+nearby_data = 
+  cafe %&gt;%
+  select(business_name, business_name2, lat, long, borough)%&gt;%
+  mutate(
+    nearby = map2(.x = long, .y = lat, ~ get_nearby_area(.x, .y)),
+    nearby = map(.x = nearby,  ~ get_data(.x),
+    ticket_n = map_dbl(nearby, nrow))) %&gt;% 
+  unnest(nearby)</code></pre>
+<pre class="r"><code>nearby_data %&gt;% 
+  drop_na(borough) %&gt;% 
+  group_by(borough, business_name) %&gt;% 
+  summarize(mean_fine = mean(fine_amount)) %&gt;% 
+  ggplot(aes(x = mean_fine, fill = borough)) +
+  geom_density(alpha = .5)</code></pre>
+<p> Total amount of fine are similar across weekdays in all five boroughs, and see a steep drop on weekend on all borough. Across all boroughs, Manhattan has the highest total fine, Staten Island has the lowest total fine. We see that the proportion of total fine in a day doesn't change across a week, we need further analysis to see if Monday in Brooklyn have higher total fine than any other day and etc.</p>
+<p> The risk of violation to get a cup of coffee is much higher in Brooklyn and Manhattan, you might have to pay 80$ for your parking around cafe in most cases. And in Bronx or Queens, the commonly average fine amount around cafe will reduce to 50. However, we don't get the cafe data in Staten Island, so the situation in Staten Island is unclear.</p>
+</div>
+<div id="shiny-app" class="section level3">
+<h3>Shiny App</h3>
+<p> To explore the question of how does the coffee shop and parking tickets rate related, and howt is the risk of parking nearby a coffee shop or the risk of rank of parking in different boroughs, we created a graphical user interface using the Shiny package <a href="https://zl2974.shinyapps.io/Risky_Coffee/">link</a>.</p>
+<p> These visulizations illustrate that:</p>
+<p> 1. There are higher risk if tou want to park nearby a coffee shop.</p>
+<p> 2. Among the five boroughs, you might have the highest risk of getting a parking tickets in Manhattan</p>
+</div>
+</div>
+<div id="hypothesis-test-and-analysis" class="section level2">
+<h2>Hypothesis Test and Analysis</h2>
+<div id="anova-test" class="section level3">
+<h3>ANOVA Test</h3>
+<p> From data exploration, we have notice that the violation code varies among boroughs as well as the fine amount. The mean of fine amount in Queen is different from the Manhattan by 10$, and thus, we propose hypothesis that there's at least 1 pairs of boroughs' fine amount is different from others.</p>
+<pre class="r"><code>parking %&gt;% 
+  drop_na(fine_amount, borough)%&gt;%
+  select(borough, fine_amount)%&gt;%
+  group_by(borough) %&gt;% 
+  summarize(mean = mean(fine_amount),
+            standard_error = sd(fine_amount)) %&gt;% 
+  knitr::kable(caption = &quot;Fine Amount in borough&quot;)</code></pre>
+<pre class="r"><code>boro_amount = parking %&gt;% 
+  drop_na(fine_amount, borough)%&gt;%
+  select(borough, fine_amount)%&gt;%
+  group_by(borough) 
+
+aov_boro_amount = aov(fine_amount ~factor(borough), data = boro_amount)
+summary(aov_boro_amount)
+Tukey_comp&lt;-TukeyHSD(aov_boro_amount,conf.level = 0.99)
+Tukey_comp$`factor(borough)` %&gt;% knitr::kable(caption = &quot;Turkey Test at 99% confidence Level&quot;)</code></pre>
+<p>To do that, we perform ANOVA test for multiple groups comparison. With:</p>
+<p><span class="math inline">\(H_0\)</span> : there's no difference of fine amount means between boroughs</p>
+<p><span class="math inline">\(H_1\)</span> : at least two fine amount means of boroughs are not equal</p>
+<p><img src="pic/anova.png" style="width:65%"></p>
+<p> As the ANOVA test result from above, we reject the Null at 99% confidence level and conclude that there's at least one borough's mean of fine amount is different from others.</p>
+<p> To further investigate the difference between boroughs, we perform Tukey test for pairwise comparison. Notice that all paris are different from each other in the setting of our data. Given the large amount of data, according to the law of large number, the estimate of mean fine amount close to the true mean of the fine amount in different borough. Under this setting, we have 99% confidence that Manhattan have different mean of fine amount than other borough. So if you unfortunately get a RISKY coffee, it is much burning than in other boroughs.</p>
+<p><img src="pic/tukey.png" style="width:65%"></p>
+</div>
+<div id="chi-square-test" class="section level3">
+<h3>Chi-square Test</h3>
+<p><b>Chi-Squared test between violation counts generated in each weekdays and different boroughs</b></p>
+<p> From data exploration, we have noticed that the violation counts proportions in different weekdays among each boroughs are different.Thus, we assume there is no homogeneity in tickets counts proportions in each weekdays among boroughs.</p>
+<p>To verify that, we performed Chi-squared test for multiple groups comparison. With:</p>
+<p><span class="math inline">\(H_0\)</span> : the tickets proportion in weekdays among boroughs are equal.</p>
+<p><span class="math inline">\(H_1\)</span> : not all proportions are equal</p>
+<pre class="r"><code>day_order = c(&quot;Monday&quot;, &quot;Tuesday&quot;, &quot;Wednesday&quot;, &quot;Thursday&quot;, &quot;Friday&quot;, &quot;Saturday&quot;, &quot;Sunday&quot;)
+
+chisq_boro_day = 
+  parking %&gt;% 
+  mutate(day_week = weekdays(issue_date),
+         day_week = factor(day_week, levels = day_order)) %&gt;% 
+  arrange(day_week) %&gt;% 
+  count(borough, day_week) %&gt;% 
+  drop_na(day_week, borough) %&gt;% 
+  pivot_wider(names_from = day_week,
+              values_from = n) %&gt;% 
+  subset(select = c(-borough)) %&gt;% 
+  data.matrix() 
+ 
+rownames(chisq_boro_day) &lt;- c(&quot;Bronx&quot;, &quot;Brooklyn&quot;, &quot;Manhattan&quot;, &quot;Queens&quot;, &quot;Staten Island&quot;)
+ 
+chisq_boro_day%&gt;% 
+  knitr::kable(caption = &quot;Test Result&quot;)
+
+chisq.test(chisq_boro_day)
+
+x_crit = qchisq(0.95,24)
+x_crit   # x critical value</code></pre>
+<p><img src="pic/chi_1.png" style="width:65%"></p>
+<p> According to above chi-square test result, We reject the null hypothesis and conclude that there's at least one borough's proportions of violation counts for week days is different from others at 0.05 significant level.</p>
+<p><b>Chi-Squared test between violation counts generated in each hour and different boroughs</b></p>
+<p> From data exploration, we have noticed that the violation counts proportions in different hours among each boroughs are different.Thus, we assume there is no homogeneity in tickets counts proportions in each hours among boroughs.</p>
+<p>To verify that, we performed Chi-squared test for multiple groups comparison. With:</p>
+<p><span class="math inline">\(H_0\)</span> : the tickets proportion in each hours among boroughs are equal.</p>
+<p><span class="math inline">\(H_1\)</span> : not all proportions are equal</p>
+<pre class="r"><code>chisq_boro_hour = 
+  parking %&gt;% 
+  filter(hour != 12.3) %&gt;% 
+  filter(hour &lt; 24) %&gt;% 
+  count(borough, hour) %&gt;% 
+  drop_na(borough) %&gt;% 
+  pivot_wider(names_from = hour,
+              values_from = n) %&gt;% 
+  subset(select = c(-borough)) %&gt;% 
+  data.matrix() 
+ 
+rownames(chisq_boro_hour) &lt;- c(&quot;Bronx&quot;, &quot;Brooklyn&quot;, &quot;Manhattan&quot;, &quot;Queens&quot;, &quot;Staten Island&quot;)
+ 
+
+chisq_boro_hour %&gt;% knitr::kable()
+
+chisq_boro_hour %&gt;% 
+  knitr::kable(caption = &quot;Distribution of ticket in a day&quot;)
+&gt;&gt;&gt;&gt;&gt;&gt;&gt; cbe0ae553e687d546375022a47205f5c4edfb16a
+
+chisq.test(chisq_boro_hour)%&gt;% 
+  broom::tidy() %&gt;% knitr::kable()
+
+x_crit = qchisq(0.95,92)
+x_crit   # x critical value</code></pre>
+<p><img src="pic/chi_2.png" style="width:65%"></p>
+<p> According to above chi-square test result, We reject the null hypothesis and conclude that there's at least one borough's proportions of violation counts for 24 hours is different from others at 0.05 significant level.</p>
+<p><b>Conclusion</b></p>
+<p> Since 526.14 million square feet of office space existed in Manhattan in 2020. Manhattan’s office space is located in 3,830 commercial buildings in the major markets of Midtown, Midtown South, Lower Manhattan and Uptown [<a href="https://www.statista.com/statistics/605882/size-of-office-area-manhattan-by-submarket/">Statistics</a>]. At any given time most of this office space is rented. Manhattan becomes the well deserved business center in NYC. Due to the unequal active status of commerce among boroughs and expensive costs of keeping a car in NYC, the active area of life and work for people who own a car concentrates upon Manhattan. This is one of reasonable explanations of chi-square test result. But this situation might be changed since the commercial areas tend to extend to other boroughs. Some data in the report shows that the Bronx office market and the Staten Island office market have seen increased investor interest over the past 10 years [<a href="https://www.metro-manhattan.com/blog/market-report-a-look-at-nyc-office-sales-activity-from-2010-to-2020/">click here to get more detailed information</a>].</p>
+</div>
+</div>
+<div id="conclusions-and-discussion" class="section level2">
+<h2>Conclusions and Discussion</h2>
+<p> The outcome of our work suggests there is a potential relationship between coffee shops and parking tickets.</p>
+<pre><code> 1. According to the map generated from the two main datasets, we can see that a large number of parking tickets are clustering around the spots where coffee shops locate.
+ 
+ 2. According to the tickets fine amount density plot, parking tickets generated nearby coffee shops(within 100 meters) are far more than other areas.</code></pre>
+<p> There are explicit patterns of the distribution of tickets generating.</p>
+<pre><code>1. Most of the parking tickets generating in the year of 2020 fall in June, July and August. 
+ 
+2. There are more parking tickets generarted during work days than weekends.
+ 
+3. There are two peaks within one day in the terms of parking ticket issuing: 8:00 in the morning and 1:00 in the afternoon.</code></pre>
+<p> There are very different patterns and characteristics of parking tickets in the five boroughs of NYC</p>
+<pre><code>1. The most frequently issued violation types are different among the five boroughs. 
+
+2.Different boroughs have different tickets rate change patterns.</code></pre>
+</div>
+
+
+
+</div>
+</div>
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.header').parent('thead').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- tabsets -->
+
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+
+$(document).ready(function () {
+  $('.tabset-dropdown > .nav-tabs > li').click(function () {
+    $(this).parent().toggleClass('nav-tabs-open')
+  });
+});
+</script>
+
+<!-- code folding -->
+<script>
+$(document).ready(function () {
+  window.initializeCodeFolding("hide" === "show");
+});
+</script>
+
+<script>
+$(document).ready(function ()  {
+
+    // move toc-ignore selectors from section div to header
+    $('div.section.toc-ignore')
+        .removeClass('toc-ignore')
+        .children('h1,h2,h3,h4,h5').addClass('toc-ignore');
+
+    // establish options
+    var options = {
+      selectors: "h1,h2,h3",
+      theme: "bootstrap3",
+      context: '.toc-content',
+      hashGenerator: function (text) {
+        return text.replace(/[.\\/?&!#<>]/g, '').replace(/\s/g, '_');
+      },
+      ignoreSelector: ".toc-ignore",
+      scrollTo: 0
+    };
+    options.showAndHide = true;
+    options.smoothScroll = true;
+
+    // tocify
+    var toc = $("#TOC").tocify(options).data("toc-tocify");
+});
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>
