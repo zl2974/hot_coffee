@@ -33,6 +33,9 @@ scale_colour_discrete = scale_colour_viridis_d
 scale_fill_discrete = scale_fill_viridis_d
 
 
+```
+
+```{r load_data,echo = FALSE, message=FALSE,warning = FALSE}
 cafe = read_csv(here::here("data/Sidewalk_Caf__Licenses_and_Applications_clean.csv"))
 
 parking = read_csv(here::here("data/parking_vio2021_cleanv1.csv")) %>%
@@ -58,9 +61,9 @@ parking = read_csv(here::here("data/parking_vio2021_cleanv1.csv")) %>%
 ```
 
 
+## Hypothesis test about fine amount
 
-
-# fine amount and different boros
+1. Anova between fine amount and different boros
 
 From data exploration, we have notice that the violation code varies among 
 boroughs as well as the fine amount. We see from the table that the mean of 
@@ -110,10 +113,10 @@ To further investigate the difference between boroughs, we perform Tukey test fo
   you unfortunately get a RISKY coffee, it is much burning than in other boroughs.
 
 
-# Hypothesis Test for Violation Counts
+## Hypothesis test about violation counts
 
 
-## Chi-Squared test between violation counts generated in each weekdays and different boroughs
+a) Chi-Squared test between violation counts generated in each weekdays and different boroughs
 
 From data exploration, we have noticed that the violation counts proportions in different weekdays among each boroughs are different.Thus, we assume there is no homogeneity in tickets counts proportions in each weekdays among boroughs. 
 
@@ -155,7 +158,8 @@ x_crit   # x critical value
 According to above chi-square test result,  We reject the null hypothesis and conclude that there's at least one borough's proportions of violation counts for week days is different from others at 0.05 significant level.  
 
 
-## Test whether the the probability of falling in the each hour is the same for each borough:
+
+b)  Chi-Squared test between violation counts generated in each hour and different boroughs:
 
 ```{r,echo = FALSE, message=FALSE,warning = FALSE}
 
@@ -173,10 +177,10 @@ chisq_boro_hour =
  
 rownames(chisq_boro_hour) <- c("Bronx", "Brooklyn", "Manhattan", "Queens", "Staten Island")
  
-chisq_boro_hour %>% 
-  knitr::kable(caption = "Distribution of ticket in a day")
+chisq_boro_hour %>% knitr::kable()
 
-chisq.test(chisq_boro_hour)
+chisq.test(chisq_boro_hour)%>% 
+  broom::tidy() %>% knitr::kable()
 
 x_crit = qchisq(0.95,92)
 x_crit   # x critical value
@@ -224,7 +228,10 @@ fit1 %>%
 brief notes for how to analysis this regression result:  
 1. stay at home order since March to June 8th.  
 2. [alternate side parking regulations](https://patch.com/new-york/midtown-nyc/nyc-extends-alternate-side-parking-suspension)
-    (https://www1.nyc.gov/html/dot/html/pr2020/pr20-037.shtml)    
+   [regulation] (https://www1.nyc.gov/html/dot/html/pr2020/pr20-037.shtml)    
 3. Pandemic becomes worse since OCT. The second Covid-19 outbreak happened all over the U.S. since Oct   
 4. [free parking on major Legal Holidays and Sundays:](https://newyorkparkingticket.com/parking-rules-holidays-sundays/). This explain why p-value of “factor(daytime)1” is below 0.05. That means workday factor is significant. Comparing with weekend, there are more parking violation on workdays than weenend due to NYC free parking rules on Sunday.  
 5. Junly and August are usually summer holiday for students all over the world. Due to that NYC is a tourist attraction, the number of tourists should be increased in July and August. Tourists who aren't familiar with the NYC parking rules may easily receive parking tickets.
+3. Pandemic becomes worse since OCT. The second Covid-19 outbreak happened all over the U.S. since Oct 
+4. [free parking on major Legal Holidays and Sundays:](https://newyorkparkingticket.com/parking-rules-holidays-sundays/). This explain why p-value of “factor(daytime)1” is below 0.05. That means workday factor is significant. Comparing with weekend, there are more parking violation on workdays than weenend due to NYC free parking rules on Sunday.
+>>>>>>> 214a846450c6b27ddbc8c5c0751f20cb6187d99b
