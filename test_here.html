@@ -405,13 +405,8 @@ div.tocify {
 </div>
 
 
-<div id="load-data" class="section level1">
-<h1>Load data</h1>
-<div id="some-plotdescriptiontest-about-fine-amount" class="section level2">
-<h2>Some plot/description/test about fine amount</h2>
-<ol style="list-style-type: decimal">
-<li>anova between fine amount and different boros</li>
-</ol>
+<div id="fine-amount-and-different-boros" class="section level1">
+<h1>fine amount and different boros</h1>
 <p>From data exploration, we have notice that the violation code varies among boroughs as well as the fine amount. We see from the table that the mean of fine amount in Queen is different from the Manhattan by 10$, and thus, we propose hypothesis that there’s at least 1 pairs of boroughs’ fine amount is different from others.</p>
 <table>
 <caption>Fine Amount in borough</caption>
@@ -543,13 +538,12 @@ div.tocify {
 </tbody>
 </table>
 <p>As the ANOVA test result from above, we reject the Null at 99% confidence level and conclude that there’s at least one borough’s mean of fine amount is different from others.</p>
-<p>To further investigate the difference between boroughs, we perform Tukey test for pairwise comparison. From the Tukey test result, we are 95% confident that the true mean difference of fine amount between Staten Island and Bronx is between -0.238 and 0.55. Since CI of other comparisons are not including “0”, we only failed to reject the null hypothesis for Staten Island and Bronx, and conclude that each two fine amount means of boroughs are not equal except for Staten Island and Bronx.</p>
+<p>To further investigate the difference between boroughs, we perform Tukey test for pairwise comparison. Notice that all paris are different from each other in the setting of our data. Given the large amount of data, according to the law of large number, the estimate of mean fine amount close to the true mean of the fine amount in different borough. Under this setting, we have 99% confidence that Manhattan have different mean of fine amount than other borough. So if you unfortunately get a RISKY coffee, it is much burning than in other boroughs.</p>
 </div>
-<div id="hypothesis-test-for-violation-counts" class="section level2">
-<h2>hypothesis test for violation counts</h2>
-<ol style="list-style-type: decimal">
-<li>Chi-Squared test between violation counts generated in each weekdays and different boroughs</li>
-</ol>
+<div id="hypothesis-test-for-violation-counts" class="section level1">
+<h1>Hypothesis Test for Violation Counts</h1>
+<div id="chi-squared-test-between-violation-counts-generated-in-each-weekdays-and-different-boroughs" class="section level2">
+<h2>Chi-Squared test between violation counts generated in each weekdays and different boroughs</h2>
 <p>From data exploration, we have noticed that the violation counts proportions in different weekdays among each boroughs are different.Thus, we assume there is no homogeneity in tickets counts proportions in each weekdays among boroughs.</p>
 <p>To verify that, we performed Chi-squared test for multiple groups comparison. With:</p>
 <p><span class="math inline">\(H_0\)</span> : the tickets proportion in weekdays among boroughs are equal.</p>
@@ -628,27 +622,205 @@ div.tocify {
 ## X-squared = 4607, df = 24, p-value &lt;2e-16</code></pre>
 <pre><code>## [1] 36.4</code></pre>
 <p>According to above chi-square test result, We reject the null hypothesis and conclude that there’s at least one borough’s proportions of violation counts for week days is different from others at 0.05 significant level.</p>
-<ol start="2" style="list-style-type: lower-alpha">
-<li>test whether the the probability of falling in the each hour is the same for each borough:</li>
-</ol>
-<pre><code>##                  0    1    2    3    4    5     6     7      8     9    10
-## Bronx         2480 2425 1659 1100  155 4091 21194 24721  42415 31777 25925
-## Brooklyn      5036 6228 4400 2635 2466 8856 13948 33418  59801 62201 37941
-## Manhattan     1879 1754 1767 1090  318 2918 19571 67370 107666 97235 83396
-## Queens        1588 2359 1932 1191  661 4464 21285 27883  62304 58740 41418
-## Staten Island   65  213  168  117   59   74   758  3531   3279  2803  2059
-##                  11    12     13    14    15    16    17   18   19   20   21
-## Bronx         31485 31356  21107 17331 10663  9886  4356 1449  631 3698 4472
-## Brooklyn      67181 56180  46268 35122 27597 17510 11712 6130 1278 4278 5319
-## Manhattan     81221 74028 124636 87195 53601 36716 32400 9464 1689 4146 3541
-## Queens        49729 41719  45968 42114 21688 26320 18372 5916  357 1830 3697
-## Staten Island  1374   497   2482  3125  2548  2026  1334  611  118  147  211
-##                 22   23
-## Bronx         3256 2264
-## Brooklyn      4234 2774
-## Manhattan     2697 2422
-## Queens        3437 2049
-## Staten Island  187  126</code></pre>
+</div>
+<div id="test-whether-the-the-probability-of-falling-in-the-each-hour-is-the-same-for-each-borough" class="section level2">
+<h2>Test whether the the probability of falling in the each hour is the same for each borough:</h2>
+<table style="width:100%;">
+<caption>Distribution of ticket in a day</caption>
+<colgroup>
+<col width="9%" />
+<col width="3%" />
+<col width="3%" />
+<col width="3%" />
+<col width="3%" />
+<col width="3%" />
+<col width="3%" />
+<col width="4%" />
+<col width="4%" />
+<col width="4%" />
+<col width="4%" />
+<col width="4%" />
+<col width="4%" />
+<col width="4%" />
+<col width="4%" />
+<col width="4%" />
+<col width="4%" />
+<col width="4%" />
+<col width="4%" />
+<col width="3%" />
+<col width="3%" />
+<col width="3%" />
+<col width="3%" />
+<col width="3%" />
+<col width="3%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th align="left"></th>
+<th align="right">0</th>
+<th align="right">1</th>
+<th align="right">2</th>
+<th align="right">3</th>
+<th align="right">4</th>
+<th align="right">5</th>
+<th align="right">6</th>
+<th align="right">7</th>
+<th align="right">8</th>
+<th align="right">9</th>
+<th align="right">10</th>
+<th align="right">11</th>
+<th align="right">12</th>
+<th align="right">13</th>
+<th align="right">14</th>
+<th align="right">15</th>
+<th align="right">16</th>
+<th align="right">17</th>
+<th align="right">18</th>
+<th align="right">19</th>
+<th align="right">20</th>
+<th align="right">21</th>
+<th align="right">22</th>
+<th align="right">23</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">Bronx</td>
+<td align="right">2480</td>
+<td align="right">2425</td>
+<td align="right">1659</td>
+<td align="right">1100</td>
+<td align="right">155</td>
+<td align="right">4091</td>
+<td align="right">21194</td>
+<td align="right">24721</td>
+<td align="right">42415</td>
+<td align="right">31777</td>
+<td align="right">25925</td>
+<td align="right">31485</td>
+<td align="right">31356</td>
+<td align="right">21107</td>
+<td align="right">17331</td>
+<td align="right">10663</td>
+<td align="right">9886</td>
+<td align="right">4356</td>
+<td align="right">1449</td>
+<td align="right">631</td>
+<td align="right">3698</td>
+<td align="right">4472</td>
+<td align="right">3256</td>
+<td align="right">2264</td>
+</tr>
+<tr class="even">
+<td align="left">Brooklyn</td>
+<td align="right">5036</td>
+<td align="right">6228</td>
+<td align="right">4400</td>
+<td align="right">2635</td>
+<td align="right">2466</td>
+<td align="right">8856</td>
+<td align="right">13948</td>
+<td align="right">33418</td>
+<td align="right">59801</td>
+<td align="right">62201</td>
+<td align="right">37941</td>
+<td align="right">67181</td>
+<td align="right">56180</td>
+<td align="right">46268</td>
+<td align="right">35122</td>
+<td align="right">27597</td>
+<td align="right">17510</td>
+<td align="right">11712</td>
+<td align="right">6130</td>
+<td align="right">1278</td>
+<td align="right">4278</td>
+<td align="right">5319</td>
+<td align="right">4234</td>
+<td align="right">2774</td>
+</tr>
+<tr class="odd">
+<td align="left">Manhattan</td>
+<td align="right">1879</td>
+<td align="right">1754</td>
+<td align="right">1767</td>
+<td align="right">1090</td>
+<td align="right">318</td>
+<td align="right">2918</td>
+<td align="right">19571</td>
+<td align="right">67370</td>
+<td align="right">107666</td>
+<td align="right">97235</td>
+<td align="right">83396</td>
+<td align="right">81221</td>
+<td align="right">74028</td>
+<td align="right">124636</td>
+<td align="right">87195</td>
+<td align="right">53601</td>
+<td align="right">36716</td>
+<td align="right">32400</td>
+<td align="right">9464</td>
+<td align="right">1689</td>
+<td align="right">4146</td>
+<td align="right">3541</td>
+<td align="right">2697</td>
+<td align="right">2422</td>
+</tr>
+<tr class="even">
+<td align="left">Queens</td>
+<td align="right">1588</td>
+<td align="right">2359</td>
+<td align="right">1932</td>
+<td align="right">1191</td>
+<td align="right">661</td>
+<td align="right">4464</td>
+<td align="right">21285</td>
+<td align="right">27883</td>
+<td align="right">62304</td>
+<td align="right">58740</td>
+<td align="right">41418</td>
+<td align="right">49729</td>
+<td align="right">41719</td>
+<td align="right">45968</td>
+<td align="right">42114</td>
+<td align="right">21688</td>
+<td align="right">26320</td>
+<td align="right">18372</td>
+<td align="right">5916</td>
+<td align="right">357</td>
+<td align="right">1830</td>
+<td align="right">3697</td>
+<td align="right">3437</td>
+<td align="right">2049</td>
+</tr>
+<tr class="odd">
+<td align="left">Staten Island</td>
+<td align="right">65</td>
+<td align="right">213</td>
+<td align="right">168</td>
+<td align="right">117</td>
+<td align="right">59</td>
+<td align="right">74</td>
+<td align="right">758</td>
+<td align="right">3531</td>
+<td align="right">3279</td>
+<td align="right">2803</td>
+<td align="right">2059</td>
+<td align="right">1374</td>
+<td align="right">497</td>
+<td align="right">2482</td>
+<td align="right">3125</td>
+<td align="right">2548</td>
+<td align="right">2026</td>
+<td align="right">1334</td>
+<td align="right">611</td>
+<td align="right">118</td>
+<td align="right">147</td>
+<td align="right">211</td>
+<td align="right">187</td>
+<td align="right">126</td>
+</tr>
+</tbody>
+</table>
 <pre><code>## 
 ##  Pearson&#39;s Chi-squared test
 ## 

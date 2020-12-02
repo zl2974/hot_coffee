@@ -105,7 +105,7 @@ the least violation ticket issued.
 \ Once we have the distribution of the issued tickets, we exploring its characteristics.
 Most of the issued ticket of 2020 by the latest data recording is centered at the 3rd quater, this very strange pattern in the normal time wouldn't come to a 
 surprise at 2020, as NYC didn't reopen until late May. Once it reopened, the violation 
-issued increased exponentially.
+issued increased exponentially. Then the tickets issue started to fall in Sep.
 
 ```{r bar_by_month}
 parking %>% 
@@ -208,7 +208,7 @@ parking %>%
 ```
 
 
-\ Still, we also intersted in the tickets generated pattern across weekdays.
+\ Still, we also interested in the tickets generated pattern across weekdays.
 
 
 ```{r echo = FALSE, message=FALSE,warning = FALSE}
@@ -379,12 +379,10 @@ Staten_vio
 
 
 
-\ Violation types in each borough also have different compositions. Speeding 
-through school area is the most common violation in all three borough. No 
-standing-day/time limit second common type of violation followed by no 
-parking-day/time. No parking street cleaning is the second common type of 
-violation in Brooklyn, Queen, Bronx. Fail to display muni meter recept is the 
-second most common violation in Stanen Island.
+\ Violation types in each borough also have different compositions. No 
+standing-day/time limit most common type of violation in Manhattan,
+followed by no parking-day/time. No parking street cleaning is the most common type of violation in Brooklyn, Queen, Bronx, then followed by Fail to display muni meter recept. Noticed that in Brooklyn, Queens and Bronx, the first two types of Violation composist of much higher proportion of violation issued than 
+the rest, whileas the ditribution is more spread out in Manhattan and Staten Island.
 
 ### Fine amount
 
@@ -392,7 +390,7 @@ second most common violation in Stanen Island.
 
 \ As we were motivated by the trouble that New Yorker can get an expensive 
 coffee taxed by the Parking ticket, we need to look at the fine amounts. 
-The Manhattan has the highest mean and the widest variance. Queens and Brooklyn 
+The Manhattan has the highest mean and the widest variance. Staten Island and Bronx 
 at the first look seems like to have similar ditributions. Further analysis is 
 needed to see if parking violation in Queens may receive a similar fine amount 
 in Brooklyn and etc.

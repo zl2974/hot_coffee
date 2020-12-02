@@ -32,10 +32,7 @@ scale_colour_discrete = scale_colour_viridis_d
 
 scale_fill_discrete = scale_fill_viridis_d
 
-```
 
-# Load data
-```{r load_data,echo = FALSE, message=FALSE,warning = FALSE}
 cafe = read_csv(here::here("data/Sidewalk_Caf__Licenses_and_Applications_clean.csv"))
 
 parking = read_csv(here::here("data/parking_vio2021_cleanv1.csv")) %>%
@@ -60,9 +57,9 @@ parking = read_csv(here::here("data/parking_vio2021_cleanv1.csv")) %>%
 ```
 
 
-## Some plot/description/test about fine amount
 
-1. anova between fine amount and different boros
+
+# fine amount and different boros
 
 From data exploration, we have notice that the violation code varies among 
 boroughs as well as the fine amount. We see from the table that the mean of 
@@ -104,13 +101,18 @@ Tukey_comp$`factor(borough)` %>% knitr::kable(caption = "Turkey Test at 99% conf
 As the ANOVA test result from above, we reject the Null at 99% confidence level 
 and conclude that there's at least one borough's mean of fine amount is different from others.
 
-To further investigate the difference between boroughs, we perform Tukey test for pairwise comparison. From the Tukey test result, we are 95% confident that the true mean difference of fine amount between Staten Island and Bronx is between -0.238 and 0.55. Since CI of other comparisons are not including "0",  we only failed to reject the null hypothesis for Staten Island and Bronx, and conclude that each two fine amount means of boroughs are not equal except for Staten Island and Bronx.
+To further investigate the difference between boroughs, we perform Tukey test for pairwise comparison. Notice that all paris are different from each other in
+ the setting of our data. Given the large amount of data, according to the law 
+ of large number, the estimate of mean fine amount close to the true mean of the
+  fine amount in different borough. Under this setting, we have 99% confidence 
+  that Manhattan have different mean of fine amount than other borough. So if 
+  you unfortunately get a RISKY coffee, it is much burning than in other boroughs.
 
 
-## hypothesis test for violation counts
+# Hypothesis Test for Violation Counts
 
 
-1. Chi-Squared test between violation counts generated in each weekdays and different boroughs
+## Chi-Squared test between violation counts generated in each weekdays and different boroughs
 
 From data exploration, we have noticed that the violation counts proportions in different weekdays among each boroughs are different.Thus, we assume there is no homogeneity in tickets counts proportions in each weekdays among boroughs. 
 
@@ -152,11 +154,7 @@ x_crit   # x critical value
 According to above chi-square test result,  We reject the null hypothesis and conclude that there's at least one borough's proportions of violation counts for week days is different from others at 0.05 significant level.  
 
 
-
-
-
-
-b) test whether the the probability of falling in the each hour is the same for each borough:
+## Test whether the the probability of falling in the each hour is the same for each borough:
 
 ```{r,echo = FALSE, message=FALSE,warning = FALSE}
 
@@ -174,7 +172,8 @@ chisq_boro_hour =
  
 rownames(chisq_boro_hour) <- c("Bronx", "Brooklyn", "Manhattan", "Queens", "Staten Island")
  
-chisq_boro_hour
+chisq_boro_hour %>% 
+  knitr::kable(caption = "Distribution of ticket in a day")
 
 chisq.test(chisq_boro_hour)
 
