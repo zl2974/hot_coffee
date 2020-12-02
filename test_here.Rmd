@@ -33,11 +33,9 @@ scale_colour_discrete = scale_colour_viridis_d
 scale_fill_discrete = scale_fill_viridis_d
 
 
-<<<<<<< HEAD
+```
 
 ```{r load_data,echo = FALSE, message=FALSE,warning = FALSE}
-=======
->>>>>>> cbe0ae553e687d546375022a47205f5c4edfb16a
 cafe = read_csv(here::here("data/Sidewalk_Caf__Licenses_and_Applications_clean.csv"))
 
 parking = read_csv(here::here("data/parking_vio2021_cleanv1.csv")) %>%
@@ -62,15 +60,9 @@ parking = read_csv(here::here("data/parking_vio2021_cleanv1.csv")) %>%
 ```
 
 
-<<<<<<< HEAD
 ## Hypothesis test about fine amount
 
 1. Anova between fine amount and different boros
-=======
-
-
-# fine amount and different boros
->>>>>>> cbe0ae553e687d546375022a47205f5c4edfb16a
 
 From data exploration, we have notice that the violation code varies among 
 boroughs as well as the fine amount. We see from the table that the mean of 
@@ -120,17 +112,10 @@ To further investigate the difference between boroughs, we perform Tukey test fo
   you unfortunately get a RISKY coffee, it is much burning than in other boroughs.
 
 
-<<<<<<< HEAD
 ## Hypothesis test about violation counts
 
 
 a) Chi-Squared test between violation counts generated in each weekdays and different boroughs
-=======
-# Hypothesis Test for Violation Counts
-
-
-## Chi-Squared test between violation counts generated in each weekdays and different boroughs
->>>>>>> cbe0ae553e687d546375022a47205f5c4edfb16a
 
 From data exploration, we have noticed that the violation counts proportions in different weekdays among each boroughs are different.Thus, we assume there is no homogeneity in tickets counts proportions in each weekdays among boroughs. 
 
@@ -172,15 +157,8 @@ x_crit   # x critical value
 According to above chi-square test result,  We reject the null hypothesis and conclude that there's at least one borough's proportions of violation counts for week days is different from others at 0.05 significant level.  
 
 
-<<<<<<< HEAD
-
-
-
 
 b)  Chi-Squared test between violation counts generated in each hour and different boroughs:
-=======
-## Test whether the the probability of falling in the each hour is the same for each borough:
->>>>>>> cbe0ae553e687d546375022a47205f5c4edfb16a
 
 ```{r,echo = FALSE, message=FALSE,warning = FALSE}
 
@@ -198,12 +176,7 @@ chisq_boro_hour =
  
 rownames(chisq_boro_hour) <- c("Bronx", "Brooklyn", "Manhattan", "Queens", "Staten Island")
  
-<<<<<<< HEAD
 chisq_boro_hour %>% knitr::kable()
-=======
-chisq_boro_hour %>% 
-  knitr::kable(caption = "Distribution of ticket in a day")
->>>>>>> cbe0ae553e687d546375022a47205f5c4edfb16a
 
 chisq.test(chisq_boro_hour)%>% 
   broom::tidy() %>% knitr::kable()
@@ -217,5 +190,41 @@ According to above chi-square test result,  We reject the null hypothesis and co
 Sine 526.14 million square feet of office space existed in Manhattan in 2020. Manhattan’s office space is located in 3,830 commercial buildings in the major markets of Midtown, Midtown South, Lower Manhattan and Uptown [[Statistics](https://www.statista.com/statistics/605882/size-of-office-area-manhattan-by-submarket/)]. At any given time most of this office space is rented. Manhattan becomes the well deserved business center in NYC. Due to the unequal active status of commerce among boroughs and expensive costs of keeping a car in NYC, the active area of life and work for people who own a car concentrates upon Manhattan. This is one of reasonable explanations of chi-square test result. But this situation might be changed since the commercial areas tend to extend to other boroughs. Some data in the report shows that the Bronx office market and the Staten Island office market have seen increased investor interest over the past 10 years [[click here to get more detailed information](https://www.metro-manhattan.com/blog/market-report-a-look-at-nyc-office-sales-activity-from-2010-to-2020/)].
 
 
+## Regression
+
+```{r}
+boro_daytime_violation = 
+  parking %>%  
+  mutate(
+    daytime = if_else(hour %in% 8:20,"1","0"),
+    day_week = weekdays(issue_date),
+    day_week = factor(day_week, levels = day_order),
+    workday_weekend = if_else(day_week %in% c("Monday", "Tuesday", "Wednesday","Thursday", "Friday"),"1","0"),
+    month = lubridate::month(issue_date),
+    month = forcats::fct_reorder(as.factor(month),month)
+  ) %>% 
+  drop_na(vehicle_color, street_name) %>% 
+  group_by(borough,month,workday_weekend,daytime) %>%
+  summarise(
+    violation_number = mean(n()),
+    street_name = street_name,
+    vehicle_color = vehicle_color,
+    street_name = street_name,
+    month = as.factor(month)
+  )
+```
 
 
+```{r}
+fit1 = 
+  lm(violation_number ~ borough + factor(workday_weekend) + factor(daytime) + factor(month), data = boro_daytime_violation) 
+
+fit1 %>% 
+  broom::tidy() %>% 
+  knitr::kable(caption = "Linar Regression Result")
+```
+
+note for how to analysis this regression result:
+1. stay at home order since March to June 8th.
+2. [alternate side parking regulations](https://patch.com/new-york/midtown-nyc/nyc-extends-alternate-side-parking-suspension)
+    (https://www1.nyc.gov/html/dot/html/pr2020/pr20-037.shtml)
