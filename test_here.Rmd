@@ -222,8 +222,9 @@ fit1 %>%
 ```
 
 brief notes for how to analysis this regression result:  
-1. stay at home order since March to June 8th.
+1. stay at home order since March to June 8th.  
 2. [alternate side parking regulations](https://patch.com/new-york/midtown-nyc/nyc-extends-alternate-side-parking-suspension)
-    (https://www1.nyc.gov/html/dot/html/pr2020/pr20-037.shtml)
-3. Pandemic becomes worse since OCT. The second Covid-19 outbreak happened all over the U.S. since Oct 
-4. [free parking on major Legal Holidays and Sundays:](https://newyorkparkingticket.com/parking-rules-holidays-sundays/). This explain why p-value of “factor(daytime)1” is below 0.05. That means workday factor is significant. Comparing with weekend, there are more parking violation on workdays than weenend due to NYC free parking rules on Sunday.
+    (https://www1.nyc.gov/html/dot/html/pr2020/pr20-037.shtml)    
+3. Pandemic becomes worse since OCT. The second Covid-19 outbreak happened all over the U.S. since Oct   
+4. [free parking on major Legal Holidays and Sundays:](https://newyorkparkingticket.com/parking-rules-holidays-sundays/). This explain why p-value of “factor(daytime)1” is below 0.05. That means workday factor is significant. Comparing with weekend, there are more parking violation on workdays than weenend due to NYC free parking rules on Sunday.  
+5. Junly and August are usually summer holiday for students all over the world. Due to that NYC is a tourist attraction, the number of tourists should be increased in July and August. Tourists who aren't familiar with the NYC parking rules may easily receive parking tickets.
