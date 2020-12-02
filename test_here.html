@@ -372,6 +372,9 @@ div.tocify {
   <a href="Proposal.html">About</a>
 </li>
 <li>
+  <a href="report.html">Report</a>
+</li>
+<li>
   <a href="mailto:&lt;liuyuzhust@163.com&gt;">
     <span class="fa fa-envelope fa-lg"></span>
      
@@ -865,11 +868,11 @@ div.tocify {
     street_name = street_name,
     vehicle_color = vehicle_color,
     street_name = street_name,
-    month = as.factor(month)
+    month = month
   )</code></pre>
 <pre><code>## `summarise()` regrouping output by &#39;borough&#39;, &#39;month&#39;, &#39;workday_weekend&#39;, &#39;daytime&#39; (override with `.groups` argument)</code></pre>
 <pre class="r"><code>fit1 = 
-  lm(violation_number ~ borough + factor(workday_weekend) + factor(daytime) + factor(month), data = boro_daytime_violation) 
+  lm(violation_number ~ borough + factor(workday_weekend) + factor(daytime) + month, data = boro_daytime_violation) 
 
 fit1 %&gt;% 
   broom::tidy() %&gt;% 
@@ -936,77 +939,77 @@ fit1 %&gt;%
 <td align="right">0.000</td>
 </tr>
 <tr class="even">
-<td align="left">factor(month)2</td>
+<td align="left">month2</td>
 <td align="right">-16941</td>
 <td align="right">11156.3</td>
 <td align="right">-1.518</td>
 <td align="right">0.129</td>
 </tr>
 <tr class="odd">
-<td align="left">factor(month)3</td>
+<td align="left">month3</td>
 <td align="right">-16271</td>
 <td align="right">10345.4</td>
 <td align="right">-1.573</td>
 <td align="right">0.116</td>
 </tr>
 <tr class="even">
-<td align="left">factor(month)4</td>
+<td align="left">month4</td>
 <td align="right">-7326</td>
 <td align="right">11345.8</td>
 <td align="right">-0.646</td>
 <td align="right">0.518</td>
 </tr>
 <tr class="odd">
-<td align="left">factor(month)5</td>
+<td align="left">month5</td>
 <td align="right">-40132</td>
 <td align="right">9715.4</td>
 <td align="right">-4.131</td>
 <td align="right">0.000</td>
 </tr>
 <tr class="even">
-<td align="left">factor(month)6</td>
+<td align="left">month6</td>
 <td align="right">-11790</td>
 <td align="right">9505.8</td>
 <td align="right">-1.240</td>
 <td align="right">0.215</td>
 </tr>
 <tr class="odd">
-<td align="left">factor(month)7</td>
+<td align="left">month7</td>
 <td align="right">39066</td>
 <td align="right">9504.7</td>
 <td align="right">4.110</td>
 <td align="right">0.000</td>
 </tr>
 <tr class="even">
-<td align="left">factor(month)8</td>
+<td align="left">month8</td>
 <td align="right">106555</td>
 <td align="right">9504.6</td>
 <td align="right">11.211</td>
 <td align="right">0.000</td>
 </tr>
 <tr class="odd">
-<td align="left">factor(month)9</td>
+<td align="left">month9</td>
 <td align="right">98901</td>
 <td align="right">9504.6</td>
 <td align="right">10.406</td>
 <td align="right">0.000</td>
 </tr>
 <tr class="even">
-<td align="left">factor(month)10</td>
+<td align="left">month10</td>
 <td align="right">14853</td>
 <td align="right">11896.4</td>
 <td align="right">1.248</td>
 <td align="right">0.212</td>
 </tr>
 <tr class="odd">
-<td align="left">factor(month)11</td>
+<td align="left">month11</td>
 <td align="right">43135</td>
 <td align="right">17598.8</td>
 <td align="right">2.451</td>
 <td align="right">0.014</td>
 </tr>
 <tr class="even">
-<td align="left">factor(month)12</td>
+<td align="left">month12</td>
 <td align="right">42880</td>
 <td align="right">13253.4</td>
 <td align="right">3.235</td>

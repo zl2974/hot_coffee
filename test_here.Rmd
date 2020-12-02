@@ -211,14 +211,14 @@ boro_daytime_violation =
     street_name = street_name,
     vehicle_color = vehicle_color,
     street_name = street_name,
-    month = as.factor(month)
+    month = month
   )
 ```
 
 
 ```{r}
 fit1 = 
-  lm(violation_number ~ borough + factor(workday_weekend) + factor(daytime) + factor(month), data = boro_daytime_violation) 
+  lm(violation_number ~ borough + factor(workday_weekend) + factor(daytime) + month, data = boro_daytime_violation) 
 
 fit1 %>% 
   broom::tidy() %>% 
