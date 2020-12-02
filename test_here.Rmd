@@ -54,7 +54,8 @@ parking = read_csv(here::here("data/parking_vio2021_cleanv1.csv")) %>%
         violation_county %in% c("BX") ~ "Bronx"
       ),
     borough = replace_na(borough, "Staten Island")
-  )
+  )%>% 
+  drop_na(address)
 
 ```
 

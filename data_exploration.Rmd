@@ -51,7 +51,8 @@ parking = read_csv(here::here("data/parking_vio2021_cleanv1.csv")) %>%
         violation_county %in% c("BX") ~ "Bronx"
       ),
     borough = replace_na(borough, "Staten Island")
-  )
+  ) %>% 
+  drop_na(address)
 ```
 
 To get the most comprehesive understanding the distribution of violation tickets
@@ -59,6 +60,7 @@ To get the most comprehesive understanding the distribution of violation tickets
  
 ```{r map,cache=T}
 read_csv(here::here("data/parking_vio2021_cleanv1.csv")) %>%
+  drop_na(address) %>% 
   filter(hour != 12.3) %>%
   select(long, lat, hour) %>%
   mutate(long = abs(long)) %>%
@@ -149,6 +151,7 @@ nyc =
   ))
 set.seed(100)
 read_csv(here::here("data/parking_vio2021_cleanv1.csv")) %>%
+  drop_na(address) %>% 
   filter(hour != 12.3) %>%
   filter(hour <= 24) %>%
   drop_na(borough,lat,long,hour) %>% 
@@ -171,9 +174,9 @@ read_csv(here::here("data/parking_vio2021_cleanv1.csv")) %>%
       xref = "x",
       yref = "y",
       y = 40.5,
-      x = -74.3	,
+      x = -74.28	,
       sizey = 0.4,
-      sizex = 0.6,
+      sizex = 0.58,
       sizing = "stretch",
       xanchor = "left",
       yanchor = "bottom",
