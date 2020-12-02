@@ -146,6 +146,16 @@ cat("reference:",
 data_2021 =
   read_csv("./data/Parking_Violations_Issued_-_Fiscal_Year_2021.csv") %>%
   janitor::clean_names() %>%
+  mutate(
+    borough =
+      case_when(
+        violation_county %in% c("BK", "K") ~ "Brooklyn",
+        violation_county %in% c("MN", "NY") ~ "Manhattan",
+        violation_county %in% c("Q", "QN") ~ "Queens",
+        violation_county %in% c("BX") ~ "Bronx"
+      ),
+    borough = replace_na(borough, "Staten Island")
+  ) %>% 
   select(
     summons_number,
     issue_date,
@@ -153,7 +163,8 @@ data_2021 =
     street_name,
     intersecting_street,
     violation_time,
-    violation_code
+    violation_code,
+    borough
   )
 
 ## pull out address data
@@ -161,10 +172,10 @@ data_2021 =
 ###pull out house number(without NA) +street number
 park21house_geo_df =
   data_2021 %>%
-  subset(select = c(house_number, street_name)) %>%
+  subset(select = c(house_number, street_name,borough)) %>%
   drop_na(house_number) %>%
   unite("address",
-        house_number:street_name,
+        house_number:borough,
         sep = ",",
         remove = FALSE) %>%
   distinct(address, .keep_all = TRUE) %>%
@@ -356,7 +367,17 @@ data_2021_cleanv1 =
         c(issue_date, time),
         remove = T,
         sep = "T") %>%
-  mutate(issue_date = lubridate::ymd_hm(issue_date))
+  mutate(issue_date = lubridate::ymd_hm(issue_date)) %>% 
+  mutate(
+    borough =
+      case_when(
+        violation_county %in% c("BK", "K") ~ "Brooklyn",
+        violation_county %in% c("MN", "NY") ~ "Manhattan",
+        violation_county %in% c("Q", "QN") ~ "Queens",
+        violation_county %in% c("BX") ~ "Bronx"
+      ),
+    borough = replace_na(borough, "Staten Island")
+  )
 
 st_sample = #get ready for resample
   function(st_name, n = 1) {

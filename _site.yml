@@ -3,24 +3,20 @@ output_dir: "."
 navbar:
   title: "Overview"
   right:
-    - text: "Map"
-      href: map.html
     - text: 'Data Exploration'
-      menu:
-       - text: 'Violation vs Time'
-         href: figures.html
-       - text: 'Violation Types'
-         href: figures1.html
+      href: data_exploration.html
     - text: 'Data Analysis'
-      href: Report.html
-    - text: 'Shiny'
+      href: test_here.html
+    - text: "Map"
       href: https://zl2974.shinyapps.io/Risky_Coffee/
     - text: 'Data source'
       href: data_source.html
+    - text: 'About'
+      href: Proposal.html
     - icon: fa-envelope fa-lg
       href: mailto:<liuyuzhust@163.com>
     - icon: fa-github fa-lg
-      href: https://zl2974.github.com/hot_coffee
+      href: https://github.com/zl2974/hot_coffee
 output:
   html_document:
     theme: cosmo

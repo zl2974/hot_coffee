@@ -1,0 +1,135 @@
+---
+title: "violation tickets vs time"
+output: 
+  html_document:
+    toc: true
+    toc_float: true
+    code_folding: hide
+---
+
+```{r setup, echo=FALSE, include = FALSE}
+library(tidyverse)
+library(readxl)
+library(patchwork)
+library(plotly)
+library(leaflet)
+library(ggplot2)
+library(lubridate)
+
+knitr::opts_chunk$set(
+  fig.height = 6,
+  fig.width = 8,
+  message = T,
+  echo = T,
+  warning = T,
+  cache = F
+)
+
+theme_set(theme_minimal() + theme(legend.position = "bottom"))
+options(
+  ggplot2.continuous.colour = "viridis",
+  ggplot2.continuous.fill = "viridis",
+  digits = 3
+)
+
+scale_colour_discrete = scale_colour_viridis_d
+
+scale_fill_discrete = scale_fill_viridis_d
+
+```
+
+
+```{r load_data, include=FALSE}
+cafe = read_csv(here::here("data/Sidewalk_Caf__Licenses_and_Applications_clean.csv"))
+
+parking = read_csv(
+  here::here("data/parking_vio2021_cleanv1.csv")) %>% 
+  filter(hour != 12.3) 
+
+```
+
+<h3><center>Over View of Tickets Distribution Across Year 2021</center></h3>
+
+This dataset contains nearly 39 million observations, most of which are recorded during June, July, August, and September. Among the five borough in NYC, Manhattan has the highest volume of tickets, followed by Brooklyn, Queens, Bronx and Staten Island.
+
+
+```{r, echo = FALSE, message=FALSE,warning = FALSE}
+parking %>% 
+  separate(issue_date, into = c("issue_date", "time"), sep = " ") %>% 
+  separate(issue_date, into = c('year', 'month', 'day'), sep = "-") %>% 
+  drop_na(month) %>% 
+  group_by(borough,month) %>% 
+  summarize(count = n()) %>% 
+  ggplot(aes(x = month, y = count, fill = borough)) + 
+    geom_bar(stat = "identity") +
+    labs(
+      x = 'Issuing Month',
+      y = 'counts',
+      title = 'The distribution of tickets quantities over month ')
+ 
+```
+
+
+<h3><center>The Periodic Change in the Number of Tickets(Week Basis) </center></h3>
+
+The volume of parking tickets issuing during weekdays are larger than volume of those issuing during weekends. This could be attibuted to two reasons:   
+1. the overall demand for parking in NYC are smaller during weekend than during weekdays
+2. Many parking spots are designed to be free parking during weekends.
+
+All the five boroughs in NYC--Manhattan, Bronx, Brooklyn, Queens and Staten Island have the same trend in the term of parking tickets generating. Manhattan always has the highest parking tickets volume, and follows with Brooklyn, Queens, Bronx and Staten Island.
+
+```{r echo = FALSE, message=FALSE,warning = FALSE}
+parking_day = parking %>%
+  select(issue_date, summons_number, borough) %>% 
+  drop_na(borough)
+
+day_order = c("Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday")
+
+parking_day %>% 
+  mutate(day_week = weekdays(issue_date)) %>%
+  group_by(day_week, borough) %>% 
+  summarize(n = n()) %>%
+  mutate(day_week = factor(day_week, levels = day_order)) %>% 
+  arrange(day_week) %>% 
+  plot_ly(x = ~ day_week, y = ~ n, type = 'scatter', mode = "line", color = ~borough) %>%
+  layout(
+    title = 'Violations by weekday',
+    xaxis = list(
+      type = 'category',
+      title = 'Weekday'),
+    yaxis = list(
+      title = 'Count of violations'))
+```
+
+
+<h3><center>The Periodic Change in the Number of Tickets(Daily Basis) </center></h3>
+
+
+During a day, the parking tickets generating has two peaks-- around 8:00 am and aroung 1:00 pm. This may be caused by the high parking demand especially during meal time. 
+
+
+
+```{r echo = FALSE, message=FALSE,warning = FALSE}
+parking %>% 
+  group_by(hour) %>% 
+  summarize(n = n()) %>%
+  plot_ly(x = ~hour, y = ~n, type = 'scatter',mode = 'line') %>%
+  layout(
+    title = 'Violations per Hour',
+    xaxis = list(
+      type = 'category',
+      title = 'Hour',
+      range = c(0, 23)),
+    yaxis = list(
+      title = 'Count of violations'))
+
+parking %>% 
+  filter(hour < 23) %>% 
+  drop_na(borough) %>% 
+  ggplot(aes(x = hour, fill = borough)) +
+  geom_bar(stat = "count") +
+  labs(title = 'Violations per Hour for each borough') +
+  ylab('Count of tickets') +
+  scale_x_continuous(breaks=seq(0, 23, 1))
+  
+```
