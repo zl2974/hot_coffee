@@ -220,3 +220,7 @@ fit1 %>%
   knitr::kable(caption = "Linar Regression Result")
 ```
 
+note for how to analysis this regression result:
+1. stay at home order since March to June 8th.
+2. [alternate side parking regulations](https://patch.com/new-york/midtown-nyc/nyc-extends-alternate-side-parking-suspension)
+    (https://www1.nyc.gov/html/dot/html/pr2020/pr20-037.shtml)
