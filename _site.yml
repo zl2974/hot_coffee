@@ -9,7 +9,7 @@ navbar:
       href: test_here.html
     - text: "Map"
       href: https://zl2974.shinyapps.io/Risky_Coffee/
-    - text: 'Data source'
+    - text: 'Data'
       href: data_source.html
     - text: 'About'
       href: Proposal.html
