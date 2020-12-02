@@ -215,7 +215,7 @@ boro_daytime_violation =
   )
 ```
 
-
+### MLR
 ```{r}
 fit1 = 
   lm(violation_number ~ borough + factor(workday_weekend) + factor(daytime) + month, data = boro_daytime_violation) 
