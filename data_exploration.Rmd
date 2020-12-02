@@ -38,8 +38,7 @@ cafe = read_csv(here::here("data/Sidewalk_Caf__Licenses_and_Applications_clean.c
 parking = read_csv(
   here::here("data/parking_vio2021_cleanv1.csv")) %>% 
   filter(hour != 12.3) %>% 
-  filter(hour <= 23) %>% 
-  drop_na(address)
+  filter(hour <= 24)
 ```
 
 To get the most comprehesive understanding the distribution of violation tickets
@@ -228,7 +227,7 @@ parking_day %>%
 
 ### Violation type{.tabset}
 
-\ We want to know the most common reason for getting tickets in NYC, and weather there are differences between the five boroughs.
+\ We want to know the most common reason for getting tickets in NYC, and whether there are differences between the five boroughs.
 
 
 
@@ -373,24 +372,60 @@ second most common violation in Stanen Island.
 
 \ It is also necessary to have a overview of the mean of fined in different boroughs, it might give us rough idea about which area is more risky in the term of getting expensive ticket.
 
-
-
-#### Fine amount by boro
+\ As we were motivated by the trouble that New Yorker can get an expensive 
+coffee taxed by the Parking ticket, we need to look at the fine amounts. 
+The Manhattan has the highest mean and the widest variance. Queens and Brooklyn 
+at the first look seems like to have similar ditributions. Further analysis is 
+needed to see if parking violation in Queens may receive a similar fine amount 
+in Brooklyn and etc.
 ```{r}
 boro_amount = parking %>% 
   drop_na(fine_amount, borough)%>%
   select(borough, fine_amount)%>%
   group_by(borough) 
 
-boro_amount %>%
-  summarize(mean = mean(fine_amount)) %>% 
-  knitr::kable()
+parking %>% 
+  drop_na(fine_amount, borough)%>%
+  select(borough, fine_amount)%>%
+  group_by(borough) %>% 
+  summarize(mean = mean(fine_amount),
+            standard_error = sd(fine_amount)) %>% 
+  knitr::kable(caption = "Fine Amount in borough")
 ```
 
-\ The tickets generated in Manhattan are most 'expensive', with the mean of 80.7 dollars. Then followed by Bronx, Staten Island and Brooklyn. The mean of fine amount is lowest in Queens.
+#### Total amount of fine
 
+\ Total amount of fine are similar across weekdays in all five boroughs, and 
+see a steep drop on weekend on all borough. Across all boroughs, Manhattan has 
+the highest total fine, Staten Island has the lowest total fine. We see that 
+the proportion of total fine in a day doesn't change across a week, we need 
+further analysis to see if Monday in Brooklyn have higher total fine than any 
+other day and etc.
+```{r}
+day_order = c("Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday")
 
-
+parking %>%
+  dplyr::select(issue_date, fine_amount, borough) %>% 
+  drop_na(issue_date,fine_amount) %>% 
+  mutate(day_week = weekdays(issue_date),
+         day_week = forcats::fct_relevel(day_week,day_order),
+         borough = fct_reorder(.f = borough,
+                               .x = fine_amount,
+                                .fun = sum)) %>% 
+  group_by(day_week,borough) %>% 
+  summarise(fine_amount = sum(fine_amount,na.rm = T)) %>% 
+  plot_ly() %>% 
+  add_bars(
+    x = ~day_week,
+    y = ~fine_amount,
+    color = ~borough,
+    colors = "viridis"
+  ) %>% 
+  layout(
+    yaxis = list(type = "log"),
+    title = "Fine amount"
+  )
+```
 ```{r}
 get_nearby_area =
   function(p_long = 0, p_lat = 0,area=100) {
@@ -429,42 +464,6 @@ nearby_data =
   unnest(nearby)
 ```
 
-#### Risk map (risk is given by rank)
-
-
-
-\ Back to the main idea, we still interested in the association between locations of cafes and violations
-
-\ We generate a map in order to show the average fine amount and number of tickets around each cafe, which could provide some information about the parking risk around that cafe. The risk assessment of a cafe is given by the rank of total fine amount around it.
-
-```{r nearby, cache=T}
-nearby_data %>% 
-  group_by(business_name) %>% 
-  summarize(mean_fine = mean(fine_amount),
-            n_ticket = n()) %>% 
-  left_join(distinct(cafe), by = "business_name") %>% 
-  drop_na(mean_fine) %>%
-  mutate(percent_rank = rank(-(mean_fine*n_ticket))/908,
-         top_risk = ceiling(percent_rank*10)*10) %>% 
-  arrange(desc(percent_rank))%>% 
-  mutate(pop =
-           str_c("<b>",business_name,"</b><br>",
-                 "Average fine amount:" ,round(mean_fine, digits = 1),"$","</b><br>",
-                 "number of tickets:", n_ticket, "</b><br>",
-                 "Risk: top", top_risk, "%","</b><br>")
-         ) %>% 
-  leaflet() %>%
-  addProviderTiles(providers$CartoDB.Positron) %>%
-  addCircleMarkers(
-    ~ long,
-    ~ lat,
-    color = ~ par(mean_fine*n_ticket),
-    radius = .1,
-    popup = ~ (pop)
-  )
-```
-
-
 #### average fine amount distribution
 ```{r}
 nearby_data %>% 
@@ -475,5 +474,5 @@ nearby_data %>%
   geom_density(alpha = .5)
 ```
 
-\ From this plot, we could find that the risk of violation to get a cup of coffee is much higher in Brooklyn and Manhattan, you might have to pay 80$ for your parking around cafe in most cases. And in Bronx or Queens, the commonly average fine amount around cafe will reduce to 50. However, we don't get the cafe data in Staten Island, so the situation in Staten Island is unclear.
+\ We collect the violation in a 100 meter area around a cafe. and plot them in to a density plot. From this plot, we could find that the risk of violation to get a cup of coffee is much higher in Brooklyn and Manhattan, you might have to pay 80$ for your parking around cafe in most cases. And in Bronx or Queens, the commonly average fine amount around cafe will reduce to 50. However, we don't get the cafe data in Staten Island, so the situation in Staten Island is unclear.
 
