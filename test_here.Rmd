@@ -38,9 +38,23 @@ scale_fill_discrete = scale_fill_viridis_d
 ```{r load_data,echo = FALSE, message=FALSE,warning = FALSE}
 cafe = read_csv(here::here("data/Sidewalk_Caf__Licenses_and_Applications_clean.csv"))
 
-parking = read_csv(
-  here::here("data/parking_vio2021_cleanv1.csv")) %>% 
-  filter(hour != 12.3) 
+parking = read_csv(here::here("data/parking_vio2021_cleanv1.csv")) %>%
+  filter(hour != 12.3, hour <= 24) %>%
+  left_join(
+    read_csv("./data/Parking_Violations_Issued_-_Fiscal_Year_2021.csv") %>%
+      janitor::clean_names() %>%
+      select(summons_number, violation_county)
+  ) %>%
+  mutate(
+    borough =
+      case_when(
+        violation_county %in% c("BK", "K") ~ "Brooklyn",
+        violation_county %in% c("MN", "NY") ~ "Manhattan",
+        violation_county %in% c("Q", "QN") ~ "Queens",
+        violation_county %in% c("BX") ~ "Bronx"
+      ),
+    borough = replace_na(borough, "Staten Island")
+  )
 
 ```
 
