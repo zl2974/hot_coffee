@@ -3,12 +3,12 @@ output_dir: "."
 navbar:
   title: "Overview"
   right:
-    - text: "Map"
-      href: https://zl2974.shinyapps.io/Risky_Coffee/
     - text: 'Data Exploration'
       href: data_exploration.html
     - text: 'Data Analysis'
       href: test_here.html
+    - text: "Map"
+      href: https://zl2974.shinyapps.io/Risky_Coffee/
     - text: 'Data source'
       href: data_source.html
     - text: 'About'
@@ -16,7 +16,7 @@ navbar:
     - icon: fa-envelope fa-lg
       href: mailto:<liuyuzhust@163.com>
     - icon: fa-github fa-lg
-      href: https://zl2974.github.com/hot_coffee
+      href: https://github.com/zl2974/hot_coffee
 output:
   html_document:
     theme: cosmo

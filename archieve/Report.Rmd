@@ -1,0 +1,492 @@
+---
+title: "Report"
+output: 
+  html_document:
+    code_fload : hide
+---
+
+```{r setup, include=FALSE}
+library(tidyverse)
+library(readxl)
+library(patchwork)
+library(plotly)
+library(leaflet)
+library(ggplot2)
+library(lubridate)
+knitr::opts_chunk$set(
+  fig.height = 6,
+  fig.width = 8,
+  message = F,
+  echo = T,
+  warning = F,
+  cache = F
+)
+theme_set(theme_minimal() + theme(legend.position = "bottom"))
+options(
+  ggplot2.continuous.colour = "viridis",
+  ggplot2.continuous.fill = "viridis",
+  digits = 3
+)
+scale_colour_discrete = scale_colour_viridis_d
+scale_fill_discrete = scale_fill_viridis_d
+cafe = read_csv(here::here("data/Sidewalk_Caf__Licenses_and_Applications_clean.csv"))
+parking = read_csv(
+  here::here("data/parking_vio2021_cleanv1.csv")) %>% 
+  filter(hour != 12.3) %>% 
+  filter(hour <= 24)
+```
+
+# Report{.tabset}
+
+## Data Processing
+
+\ We set NYC Open Data as primary data source, and required:
+
+1. Open Parking and Camera Violations
+1. Parking Violations Issued - Fiscal Year 2021
+1. Sidewalk Café Licenses and Applications
+
+from NYC Open Data.
+
+\ With these data, we first clean all variable names and select target variables for comparison 
+between data, as well as changing variable types to reflecting their actual value.
+Then we focus on acquiring geometric information via available 
+information in the datasets. We wrote a function to pull geometric information 
+from [Geosearch](https://labs-geosearch-docs.netlify.app/). 
+Third, we identified violation in a certain range of area, and nest them to the
+ location we interested.
+ 
+## Data description
+
+Our analysis is mainly based on two files, `Sidewalk_Caf__Licenses_and_Applications_clean` and `parking_vio2021_cleanv1` 
+
+#### Violation data
+
+The resulting data file of `parking_vio2021_cleanv1` contains a single dataframe df with `r nrow(cafe)` rows of data on `r ncol(cafe)` variables, the list below is our variables of interest:
+
+  * `summons_number`. Unique identifier of summons.
+  * `issue_date`. Issue date
+  * `violation_code`. Type of violation.
+  * `vehicle_make`. Make of car written on summons.
+  * `hour`. Time(hour) violation occurred.
+  * `violation_county`. County of violation.
+  * `house_number`. Address number of violation.
+  * `street_name`. Street name of summons issued.
+  * `intersecting_street`. Violation near intersecting street.
+  * `vehicle_color`. Color of car written on summons.
+  * `vehicle_year`. Year of car written on summons.
+  * `long`. Longitude violation occurred.
+  * `lat`. Latitude violation occurred.
+  * `borough`. Borough of violation.
+  * `fine_amount`. Fine amount.
+  
+#### Cafe data
+
+  The resulting data file of `Sidewalk_Caf__Licenses_and_Applications_clean` contains a single dataframe df with `r nrow(parking)` rows of data on `r ncol(parking)` variables, the list below is our variables of interest:
+
+  * `business_name`. The legal business name as filed with the New York State Secretary of State or County Clerk
+  * `business_name2`. If applicable, the Doing-Business-As (DBA)/trade name.
+  * `lat`. Latitude of cafe.
+  * `long`. Longitude of cafe.
+
+ 
+## data exploration
+
+To get the most comprehesive understanding the distribution of violation tickets
+ among NYC, we map all violation to a 3D surface.
+ 
+```{r map,cache=T}
+parking %>%
+  select(long, lat, hour) %>%
+  mutate(long = abs(long)) %>%
+  drop_na() %>%
+  with(., MASS::kde2d(lat, long)) %>%
+  as_tibble() %>%
+  plot_ly() %>%
+  add_surface(x = ~ x, y = ~ y, z = ~ z) %>%
+  layout(scene = list(
+    yaixs = list(autorange = "reversed"),
+    zaxis = list(
+      range = c(0.1, 150),
+      title = "",
+      showline = FALSE,
+      showticklabels = FALSE,
+      showline = FALSE,
+      showgrid = FALSE
+    ),
+    camera = list(eye = list(
+      x = -1.25, y = 1.25, z = 1.25
+    )),
+    showlegend = FALSE
+  ))
+parking %>% 
+  drop_na(borough) %>% 
+  group_by(borough) %>% 
+  summarise(ticket =
+              n()/nrow(parking)) %>% 
+  arrange(desc(ticket)) %>% 
+  pivot_wider(
+    names_from = borough,
+    values_from = ticket
+  ) %>% 
+  knitr::kable()
+```
+
+\ We can see that most of the violation ticket issued is concentrated in Manhattan by a large margin, followed by Brooklyn at 23.2%. Staten Island has 
+the least violation ticket issued.
+
+\ Once we have the distribution of the issued, we exploring its characteristics.
+Most of the issued ticket of 2020 by the latest data recording is centered at the 3rd quater, this very strange pattern in the normal time wouldn't come to a 
+surprise at 2020, as NY didn't reopen until late May. Once it reopened, the violation 
+issued increased exponentially.
+
+```{r bar_by_month}
+parking %>% 
+  mutate(month = lubridate::month(issue_date),
+         month = forcats::fct_reorder(as.factor(month),month)
+         ) %>% 
+  drop_na(month,borough) %>% 
+  group_by(borough,month) %>% 
+  summarize(tickets = n()) %>% 
+  ungroup() %>%
+  mutate(borough = forcats::fct_reorder(borough,tickets,sum)) %>% 
+  ggplot(aes(x = month, y = tickets, fill = borough,group = borough)) + 
+    geom_bar(stat = "identity",position = "dodge") +
+    labs(
+      x = 'Issuing Month',
+      y = 'counts',
+      title = 'The distribution of tickets quantities over month ')
+```
+
+\ Trend of violation tickets issued can be seen via .... As shown, Violation 
+tickets mostly issued in the daytime. Two peaks are observed in the animation, 
+which is 8 am and 13pm, representing 
+`r parking %>% filter(hour==8) %>% nrow()*100/nrow(parking)`% and 
+`r parking %>% filter(hour==13) %>% nrow()*100/nrow(parking)`% tickets issued 
+of the day.
+
+```{r hour_map,cache=T}
+nyc =
+  parking %>%
+  drop_na(long, lat) %>%
+  summarise(
+    lon_max = max(long),
+    lon_min = min(long),
+    lat_max = max(lat),
+    lat_min = min(lat)
+  )
+nyc =
+  ggmap::get_map(location = c(
+    right = pull(nyc, lon_max),
+    left = pull(nyc, lon_min),
+    top = pull(nyc, lat_max),
+    bottom = pull(nyc, lat_min)
+  ))
+set.seed(100)
+parking %>%
+  filter(hour <= 24) %>%
+  drop_na(borough,lat,long,hour) %>% 
+  sample_n(1e+5) %>% 
+  mutate(text_label = str_c("borough:", borough, ",address:", address)) %>% 
+  plot_ly()  %>% 
+    add_markers(
+    y = ~ lat,
+    x = ~ long,
+    text = ~ text_label,
+    alpha = 0.02,
+    frame = ~ hour,
+    mode = "marker",
+    color = ~borough,
+    colors = viridis::viridis(4,option = "C")
+  ) %>%
+  layout(
+    images = list(
+      source = raster2uri(nyc),
+      xref = "x",
+      yref = "y",
+      y = 40.5,
+      x = -74.3	,
+      sizey = 0.4,
+      sizex = 0.6,
+      sizing = "stretch",
+      xanchor = "left",
+      yanchor = "bottom",
+      opacity = 0.4,
+      layer = "below"
+    )
+  )%>%
+  animation_opts(transition = 0,frame = 24)
+```
+
+\ Group by borough, we seen that these trends vary. As in Manhattan, the peaks 
+is similar to the global trend, but other boroughs have a earlier or no second 
+peak. This might reflect the nature of most business center is located in Manhattan, and thus has a larger lunch break group.
+
+```{r hour_borough, cache = T}
+parking %>% 
+  group_by(hour,borough) %>%
+  drop_na(hour,borough) %>% 
+  summarise(n = n()) %>% 
+  plot_ly(x = ~hour, y = ~n, type = 'scatter',mode = 'line', color= ~ borough) %>%
+  layout(
+    title = 'Violations per Hour',
+    xaxis = list(
+      type = 'category',
+      title = 'Hour',
+      range = c(0, 23)),
+    yaxis = list(
+      title = 'Count of violations'))
+```
+
+\ Violation types in each borough also have different compositions. Speeding 
+through school area is the most common violation in all three borough. No 
+standing-day/time limit second common type of violation followed by no 
+parking-day/time. No parking street cleaning is the second common type of 
+violation in Brooklyn, Queen, Bronx. Fail to display muni meter recept is the 
+second most common violation in Stanen Island.
+
+### Violation type{.tabset}
+
+#### Manhattan
+```{r}
+vio_code = readxl::read_xlsx('data/ParkingViolationCodes_January2020.xlsx') %>% 
+  janitor::clean_names() %>% 
+  dplyr::select(violation_code, violation_description) %>% 
+  mutate(violation_description = str_to_lower(violation_description))
+vio_count_boro = 
+  parking %>% 
+  left_join(vio_code, by = 'violation_code')
+Manhattan_vio = 
+  vio_count_boro %>% 
+  filter(borough == 'Manhattan') %>% 
+  group_by(violation_description) %>% 
+  summarize(n = n()) %>% 
+  mutate(violation_description = fct_reorder(violation_description, n)) %>% 
+  arrange(desc(n)) %>% 
+  head(10) %>% 
+  ggplot(aes(x = violation_description, y = n, fill = violation_description)) +
+  geom_bar(stat = "identity") + 
+  theme(
+    axis.text.x = element_text(angle = 90, vjust = .5, hjust = 1),
+    legend.position = "right",
+    legend.text = element_text(size = 8)
+  ) +
+  labs(
+    title = 'Top 10 violations in Manhattan') +
+    xlab("violation description") +
+    ylab('Count of tickets')  
+Queens_vio = 
+  vio_count_boro %>% 
+  filter(borough == 'Queens') %>% 
+  group_by(violation_description) %>% 
+  summarize(n = n()) %>% 
+  mutate(violation_description = fct_reorder(violation_description, n)) %>% 
+  arrange(desc(n)) %>% 
+  head(10) %>% 
+  ggplot(aes(x = violation_description, y = n, fill = violation_description)) +
+  geom_bar(stat = "identity") + 
+  theme(
+    axis.text.x = element_text(angle = 90, vjust = .5, hjust = 1),
+    legend.position = "right",
+    legend.text = element_text(size = 8)
+  ) +
+  labs(
+    title = 'Top 10 violations in Queens') +
+    xlab("violation description") +
+    ylab('Count of tickets') 
+Bronx_vio = 
+  vio_count_boro %>% 
+  filter(borough == 'Bronx') %>% 
+  group_by(violation_description) %>% 
+  summarize(n = n()) %>% 
+  mutate(violation_description = fct_reorder(violation_description, n)) %>% 
+  arrange(desc(n)) %>% 
+  head(10) %>% 
+  ggplot(aes(x = violation_description, y = n, fill = violation_description)) +
+  geom_bar(stat = "identity") + 
+  theme(
+    axis.text.x = element_text(angle = 90, vjust = .5, hjust = 1),
+    legend.position = "right",
+    legend.text = element_text(size = 8)
+  ) +
+  labs(
+    title = 'Top 10 violations in Bronx') +
+    xlab("violation description") +
+    ylab('Count of tickets')  
+Brooklyn_vio = 
+  vio_count_boro %>% 
+  filter(borough == 'Brooklyn') %>% 
+  group_by(violation_description) %>% 
+  summarize(n = n()) %>% 
+  mutate(violation_description = fct_reorder(violation_description, n)) %>% 
+  arrange(desc(n)) %>% 
+  head(10) %>% 
+  ggplot(aes(x = violation_description, y = n, fill = violation_description)) +
+  geom_bar(stat = "identity") + 
+  theme(
+    axis.text.x = element_text(angle = 90, vjust = .5, hjust = 1),
+    legend.position = "right",
+    legend.text = element_text(size = 8)
+  ) +
+  labs(
+    title = 'Top 10 violations in Brooklyn') +
+    xlab("violation description") +
+    ylab('Count of tickets') 
+Staten_vio = 
+  vio_count_boro %>% 
+  filter(borough == 'Staten Island') %>% 
+  group_by(violation_description) %>% 
+  summarize(n = n()) %>% 
+  mutate(violation_description = fct_reorder(violation_description, n)) %>% 
+  arrange(desc(n)) %>% 
+  head(10) %>% 
+  ggplot(aes(x = violation_description, y = n, fill = violation_description)) +
+  geom_bar(stat = "identity") + 
+  theme(
+    axis.text.x = element_text(angle = 90, vjust = .5, hjust = 1),
+    legend.position = "right",
+    legend.text = element_text(size = 8)
+  ) +
+  labs(
+    title = 'Top 10 violations in Staten Island') +
+    xlab("violation description") +
+    ylab('Count of tickets')  
+Manhattan_vio
+```
+
+#### Queen
+```{r}
+Queens_vio 
+```
+
+#### Bronx
+```{r}
+Bronx_vio
+```
+
+#### Brooklyn
+```{r}
+Brooklyn_vio
+```
+
+#### Staten Island
+```{r}
+Staten_vio
+```
+
+
+### Fine amount
+
+\ We further complete our exploratory analysis about fine amount, which might better represent the risk for individual.
+
+
+
+#### Fine amount by boro
+```{r}
+boro_amount = parking %>% 
+  drop_na(fine_amount, borough)%>%
+  select(borough, fine_amount)%>%
+  group_by(borough) 
+
+boro_amount %>%
+  summarize(mean = mean(fine_amount)) %>% 
+  knitr::kable()
+```
+
+\ Back to the main idea, we still interested in the association between locations of cafes and violations
+
+```{r}
+get_nearby_area =
+  function(p_long = 0, p_lat = 0,area=100) {
+    return(
+      tibble(
+        long_lwr = p_long - area / (6378137 * cos(pi * p_lat / 180)) * 180 / pi,
+        long_upr = p_long + area / (6378137 * cos(pi * p_lat / 180)) * 180 /
+          pi,
+        lat_lwr = p_lat - area / 6378137 * 180 / pi,
+        lat_upr = p_lat + area / 6378137 * 180 / pi
+      )
+    )
+  }
+
+get_data =
+  function(area) {
+    data =
+      parking %>%
+      bind_cols(area) %>%
+      filter(long < long_upr,
+             long > long_lwr,
+             lat < lat_upr,
+             lat > lat_lwr) %>% 
+  select(summons_number, issue_date, violation_code,hour, vehicle_color, fine_amount)
+    
+    return(data)
+  }
+
+nearby_data = 
+  cafe %>%
+  select(business_name, business_name2, lat, long, borough)%>%
+  mutate(
+    nearby = map2(.x = long, .y = lat, ~ get_nearby_area(.x, .y)),
+    nearby = map(.x = nearby,  ~ get_data(.x),
+    ticket_n = map_dbl(nearby, nrow))) %>% 
+  unnest(nearby)
+```
+
+#### Risk map (risk is given by rank)
+
+\ We generate a map in order to show the average fine amount and number of tickets around each cafe, which could provide some information about the parking risk around that cafe. The risk assessment of a cafe is given by the rank of total fine amount around it.
+
+```{r nearby, cache=T}
+nearby_data %>% 
+  group_by(business_name) %>% 
+  summarize(mean_fine = mean(fine_amount),
+            n_ticket = n()) %>% 
+  left_join(distinct(cafe), by = "business_name") %>% 
+  drop_na(mean_fine) %>%
+  mutate(percent_rank = rank(-(mean_fine*n_ticket))/908,
+         top_risk = ceiling(percent_rank*10)*10) %>% 
+  arrange(desc(percent_rank))%>% 
+  mutate(pop =
+           str_c("<b>",business_name,"</b><br>",
+                 "Average fine amount:" ,round(mean_fine, digits = 1),"$","</b><br>",
+                 "number of tickets:", n_ticket, "</b><br>",
+                 "Risk: top", top_risk, "%","</b><br>")
+         ) %>% 
+  leaflet() %>%
+  addProviderTiles(providers$CartoDB.Positron) %>%
+  addCircleMarkers(
+    ~ long,
+    ~ lat,
+    color = ~pal(mean_fine*n_ticket),
+    radius = .1,
+    popup = ~ (pop)
+  )
+```
+
+
+#### average fine amount distribution
+```{r}
+nearby_data %>% 
+  drop_na(borough) %>% 
+  group_by(borough, business_name) %>% 
+  summarize(mean_fine = mean(fine_amount)) %>% 
+  ggplot(aes(x = mean_fine, fill = borough)) +
+  geom_density(alpha = .5)
+```
+
+\ From this plot, we could find that the risk of violation to get a cup of coffee is much higher in Brooklyn and Manhattan, you might have to pay 80$ for your parking around cafe in most cases. And in Bronx or Queens, the commonly average fine amount around cafe will reduce to 50. However, we don't get the cafe data in Staten Island, so the situation in Staten Island is unclear.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
