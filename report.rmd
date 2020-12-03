@@ -1178,23 +1178,40 @@ fit1 %>%
   knitr::kable(caption = "Linar Regression Result")
 ```
 
-From above linear regression model, we could see that all boroughs, month, workday/weekend, daytime/night are significant variables for violation counts prediction.  
+
+From above linear regression model, we could see that boroughs, month, workday/weekend, daytime/night are significant variables for violation counts prediction.  
+
 $~$
-When Bronx works as reference, the p value for each borough is far away smaller than 0.05. This means boroughs has significant effect on violation counts prediction even if Staten Island has very small violation counts by comparing to other boroughs.  
+When Bronx works as reference, the p values for "Brooklyn", "Manhattan", "Queens" are far away smaller than 0.05. This means boroughs has significant effect on violation counts prediction. Staten Island has negative estimate and very small p value because its very small violation counts by comparing to other boroughs.  
+
 $~$
-The NYC parking regulation:[free parking on major Legal Holidays and Sundays:](https://newyorkparkingticket.com/parking-rules-holidays-sundays/). This explain why p-value of “workday_weekend” is below 0.05. That means workday factor is significant. Comparing with weekend, there are more parking violation on workdays than weenend due to NYC free parking rules on Sunday.This result is corresponding with the Violation per Hour plot we made in [data exploration](https://zl2974.github.io/hot_coffee/data_exploration.html)  
+
+The NYC parking regulation:[free parking on major Legal Holidays and Sundays:](https://newyorkparkingticket.com/parking-rules-holidays-sundays/). This explain why p-value of “workday_weekend” is below 0.05. That means workday factor is significant. Comparing with weekend, there are more parking violation on workdays than weenend due to NYC free parking rules on Sunday.This result is corresponding with the Violation per Hour plot we made in [data exploration](https://zl2974.github.io/hot_coffee/data_exploration.html) 
+
 $~$
-The p vale of factor(daytime)1 is less than 0.05. It makes sense, since people more likely to go out and parking on the street on daytime than night. And parking seems to become a routine issue for commuters.
+
+The p vale of factor(daytime)1 is less than 0.05. It makes sense, since people more likely to go out and parking on the street on daytime than night. And parking seems to become a routine issue for commuters.  
+
 $~$
+
 The P value for each month is smaller than 2e^16. No matter which month to go out, there will be a significant risk of receiving a parking tickets. The police goes to work on the whole of the year. There might have another explanation for the significance of month. There might some months need to be pay more attention to. May, June, Junly and August are usually summer holiday for students all over the world. Due to that NYC is a tourist attraction, the number of tourists should be increased from May to August. Tourists who aren't familiar with the NYC parking rules may easily receive parking tickets.
 
+
+
+#### Model diagnosis
 ```{r}
 summary(fit1)
 
-#par(mfrow = c(2,2))
-#plot(fit1)
-```
+set.seed(500)
+sample_fit1 = 
+  boro_daytime_violationln %>% 
+  sample_n(5e+3, replace = TRUE)
 
+sample_lm = lm(ln_violation ~ borough + factor(workday_weekend) + factor(daytime) + month, sample_fit1)
+
+par(mfrow = c(2,2))
+plot(sample_lm)
+```
 
 
 ## Conclusions and Discussion

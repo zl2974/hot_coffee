@@ -1057,10 +1057,15 @@ fit1 %&gt;%
 </tr>
 </tbody>
 </table>
-<p>From above linear regression model, we could see that all boroughs, month, workday/weekend, daytime/night are significant variables for violation counts prediction.<br />
-<span class="math inline">\(~\)</span> When Bronx works as reference, the p value for each borough is far away smaller than 0.05. This means boroughs has significant effect on violation counts prediction even if Staten Island has very small violation counts by comparing to other boroughs.<br />
-<span class="math inline">\(~\)</span> The NYC parking regulation:<a href="https://newyorkparkingticket.com/parking-rules-holidays-sundays/">free parking on major Legal Holidays and Sundays:</a>. This explain why p-value of “workday_weekend” is below 0.05. That means workday factor is significant. Comparing with weekend, there are more parking violation on workdays than weenend due to NYC free parking rules on Sunday.This result is corresponding with the Violation per Hour plot we made in <a href="https://zl2974.github.io/hot_coffee/data_exploration.html">data exploration</a><br />
-<span class="math inline">\(~\)</span> The p vale of factor(daytime)1 is less than 0.05. It makes sense, since people more likely to go out and parking on the street on daytime than night. And parking seems to become a routine issue for commuters. <span class="math inline">\(~\)</span> The P value for each month is smaller than 2e^16. No matter which month to go out, there will be a significant risk of receiving a parking tickets. The police goes to work on the whole of the year. There might have another explanation for the significance of month. There might some months need to be pay more attention to. May, June, Junly and August are usually summer holiday for students all over the world. Due to that NYC is a tourist attraction, the number of tourists should be increased from May to August. Tourists who aren’t familiar with the NYC parking rules may easily receive parking tickets.</p>
+<p>From above linear regression model, we could see that boroughs, month, workday/weekend, daytime/night are significant variables for violation counts prediction. These variabkes are</p>
+<p><span class="math inline">\(~\)</span> When Bronx works as reference, the p values for “Brooklyn”, “Manhattan”, “Queens” are far away smaller than 0.05. This means boroughs has significant effect on violation counts prediction. Staten Island has negative estimate and very small p value because its very small violation counts by comparing to other boroughs.</p>
+<p><span class="math inline">\(~\)</span></p>
+<p>The NYC parking regulation:<a href="https://newyorkparkingticket.com/parking-rules-holidays-sundays/">free parking on major Legal Holidays and Sundays:</a>. This explain why p-value of “workday_weekend” is below 0.05. That means workday factor is significant. Comparing with weekend, there are more parking violation on workdays than weenend due to NYC free parking rules on Sunday.This result is corresponding with the Violation per Hour plot we made in <a href="https://zl2974.github.io/hot_coffee/data_exploration.html">data exploration</a><br />
+<span class="math inline">\(~\)</span> The p vale of factor(daytime)1 is less than 0.05. It makes sense, since people more likely to go out and parking on the street on daytime than night. And parking seems to become a routine issue for commuters.<br />
+<span class="math inline">\(~\)</span> The P value for each month is smaller than 2e^16. No matter which month to go out, there will be a significant risk of receiving a parking tickets. The police goes to work on the whole of the year. There might have another explanation for the significance of month. There might some months need to be pay more attention to. May, June, Junly and August are usually summer holiday for students all over the world. Due to that NYC is a tourist attraction, the number of tourists should be increased from May to August. Tourists who aren’t familiar with the NYC parking rules may easily receive parking tickets.</p>
+</div>
+<div id="model-diagnosis" class="section level3">
+<h3>Model diagnosis</h3>
 <pre class="r"><code>summary(fit1)</code></pre>
 <pre><code>## 
 ## Call:
@@ -1097,8 +1102,16 @@ fit1 %&gt;%
 ## Residual standard error: 0.17 on 2231917 degrees of freedom
 ## Multiple R-squared:  0.98,   Adjusted R-squared:  0.98 
 ## F-statistic: 6.33e+06 on 17 and 2231917 DF,  p-value: &lt;2e-16</code></pre>
-<pre class="r"><code>#par(mfrow = c(2,2))
-#plot(fit1)</code></pre>
+<pre class="r"><code>set.seed(500)
+sample_fit1 = 
+  boro_daytime_violationln %&gt;% 
+  sample_n(5e+3, replace = TRUE)
+
+sample_lm = lm(ln_violation ~ borough + factor(workday_weekend) + factor(daytime) + month, sample_fit1)
+
+par(mfrow = c(2,2))
+plot(sample_lm)</code></pre>
+<p><img src="test_here_files/figure-html/unnamed-chunk-8-1.png" width="768" /></p>
 </div>
 </div>
 
