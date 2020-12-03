@@ -863,6 +863,21 @@ div.tocify {
 </div>
 <div id="regression" class="section level2">
 <h2>Regression</h2>
+<p>The resulting data frame of <code>boro_daytime_violation</code> contains a single dataframe df with 2,231,935rows of data on 8 variables, the list below is our variables of interest:</p>
+<ul>
+<li><code>violation_number</code>. mean of violation</li>
+<li><code>month</code>. Issue month</li>
+<li><code>workday_weekend</code>. a factor variable: 1 represent workday(Monday to Friday), 0 represent weekend</li>
+<li><code>hour</code>. Time(hour) violation occurred.</li>
+<li><code>daytime</code>. a factor variable: 1 represent daytime(8am to 8pm), 0 represent night(8pm to 8am)</li>
+<li><code>street_name</code>. Street name of summons issued.</li>
+<li><code>vehicle_color</code>. Color of car written on summons.</li>
+<li><code>borough</code>. Borough of violation.</li>
+</ul>
+<p>The data frame of <code>boro_daytime_violationln</code> contains an addtional variable:</p>
+<ul>
+<li><code>ln_violation</code>. logarithm transformation of mean of violation</li>
+</ul>
 <pre class="r"><code>boro_daytime_violation = 
   parking %&gt;%  
   mutate(
@@ -889,7 +904,7 @@ div.tocify {
   lm(violation_number ~ borough + factor(workday_weekend) + factor(daytime) + month, data = boro_daytime_violation)
 
 MASS::boxcox(fit1)</code></pre>
-<p><img src="test_here_files/figure-html/unnamed-chunk-6-1.png" width="768" /> we use box-cox method to determine transformation of y. Since</p>
+<p><img src="test_here_files/figure-html/unnamed-chunk-6-1.png" width="768" /> we use box-cox method to determine transformation of y. Since λ is close to 0, logarithm transformation should apply to violation counts.</p>
 </div>
 <div id="mlr" class="section level3">
 <h3>MLR</h3>

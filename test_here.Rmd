@@ -192,7 +192,20 @@ Sine 526.14 million square feet of office space existed in Manhattan in 2020. Ma
 
 
 ## Regression
+The resulting data frame of `boro_daytime_violation` contains a single dataframe df with  2,231,935rows of data on 8 variables, the list below is our variables of interest:
 
+  * `violation_number`. mean of violation
+  * `month`. Issue month
+  * `workday_weekend`. a factor variable: 1 represent workday(Monday to Friday), 0 represent weekend
+  * `hour`. Time(hour) violation occurred.
+  * `daytime`. a factor variable: 1 represent daytime(8am to 8pm), 0 represent night(8pm to 8am)
+  * `street_name`. Street name of summons issued.
+  * `vehicle_color`. Color of car written on summons.
+  * `borough`. Borough of violation.
+  
+The data frame of `boro_daytime_violationln` contains an addtional variable:
+
+ * `ln_violation`. logarithm transformation of mean of violation
 ```{r}
 boro_daytime_violation = 
   parking %>%  
@@ -226,7 +239,7 @@ MASS::boxcox(fit1)
 
 
 ```
-we use box-cox method to determine transformation of y. Since 
+we use box-cox method to determine transformation of y. Since λ is close to 0, logarithm transformation should apply to violation counts.
 
 ### MLR
 ```{r}
