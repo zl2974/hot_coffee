@@ -6,7 +6,7 @@ navbar:
     - text: 'Data Exploration'
       href: data_exploration.html
     - text: 'Data Analysis'
-      menu
+      menu:
         - text: 'Analysis'
           href: test_here.html
         - text: 'Regression'
