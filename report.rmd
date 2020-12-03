@@ -967,7 +967,7 @@ other day and etc.
 
 ## Hypothesis Test and Analysis
 
-###ANOVA Test
+### ANOVA Test
 
 \ From data exploration, we have notice that the violation code varies among 
 boroughs as well as the fine amount. The mean of 
@@ -1021,7 +1021,7 @@ and conclude that there's at least one borough's mean of fine amount is differen
 <img src="./pic/tukey.png" style="width:65%">
 
 
-###Chi-square Test
+### Chi-square Test
 
 <b>Chi-Squared test between violation counts generated in each weekdays and different boroughs</b>
 
@@ -1114,8 +1114,90 @@ x_crit   # x critical value
 
 \ Since 526.14 million square feet of office space existed in Manhattan in 2020. Manhattan’s office space is located in 3,830 commercial buildings in the major markets of Midtown, Midtown South, Lower Manhattan and Uptown [[Statistics](https://www.statista.com/statistics/605882/size-of-office-area-manhattan-by-submarket/)]. At any given time most of this office space is rented. Manhattan becomes the well deserved business center in NYC. Due to the unequal active status of commerce among boroughs and expensive costs of keeping a car in NYC, the active area of life and work for people who own a car concentrates upon Manhattan. This is one of reasonable explanations of chi-square test result. But this situation might be changed since the commercial areas tend to extend to other boroughs. Some data in the report shows that the Bronx office market and the Staten Island office market have seen increased investor interest over the past 10 years [[click here to get more detailed information](https://www.metro-manhattan.com/blog/market-report-a-look-at-nyc-office-sales-activity-from-2010-to-2020/)].
 
+### Regression
+The resulting data frame of `boro_daytime_violation` contains a single dataframe df with  2,231,935rows of data on 8 variables, the list below is our variables of interest:
 
-##Conclusions and Discussion
+  * `violation_number`. mean of violation
+  * `month`. Issue month
+  * `workday_weekend`. a factor variable: 1 represent workday(Monday to Friday), 0 represent weekend
+  * `hour`. Time(hour) violation occurred.
+  * `daytime`. a factor variable: 1 represent daytime(8am to 8pm), 0 represent night(8pm to 8am)
+  * `street_name`. Street name of summons issued.
+  * `vehicle_color`. Color of car written on summons.
+  * `borough`. Borough of violation.
+  
+The data frame of `boro_daytime_violationln` contains an addtional variable:
+
+ * `ln_violation`. logarithm transformation of mean of violation
+ 
+```{r}
+boro_daytime_violation = 
+  parking %>%  
+  mutate(
+    daytime = if_else(hour %in% 8:20,"1","0"),
+    day_week = weekdays(issue_date),
+    workday_weekend = if_else(day_week %in% c("Monday", "Tuesday", "Wednesday","Thursday", "Friday"),"1","0"),
+    month = lubridate::month(issue_date),
+    month = forcats::fct_reorder(as.factor(month),month)
+  ) %>% 
+  drop_na(vehicle_color, street_name) %>% 
+  group_by(borough,month,workday_weekend,daytime) %>%
+  summarise(
+    violation_number = mean(n()),
+    street_name = street_name,
+    vehicle_color = vehicle_color,
+    street_name = street_name,
+    month = month,
+    hour = hour
+  )
+```
+
+
+
+#### Box-Cox Transformation
+```{r}
+fit1 = 
+  lm(violation_number ~ borough + factor(workday_weekend) + factor(daytime) + month, data = boro_daytime_violation)
+
+MASS::boxcox(fit1)
+
+
+```
+we use box-cox method to determine transformation of y. Since λ is close to 0, logarithm transformation should apply to violation counts.
+
+#### MLR
+```{r}
+boro_daytime_violationln = boro_daytime_violation %>%
+  mutate(ln_violation = log(violation_number, base = exp(1)))
+
+fit1 = 
+  lm(ln_violation ~ borough + factor(workday_weekend) + factor(daytime) + month, data = boro_daytime_violationln)
+
+fit1 %>% 
+  broom::tidy() %>% 
+  knitr::kable(caption = "Linar Regression Result")
+```
+
+From above linear regression model, we could see that all boroughs, month, workday/weekend, daytime/night are significant variables for violation counts prediction.  
+$~$
+When Bronx works as reference, the p value for each borough is far away smaller than 0.05. This means boroughs has significant effect on violation counts prediction even if Staten Island has very small violation counts by comparing to other boroughs.  
+$~$
+The NYC parking regulation:[free parking on major Legal Holidays and Sundays:](https://newyorkparkingticket.com/parking-rules-holidays-sundays/). This explain why p-value of “workday_weekend” is below 0.05. That means workday factor is significant. Comparing with weekend, there are more parking violation on workdays than weenend due to NYC free parking rules on Sunday.This result is corresponding with the Violation per Hour plot we made in [data exploration](https://zl2974.github.io/hot_coffee/data_exploration.html)  
+$~$
+The p vale of factor(daytime)1 is less than 0.05. It makes sense, since people more likely to go out and parking on the street on daytime than night. And parking seems to become a routine issue for commuters.
+$~$
+The P value for each month is smaller than 2e^16. No matter which month to go out, there will be a significant risk of receiving a parking tickets. The police goes to work on the whole of the year. There might have another explanation for the significance of month. There might some months need to be pay more attention to. May, June, Junly and August are usually summer holiday for students all over the world. Due to that NYC is a tourist attraction, the number of tourists should be increased from May to August. Tourists who aren't familiar with the NYC parking rules may easily receive parking tickets.
+
+```{r}
+summary(fit1)
+
+#par(mfrow = c(2,2))
+#plot(fit1)
+```
+
+
+
+## Conclusions and Discussion
 
 
 \ The outcome of our work suggests there is a potential relationship between coffee shops and parking tickets.

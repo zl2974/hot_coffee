@@ -206,6 +206,7 @@ The resulting data frame of `boro_daytime_violation` contains a single dataframe
 The data frame of `boro_daytime_violationln` contains an addtional variable:
 
  * `ln_violation`. logarithm transformation of mean of violation
+ 
 ```{r}
 boro_daytime_violation = 
   parking %>%  
@@ -262,7 +263,7 @@ The NYC parking regulation:[free parking on major Legal Holidays and Sundays:](h
 $~$
 The p vale of factor(daytime)1 is less than 0.05. It makes sense, since people more likely to go out and parking on the street on daytime than night. And parking seems to become a routine issue for commuters.
 $~$
-The P value for each month is smaller than 2e^16. No matter which month to go out, there will be a significant risk of receiving a parking tickets. The police goes to work on the whole of the year. There might have another explaination for the significance of month. There might some months need to be pay more attention to. May, June Junly and August are usually summer holiday for students all over the world. Due to that NYC is a tourist attraction, the number of tourists should be increased from May to August. Tourists who aren't familiar with the NYC parking rules may easily receive parking tickets.
+The P value for each month is smaller than 2e^16. No matter which month to go out, there will be a significant risk of receiving a parking tickets. The police goes to work on the whole of the year. There might have another explanation for the significance of month. There might some months need to be pay more attention to. May, June, Junly and August are usually summer holiday for students all over the world. Due to that NYC is a tourist attraction, the number of tourists should be increased from May to August. Tourists who aren't familiar with the NYC parking rules may easily receive parking tickets.
 
 ```{r}
 summary(fit1)
