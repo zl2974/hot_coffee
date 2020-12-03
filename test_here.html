@@ -359,8 +359,20 @@ div.tocify {
         <li>
   <a href="data_exploration.html">Data Exploration</a>
 </li>
-<li>
-  <a href="test_here.html">Data Analysis</a>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+    Data Analysis
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="test_here.html">Analysis</a>
+    </li>
+    <li>
+      <a href="https://zl2974.github.io/risky_coffee/Report.html">Regression</a>
+    </li>
+  </ul>
 </li>
 <li>
   <a href="https://zl2974.shinyapps.io/Risky_Coffee/">Map</a>
@@ -856,7 +868,6 @@ div.tocify {
   mutate(
     daytime = if_else(hour %in% 8:20,&quot;1&quot;,&quot;0&quot;),
     day_week = weekdays(issue_date),
-    day_week = factor(day_week, levels = day_order),
     workday_weekend = if_else(day_week %in% c(&quot;Monday&quot;, &quot;Tuesday&quot;, &quot;Wednesday&quot;,&quot;Thursday&quot;, &quot;Friday&quot;),&quot;1&quot;,&quot;0&quot;),
     month = lubridate::month(issue_date),
     month = forcats::fct_reorder(as.factor(month),month)
@@ -868,13 +879,25 @@ div.tocify {
     street_name = street_name,
     vehicle_color = vehicle_color,
     street_name = street_name,
-    month = month
+    month = month,
+    hour = hour
   )</code></pre>
 <pre><code>## `summarise()` regrouping output by &#39;borough&#39;, &#39;month&#39;, &#39;workday_weekend&#39;, &#39;daytime&#39; (override with `.groups` argument)</code></pre>
+<div id="box-cox-transformation" class="section level3">
+<h3>Box-Cox Transformation</h3>
+<pre class="r"><code>fit1 = 
+  lm(violation_number ~ borough + factor(workday_weekend) + factor(daytime) + month, data = boro_daytime_violation)
+
+MASS::boxcox(fit1)</code></pre>
+<p><img src="test_here_files/figure-html/unnamed-chunk-6-1.png" width="768" /> we use box-cox method to determine transformation of y. Since</p>
+</div>
 <div id="mlr" class="section level3">
 <h3>MLR</h3>
-<pre class="r"><code>fit1 = 
-  lm(violation_number ~ borough + factor(workday_weekend) + factor(daytime) + month, data = boro_daytime_violation) 
+<pre class="r"><code>boro_daytime_violationln = boro_daytime_violation %&gt;%
+  mutate(ln_violation = log(violation_number, base = exp(1)))
+
+fit1 = 
+  lm(ln_violation ~ borough + factor(workday_weekend) + factor(daytime) + month, data = boro_daytime_violationln)
 
 fit1 %&gt;% 
   broom::tidy() %&gt;% 
@@ -893,138 +916,174 @@ fit1 %&gt;%
 <tbody>
 <tr class="odd">
 <td align="left">(Intercept)</td>
-<td align="right">-221757</td>
-<td align="right">9504.9</td>
-<td align="right">-23.331</td>
-<td align="right">0.000</td>
+<td align="right">-2.355</td>
+<td align="right">0.041</td>
+<td align="right">-56.99</td>
+<td align="right">0</td>
 </tr>
 <tr class="even">
 <td align="left">boroughBrooklyn</td>
-<td align="right">40554</td>
-<td align="right">90.0</td>
-<td align="right">450.773</td>
+<td align="right">0.535</td>
 <td align="right">0.000</td>
+<td align="right">1367.01</td>
+<td align="right">0</td>
 </tr>
 <tr class="odd">
 <td align="left">boroughManhattan</td>
-<td align="right">129827</td>
-<td align="right">83.2</td>
-<td align="right">1560.969</td>
+<td align="right">1.080</td>
 <td align="right">0.000</td>
+<td align="right">2988.15</td>
+<td align="right">0</td>
 </tr>
 <tr class="even">
 <td align="left">boroughQueens</td>
-<td align="right">35013</td>
-<td align="right">91.3</td>
-<td align="right">383.635</td>
+<td align="right">0.459</td>
 <td align="right">0.000</td>
+<td align="right">1157.70</td>
+<td align="right">0</td>
 </tr>
 <tr class="odd">
 <td align="left">boroughStaten Island</td>
-<td align="right">-49169</td>
-<td align="right">248.5</td>
-<td align="right">-197.850</td>
-<td align="right">0.000</td>
+<td align="right">-2.381</td>
+<td align="right">0.001</td>
+<td align="right">-2203.85</td>
+<td align="right">0</td>
 </tr>
 <tr class="even">
 <td align="left">factor(workday_weekend)1</td>
-<td align="right">121142</td>
-<td align="right">82.4</td>
-<td align="right">1469.928</td>
+<td align="right">1.987</td>
 <td align="right">0.000</td>
+<td align="right">5547.42</td>
+<td align="right">0</td>
 </tr>
 <tr class="odd">
 <td align="left">factor(daytime)1</td>
-<td align="right">107534</td>
-<td align="right">73.9</td>
-<td align="right">1455.015</td>
+<td align="right">1.681</td>
 <td align="right">0.000</td>
+<td align="right">5231.14</td>
+<td align="right">0</td>
 </tr>
 <tr class="even">
 <td align="left">month2</td>
-<td align="right">-16941</td>
-<td align="right">11156.3</td>
-<td align="right">-1.518</td>
-<td align="right">0.129</td>
+<td align="right">0.769</td>
+<td align="right">0.048</td>
+<td align="right">15.86</td>
+<td align="right">0</td>
 </tr>
 <tr class="odd">
 <td align="left">month3</td>
-<td align="right">-16271</td>
-<td align="right">10345.4</td>
-<td align="right">-1.573</td>
-<td align="right">0.116</td>
+<td align="right">1.378</td>
+<td align="right">0.045</td>
+<td align="right">30.65</td>
+<td align="right">0</td>
 </tr>
 <tr class="even">
 <td align="left">month4</td>
-<td align="right">-7326</td>
-<td align="right">11345.8</td>
-<td align="right">-0.646</td>
-<td align="right">0.518</td>
+<td align="right">0.657</td>
+<td align="right">0.049</td>
+<td align="right">13.33</td>
+<td align="right">0</td>
 </tr>
 <tr class="odd">
 <td align="left">month5</td>
-<td align="right">-40132</td>
-<td align="right">9715.4</td>
-<td align="right">-4.131</td>
-<td align="right">0.000</td>
+<td align="right">2.640</td>
+<td align="right">0.042</td>
+<td align="right">62.52</td>
+<td align="right">0</td>
 </tr>
 <tr class="even">
 <td align="left">month6</td>
-<td align="right">-11790</td>
-<td align="right">9505.8</td>
-<td align="right">-1.240</td>
-<td align="right">0.215</td>
+<td align="right">7.457</td>
+<td align="right">0.041</td>
+<td align="right">180.47</td>
+<td align="right">0</td>
 </tr>
 <tr class="odd">
 <td align="left">month7</td>
-<td align="right">39066</td>
-<td align="right">9504.7</td>
-<td align="right">4.110</td>
-<td align="right">0.000</td>
+<td align="right">9.508</td>
+<td align="right">0.041</td>
+<td align="right">230.11</td>
+<td align="right">0</td>
 </tr>
 <tr class="even">
 <td align="left">month8</td>
-<td align="right">106555</td>
-<td align="right">9504.6</td>
-<td align="right">11.211</td>
-<td align="right">0.000</td>
+<td align="right">10.091</td>
+<td align="right">0.041</td>
+<td align="right">244.22</td>
+<td align="right">0</td>
 </tr>
 <tr class="odd">
 <td align="left">month9</td>
-<td align="right">98901</td>
-<td align="right">9504.6</td>
-<td align="right">10.406</td>
-<td align="right">0.000</td>
+<td align="right">10.011</td>
+<td align="right">0.041</td>
+<td align="right">242.29</td>
+<td align="right">0</td>
 </tr>
 <tr class="even">
 <td align="left">month10</td>
-<td align="right">14853</td>
-<td align="right">11896.4</td>
-<td align="right">1.248</td>
-<td align="right">0.212</td>
+<td align="right">0.567</td>
+<td align="right">0.052</td>
+<td align="right">10.97</td>
+<td align="right">0</td>
 </tr>
 <tr class="odd">
 <td align="left">month11</td>
-<td align="right">43135</td>
-<td align="right">17598.8</td>
-<td align="right">2.451</td>
-<td align="right">0.014</td>
+<td align="right">0.394</td>
+<td align="right">0.077</td>
+<td align="right">5.15</td>
+<td align="right">0</td>
 </tr>
 <tr class="even">
 <td align="left">month12</td>
-<td align="right">42880</td>
-<td align="right">13253.4</td>
-<td align="right">3.235</td>
-<td align="right">0.001</td>
+<td align="right">1.245</td>
+<td align="right">0.058</td>
+<td align="right">21.62</td>
+<td align="right">0</td>
 </tr>
 </tbody>
 </table>
-<p>brief notes for how to analysis this regression result:<br />
-1. stay at home order since March to June 8th.<br />
-2. <a href="https://patch.com/new-york/midtown-nyc/nyc-extends-alternate-side-parking-suspension">alternate side parking regulations</a> [regulation] (<a href="https://www1.nyc.gov/html/dot/html/pr2020/pr20-037.shtml" class="uri">https://www1.nyc.gov/html/dot/html/pr2020/pr20-037.shtml</a>)<br />
-3. Pandemic becomes worse since OCT. The second Covid-19 outbreak happened all over the U.S. since Oct<br />
-4. <a href="https://newyorkparkingticket.com/parking-rules-holidays-sundays/">free parking on major Legal Holidays and Sundays:</a>. This explain why p-value of “factor(daytime)1” is below 0.05. That means workday factor is significant. Comparing with weekend, there are more parking violation on workdays than weenend due to NYC free parking rules on Sunday.<br />
-5. Junly and August are usually summer holiday for students all over the world. Due to that NYC is a tourist attraction, the number of tourists should be increased in July and August. Tourists who aren’t familiar with the NYC parking rules may easily receive parking tickets.</p>
+<p>From above linear regression model, we could see that all boroughs, month, workday/weekend, daytime/night are significant variables for violation counts prediction.<br />
+<span class="math inline">\(~\)</span> When Bronx works as reference, the p value for each borough is far away smaller than 0.05. This means boroughs has significant effect on violation counts prediction even if Staten Island has very small violation counts by comparing to other boroughs.<br />
+<span class="math inline">\(~\)</span> The NYC parking regulation:<a href="https://newyorkparkingticket.com/parking-rules-holidays-sundays/">free parking on major Legal Holidays and Sundays:</a>. This explain why p-value of “workday_weekend” is below 0.05. That means workday factor is significant. Comparing with weekend, there are more parking violation on workdays than weenend due to NYC free parking rules on Sunday.This result is corresponding with the Violation per Hour plot we made in <a href="https://zl2974.github.io/hot_coffee/data_exploration.html">data exploration</a><br />
+<span class="math inline">\(~\)</span> The p vale of factor(daytime)1 is less than 0.05. It makes sense, since people more likely to go out and parking on the street on daytime than night. And parking seems to become a routine issue for commuters. <span class="math inline">\(~\)</span> The P value for each month is smaller than 2e^16. No matter which month to go out, there will be a significant risk of receiving a parking tickets. The police goes to work on the whole of the year. There might have another explaination for the significance of month. There might some months need to be pay more attention to. May, June Junly and August are usually summer holiday for students all over the world. Due to that NYC is a tourist attraction, the number of tourists should be increased from May to August. Tourists who aren’t familiar with the NYC parking rules may easily receive parking tickets.</p>
+<pre class="r"><code>summary(fit1)</code></pre>
+<pre><code>## 
+## Call:
+## lm(formula = ln_violation ~ borough + factor(workday_weekend) + 
+##     factor(daytime) + month, data = boro_daytime_violationln)
+## 
+## Residuals:
+##    Min     1Q Median     3Q    Max 
+## -3.093 -0.056  0.026  0.048  3.966 
+## 
+## Coefficients:
+##                           Estimate Std. Error  t value Pr(&gt;|t|)    
+## (Intercept)              -2.354795   0.041318   -56.99  &lt; 2e-16 ***
+## boroughBrooklyn           0.534616   0.000391  1367.01  &lt; 2e-16 ***
+## boroughManhattan          1.080364   0.000362  2988.15  &lt; 2e-16 ***
+## boroughQueens             0.459306   0.000397  1157.70  &lt; 2e-16 ***
+## boroughStaten Island     -2.380871   0.001080 -2203.85  &lt; 2e-16 ***
+## factor(workday_weekend)1  1.987416   0.000358  5547.42  &lt; 2e-16 ***
+## factor(daytime)1          1.680634   0.000321  5231.14  &lt; 2e-16 ***
+## month2                    0.769226   0.048497    15.86  &lt; 2e-16 ***
+## month3                    1.378418   0.044972    30.65  &lt; 2e-16 ***
+## month4                    0.657421   0.049321    13.33  &lt; 2e-16 ***
+## month5                    2.640404   0.042233    62.52  &lt; 2e-16 ***
+## month6                    7.457344   0.041323   180.47  &lt; 2e-16 ***
+## month7                    9.507507   0.041317   230.11  &lt; 2e-16 ***
+## month8                   10.090603   0.041317   244.22  &lt; 2e-16 ***
+## month9                   10.010653   0.041317   242.29  &lt; 2e-16 ***
+## month10                   0.567481   0.051715    10.97  &lt; 2e-16 ***
+## month11                   0.394228   0.076504     5.15  2.6e-07 ***
+## month12                   1.245397   0.057613    21.62  &lt; 2e-16 ***
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+## 
+## Residual standard error: 0.17 on 2231917 degrees of freedom
+## Multiple R-squared:  0.98,   Adjusted R-squared:  0.98 
+## F-statistic: 6.33e+06 on 17 and 2231917 DF,  p-value: &lt;2e-16</code></pre>
+<pre class="r"><code>#par(mfrow = c(2,2))
+#plot(fit1)</code></pre>
 </div>
 </div>
 

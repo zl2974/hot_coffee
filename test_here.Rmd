@@ -199,7 +199,6 @@ boro_daytime_violation =
   mutate(
     daytime = if_else(hour %in% 8:20,"1","0"),
     day_week = weekdays(issue_date),
-    day_week = factor(day_week, levels = day_order),
     workday_weekend = if_else(day_week %in% c("Monday", "Tuesday", "Wednesday","Thursday", "Friday"),"1","0"),
     month = lubridate::month(issue_date),
     month = forcats::fct_reorder(as.factor(month),month)
@@ -211,25 +210,51 @@ boro_daytime_violation =
     street_name = street_name,
     vehicle_color = vehicle_color,
     street_name = street_name,
-    month = month
+    month = month,
+    hour = hour
   )
 ```
 
-### MLR
+
+
+### Box-Cox Transformation
 ```{r}
 fit1 = 
-  lm(violation_number ~ borough + factor(workday_weekend) + factor(daytime) + month, data = boro_daytime_violation) 
+  lm(violation_number ~ borough + factor(workday_weekend) + factor(daytime) + month, data = boro_daytime_violation)
+
+MASS::boxcox(fit1)
+
+
+```
+we use box-cox method to determine transformation of y. Since 
+
+### MLR
+```{r}
+boro_daytime_violationln = boro_daytime_violation %>%
+  mutate(ln_violation = log(violation_number, base = exp(1)))
+
+fit1 = 
+  lm(ln_violation ~ borough + factor(workday_weekend) + factor(daytime) + month, data = boro_daytime_violationln)
 
 fit1 %>% 
   broom::tidy() %>% 
   knitr::kable(caption = "Linar Regression Result")
 ```
 
-brief notes for how to analysis this regression result:  
-1. stay at home order since March to June 8th.  
-2. [alternate side parking regulations](https://patch.com/new-york/midtown-nyc/nyc-extends-alternate-side-parking-suspension)
-   [regulation] (https://www1.nyc.gov/html/dot/html/pr2020/pr20-037.shtml)    
-3. Pandemic becomes worse since OCT. The second Covid-19 outbreak happened all over the U.S. since Oct   
-4. [free parking on major Legal Holidays and Sundays:](https://newyorkparkingticket.com/parking-rules-holidays-sundays/). This explain why p-value of “factor(daytime)1” is below 0.05. That means workday factor is significant. Comparing with weekend, there are more parking violation on workdays than weenend due to NYC free parking rules on Sunday.  
-5. Junly and August are usually summer holiday for students all over the world. Due to that NYC is a tourist attraction, the number of tourists should be increased in July and August. Tourists who aren't familiar with the NYC parking rules may easily receive parking tickets.
+From above linear regression model, we could see that all boroughs, month, workday/weekend, daytime/night are significant variables for violation counts prediction.  
+$~$
+When Bronx works as reference, the p value for each borough is far away smaller than 0.05. This means boroughs has significant effect on violation counts prediction even if Staten Island has very small violation counts by comparing to other boroughs.  
+$~$
+The NYC parking regulation:[free parking on major Legal Holidays and Sundays:](https://newyorkparkingticket.com/parking-rules-holidays-sundays/). This explain why p-value of “workday_weekend” is below 0.05. That means workday factor is significant. Comparing with weekend, there are more parking violation on workdays than weenend due to NYC free parking rules on Sunday.This result is corresponding with the Violation per Hour plot we made in [data exploration](https://zl2974.github.io/hot_coffee/data_exploration.html)  
+$~$
+The p vale of factor(daytime)1 is less than 0.05. It makes sense, since people more likely to go out and parking on the street on daytime than night. And parking seems to become a routine issue for commuters.
+$~$
+The P value for each month is smaller than 2e^16. No matter which month to go out, there will be a significant risk of receiving a parking tickets. The police goes to work on the whole of the year. There might have another explaination for the significance of month. There might some months need to be pay more attention to. May, June Junly and August are usually summer holiday for students all over the world. Due to that NYC is a tourist attraction, the number of tourists should be increased from May to August. Tourists who aren't familiar with the NYC parking rules may easily receive parking tickets.
+
+```{r}
+summary(fit1)
+
+#par(mfrow = c(2,2))
+#plot(fit1)
+```
 
