@@ -7,6 +7,8 @@ navbar:
       href: data_exploration.html
     - text: 'Data Analysis'
       href: test_here.html
+    - text: 'Regression'
+      href: https://zl2974.github.io/risky_coffee/Report.html      
     - text: "Map"
       href: https://zl2974.shinyapps.io/Risky_Coffee/
     - text: 'Data'
