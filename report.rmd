@@ -73,6 +73,7 @@ The following resources are a sample of what inspired this project:
 
 \ 5. What are the most commonly issured parking tickets type? Are they being different in different boroughs?
 
+Our question might shifted a bit during the exploration and regression, due to either falling into a rabbit hole or the data limitation( or our limitation).
 
 ##Data
 
@@ -104,11 +105,15 @@ This dataset features detailed information about sidewalk café license applicat
 1. Sidewalk Café Licenses and Applications
 
 
+\ First we focus on acquiring our own geographic information via available information in the datasets. 
 
-\ First we focus on acquiring our own geographic information via available information in the datasets.  
 \ We wrote a function to pull geographic information 
 from [Geosearch](https://labs-geosearch-docs.netlify.app/). We got longitude and latitude information
-of each violation through that function and will write them in our resulting dataset.
+of each violation through that function and will write them in our resulting dataset. 
+
+\ This function works for the most of the observation, but we have encounter some bug during querying. Because this is a experimental platform(Alpha?), so 
+There's some mismatch due to the query input and the dictionary and fuzzy matching on their site(eg. "N,E 26th ST" may not find a perfect match on that website, and it returned a closest match back, but it wasn't the location for the query). We try to cross validation with other platforms(eg. Google Maps and OpenStreet), but all those platforms charge and have limit amount of query far smaller than our query. So we ploted the location of all query onto the map, it looks like NYC and random check some points and they all fit, so we stick to our function.
+
 
 ```{r eval=FALSE}
 ###select variables we need
@@ -462,6 +467,10 @@ data_2021_cleanv1 =
 \ Finally, we generate the fine_amount variable based on geographic variables and violation code. Since the fine amount is different in 
 Manhattan 96th St. & below, we select them by 96th St. geographic variables, and acquire fine amount acording to the attached ParkingViolation Code excel.
 
+\ It is interesting to notice that below 96th  St. have different fine amount for some case, so we need to identify them. NYC's streets are not horizontally or vertically distributed, so we can't just find a latitude and conclude that below them are all below 96th St. And our query function can only return point, not a line for 96th Street.
+
+\ Instead, we looked through a bunch of open source data, and found this [Nyc-geo-metadata](https://github.com/CityOfNewYork/nyc-geo-metadata) repo have street shapefile. So we downloaded it and extract the geometry of 96th St. Then we fit a linear model to these latitude and longitude, so we have a line, then we predict the longtitude given the latitude, if the longtitude is below the predicted value and it is located in Manhattan, we identified it as below 96th Street.
+
 ```{r eval=FALSE}
 st_96 = lm(lat~long,read_csv("data/96th.csv"))
 
@@ -490,6 +499,32 @@ data_2021_cleanv1 = data_2021_cleanv1 %>%
 
 
 \ Thus, for now, we could get all our required information without acquiring a excessively large dataset(around 14 GB).
+
+\ Also worth mentioning, during building our shiny apps, and regression model, we need to identify all points that are located within a area of certain range. Then we have 2 problems, 
+
+first , how to define this range on longitude and latitude? 
+
+To map a 2D area in meter to a spherical surface(Yes, the earth is spherical) in radius, we introduced another function calculated the range of radius in longitude and latitude, adjusting the location of latitude to longitude, the function is as follow:
+
+```{r eval = F}
+get_nearby_area =
+  function(p_long = 0, p_lat = 0,area=100) {
+    return(
+      tibble(
+        long_lwr = p_long - area / (6378137 * cos(pi * p_lat / 180)) * 180 / pi,
+        long_upr = p_long + area / (6378137 * cos(pi * p_lat / 180)) * 180 /
+          pi,
+        lat_lwr = p_lat - area / 6378137 * 180 / pi,
+        lat_upr = p_lat + area / 6378137 * 180 / pi
+      )
+    )
+  }
+```
+
+Solving the first question, we have the next.
+
+We are nesting the data into another data, and if we looked at 1000 location, and let say each of them have 3000 ticket total, we will end up with a data of 
+ dim(1000,its columns)$\times$ dim(3000,its columns), 
 
 ### Data description
 
@@ -739,120 +774,10 @@ All the five boroughs in NYC–Manhattan, Bronx, Brooklyn, Queens and Staten Isl
 
 \ We want to know the most common reason for getting tickets in NYC, and whether there are differences between the five boroughs.We made bar plots of the top 10 most frequent parking tickets type in each boroughs.
 
-```{r}
-vio_code = readxl::read_xlsx('data/ParkingViolationCodes_January2020.xlsx') %>% 
-  janitor::clean_names() %>% 
-  dplyr::select(violation_code, violation_description) %>% 
-  mutate(violation_description = str_to_lower(violation_description))
-vio_count_boro = 
-  parking %>% 
-  left_join(vio_code, by = 'violation_code')
-Manhattan_vio = 
-  vio_count_boro %>% 
-  filter(borough == 'Manhattan') %>% 
-  group_by(violation_description) %>% 
-  summarize(n = n()) %>% 
-  mutate(violation_description = fct_reorder(violation_description, n)) %>% 
-  arrange(desc(n)) %>% 
-  head(10) %>% 
-  ggplot(aes(x = violation_description, y = n, fill = violation_description)) +
-  geom_bar(stat = "identity") + 
-  theme(
-    axis.text.x = element_text(angle = 90, vjust = .5, hjust = 1),
-    legend.position = "right",
-    legend.text = element_text(size = 8)
-  ) +
-  labs(
-    title = 'Top 10 violations in Manhattan') +
-    xlab("violation description") +
-    ylab('Count of tickets')  
-Queens_vio = 
-  vio_count_boro %>% 
-  filter(borough == 'Queens') %>% 
-  group_by(violation_description) %>% 
-  summarize(n = n()) %>% 
-  mutate(violation_description = fct_reorder(violation_description, n)) %>% 
-  arrange(desc(n)) %>% 
-  head(10) %>% 
-  ggplot(aes(x = violation_description, y = n, fill = violation_description)) +
-  geom_bar(stat = "identity") + 
-  theme(
-    axis.text.x = element_text(angle = 90, vjust = .5, hjust = 1),
-    legend.position = "right",
-    legend.text = element_text(size = 8)
-  ) +
-  labs(
-    title = 'Top 10 violations in Queens') +
-    xlab("violation description") +
-    ylab('Count of tickets') 
-Bronx_vio = 
-  vio_count_boro %>% 
-  filter(borough == 'Bronx') %>% 
-  group_by(violation_description) %>% 
-  summarize(n = n()) %>% 
-  mutate(violation_description = fct_reorder(violation_description, n)) %>% 
-  arrange(desc(n)) %>% 
-  head(10) %>% 
-  ggplot(aes(x = violation_description, y = n, fill = violation_description)) +
-  geom_bar(stat = "identity") + 
-  theme(
-    axis.text.x = element_text(angle = 90, vjust = .5, hjust = 1),
-    legend.position = "right",
-    legend.text = element_text(size = 8)
-  ) +
-  labs(
-    title = 'Top 10 violations in Bronx') +
-    xlab("violation description") +
-    ylab('Count of tickets')  
-Brooklyn_vio = 
-  vio_count_boro %>% 
-  filter(borough == 'Brooklyn') %>% 
-  group_by(violation_description) %>% 
-  summarize(n = n()) %>% 
-  mutate(violation_description = fct_reorder(violation_description, n)) %>% 
-  arrange(desc(n)) %>% 
-  head(10) %>% 
-  ggplot(aes(x = violation_description, y = n, fill = violation_description)) +
-  geom_bar(stat = "identity") + 
-  theme(
-    axis.text.x = element_text(angle = 90, vjust = .5, hjust = 1),
-    legend.position = "right",
-    legend.text = element_text(size = 8)
-  ) +
-  labs(
-    title = 'Top 10 violations in Brooklyn') +
-    xlab("violation description") +
-    ylab('Count of tickets') 
-Staten_vio = 
-  vio_count_boro %>% 
-  filter(borough == 'Staten Island') %>% 
-  group_by(violation_description) %>% 
-  summarize(n = n()) %>% 
-  mutate(violation_description = fct_reorder(violation_description, n)) %>% 
-  arrange(desc(n)) %>% 
-  head(10) %>% 
-  ggplot(aes(x = violation_description, y = n, fill = violation_description)) +
-  geom_bar(stat = "identity") + 
-  theme(
-    axis.text.x = element_text(angle = 90, vjust = .5, hjust = 1),
-    legend.position = "right",
-    legend.text = element_text(size = 8)
-  ) +
-  labs(
-    title = 'Top 10 violations in Staten Island') +
-    xlab("violation description") +
-    ylab('Count of tickets')  
-Manhattan_vio
-Queens_vio
-Bronx_vio
-Brooklyn_vio
-Staten_vio
-```
-
 \ Violation types in each borough also have different compositions. No 
 standing-day/time limit most common type of violation in Manhattan,
-followed by no parking-day/time. No parking street cleaning is the most common type of violation in Brooklyn, Queen, Bronx, then followed by Fail to display muni meter recept. Noticed that in Brooklyn, Queens and Bronx, the first two types of Violation composist of much higher proportion of violation issued than 
-the rest, whileas the ditribution is more spread out in Manhattan and Staten Island.
+followed by no parking-day/time. No parking street cleaning is the most common type of violation in Brooklyn, Queen, Bronx, then followed by Fail to display muni meter receipt. Noticed that in Brooklyn, Queens and Bronx, the first two types of Violation composist of much higher proportion of violation issued than 
+the rest, whereas the ditribution is more spread out in Manhattan and Staten Island.
 
 
 ###Fine Amount
@@ -952,17 +877,6 @@ further analysis to see if Monday in Brooklyn have higher total fine than any
 other day and etc.
 
 \ The risk of violation to get a cup of coffee is much higher in Brooklyn and Manhattan, you might have to pay 80$ for your parking around cafe in most cases. And in Bronx or Queens, the commonly average fine amount around cafe will reduce to 50. However, we don't get the cafe data in Staten Island, so the situation in Staten Island is unclear.
-
-
-###Shiny App
-
-\ To explore the question of how does the coffee shop and parking tickets rate related, and howt is the risk of parking nearby a coffee shop or the risk of rank of parking in different boroughs,  we created a graphical user interface using the Shiny package [link](https://zl2974.shinyapps.io/Risky_Coffee/).
-
-\ These visulizations illustrate that:
-
-\ 1. There are higher risk if tou want to park nearby a coffee shop.
-
-\ 2. Among the five boroughs, you might have the highest risk of getting a parking tickets in Manhattan
 
 
 ## Hypothesis Test and Analysis
@@ -1114,7 +1028,8 @@ x_crit   # x critical value
 
 \ Since 526.14 million square feet of office space existed in Manhattan in 2020. Manhattan’s office space is located in 3,830 commercial buildings in the major markets of Midtown, Midtown South, Lower Manhattan and Uptown [[Statistics](https://www.statista.com/statistics/605882/size-of-office-area-manhattan-by-submarket/)]. At any given time most of this office space is rented. Manhattan becomes the well deserved business center in NYC. Due to the unequal active status of commerce among boroughs and expensive costs of keeping a car in NYC, the active area of life and work for people who own a car concentrates upon Manhattan. This is one of reasonable explanations of chi-square test result. But this situation might be changed since the commercial areas tend to extend to other boroughs. Some data in the report shows that the Bronx office market and the Staten Island office market have seen increased investor interest over the past 10 years [[click here to get more detailed information](https://www.metro-manhattan.com/blog/market-report-a-look-at-nyc-office-sales-activity-from-2010-to-2020/)].
 
-### Regression
+### Regression Exploration
+
 The resulting data frame of `boro_daytime_violation` contains a single dataframe df with  2,231,935rows of data on 8 variables, the list below is our variables of interest:
 
   * `violation_number`. mean of violation
@@ -1212,6 +1127,72 @@ sample_lm = lm(ln_violation ~ borough + factor(workday_weekend) + factor(daytime
 par(mfrow = c(2,2))
 plot(sample_lm)
 ```
+
+We can see that the residual vs fitted is not equally distributed around 0 horizontal line. In fact, there's a pattern in the residual, indicating that the model although have high goodness of fit, but violating normal assumption on the residual. As a matter of fact, our data follows poison distribution, and thus linear model wouldn't be appropriated for our model. When we doing regression, linear model will not be consider.
+
+So we seek another method for fitting a model for our purpose.
+
+### Regression
+
+#### Data
+From previously data exploration and data analysis, we know that the tickets issue is different in borough, hour and weekdays.
+
+Therefore, for us to predicting the possible amount of ticket around certain area of a cafe( in our case, 100m around the cafe), we use these variables as our interested predictors for our model. 
+
+<img src = "https://github.com/zl2974/risky_coffee/blob/master/Report_files/figure-html/data-2.png?raw=true" style = "width : 60%">
+
+Our interested dependent is **hour_day_risk**: the amount of tickets issue in this area of certain hour and weekday. We can interpret that this dependent is following poison distribution, so we need to consider regression model for this settings. 
+
+We first try transformation with log, but it was still skewed, after some research, we found out Poisson regression and decide use this method for our model.
+
+And here's the predictors in our model:
+
+- *hour* : integer reflecting the 24 hour format of hour of the day;
+- *weekday* : factors reflecting either it is a workday or weekend;
+- *borough* : factors reflecting which borough this area is in;
+- *tickets* : float reflecting the baseline total issue tickets of the area;
+
+#### Fitting Model
+
+Because of the poison distribution of the dependent, we propose 3 models for prediction:
+
+1. General Model of *hour_day_risk ~ ticket + borough + hour + weekday* with _poison()_ family
+1. General Model of _hour_day_risk ~ ticket + borough*hour + weekday_ with _poison()_ family, assuming that there are interaction
+1. General Addiction Model of *hour_day_risk ~ s(ticket) + s(hour) + borough  + weekday* with _poison()_ family and addressing that most tickets is issued during office hour.
+
+## Cross-validation for model
+
+\ Looking at all model, all predictors we chose are statistically significant.so we stick to these model predictor for our model. and looking at all three model, the residual mean sum of square are similar across 3 model. So
+
+- firstly, interaction terms are not contributing to model predictability. And 
+- secondly,first order general linear model provide similar predictability to 5 order general addiction model. 
+
+<img src = "https://github.com/zl2974/risky_coffee/blob/master/Report_files/figure-html/rmse-1.png?raw=true" style = "width : 60%">
+
+Given above consideration, and taking computing and optimization into consideration, we think the general linear model would be useful for predicting ticket of a area in certain time and day for our app.
+
+
+#### Model Conclusion
+
+\ *hour, weekdays, borough*, and the *baseline total amount of tickets issue* are all good predictor for expecting amount of ticket issue in a certain hour of a day. 
+
+###Shiny App
+
+\ With all the interesting finding and regression model for prediction from above. And to explore the question of how does the coffee shop and parking tickets rate related, and what is the risk of parking nearby a coffee shop or the risk of rank of parking in different boroughs,  we created a graphical user interface using the Shiny package. 
+
+\ In this app, you can search cafe around 1 kilometer from you location. And each point representing a cafe, clicking the point will present the information( Name, location, relative risk based on baseline and predicted number of ticket at real time and weekday)
+
+\ User can also select their preference and change location(As long as it is in NYC), to match their needs.
+
+[link](https://zl2974.shinyapps.io/Risky_Coffee/).
+
+<iframe id="Cafe Risk Map" src="https://zl2974.shinyapps.io/Risky_Coffee/" style="border: none; width: 100%; height: 850px" frameborder="0"></iframe>
+
+\ These visulizations illustrate that:
+
+\ 1. There are higher risk if you want to park nearby a coffee shop.
+
+\ 2. Among the five boroughs, you might have the highest risk of getting a parking tickets in Manhattan
 
 
 ## Conclusions and Discussion

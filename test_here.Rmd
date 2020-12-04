@@ -15,9 +15,9 @@ library(lubridate)
 knitr::opts_chunk$set(
   fig.height = 6,
   fig.width = 8,
-  message = T,
+  message = F,
   echo = T,
-  warning = T,
+  warning = F,
   cache = F
 )
 
@@ -63,7 +63,7 @@ parking = read_csv(here::here("data/parking_vio2021_cleanv1.csv")) %>%
 
 ## Hypothesis test about fine amount
 
-1. Anova between fine amount and different boros
+### Anova between fine amount and different boros
 
 From data exploration, we have notice that the violation code varies among 
 boroughs as well as the fine amount. We see from the table that the mean of 
@@ -116,7 +116,7 @@ To further investigate the difference between boroughs, we perform Tukey test fo
 ## Hypothesis test about violation counts
 
 
-a) Chi-Squared test between violation counts generated in each weekdays and different boroughs
+### Chi-Squared test between violation counts generated in each weekdays and different boroughs
 
 From data exploration, we have noticed that the violation counts proportions in different weekdays among each boroughs are different.Thus, we assume there is no homogeneity in tickets counts proportions in each weekdays among boroughs. 
 
@@ -157,13 +157,9 @@ x_crit   # x critical value
 
 According to above chi-square test result,  We reject the null hypothesis and conclude that there's at least one borough's proportions of violation counts for week days is different from others at 0.05 significant level.  
 
-
-
-b)  Chi-Squared test between violation counts generated in each hour and different boroughs:
+###  Chi-Squared test between violation counts generated in each hour and different boroughs:
 
 ```{r,echo = FALSE, message=FALSE,warning = FALSE}
-
-
 chisq_boro_hour = 
   parking %>% 
   filter(hour != 12.3) %>% 
@@ -191,7 +187,8 @@ According to above chi-square test result,  We reject the null hypothesis and co
 Sine 526.14 million square feet of office space existed in Manhattan in 2020. Manhattan’s office space is located in 3,830 commercial buildings in the major markets of Midtown, Midtown South, Lower Manhattan and Uptown [[Statistics](https://www.statista.com/statistics/605882/size-of-office-area-manhattan-by-submarket/)]. At any given time most of this office space is rented. Manhattan becomes the well deserved business center in NYC. Due to the unequal active status of commerce among boroughs and expensive costs of keeping a car in NYC, the active area of life and work for people who own a car concentrates upon Manhattan. This is one of reasonable explanations of chi-square test result. But this situation might be changed since the commercial areas tend to extend to other boroughs. Some data in the report shows that the Bronx office market and the Staten Island office market have seen increased investor interest over the past 10 years [[click here to get more detailed information](https://www.metro-manhattan.com/blog/market-report-a-look-at-nyc-office-sales-activity-from-2010-to-2020/)].
 
 
-## Regression
+## Regression Exploration
+
 The resulting data frame of `boro_daytime_violation` contains a single dataframe df with  2,231,935rows of data on 8 variables, the list below is our variables of interest:
 
   * `violation_number`. mean of violation
@@ -207,7 +204,7 @@ The data frame of `boro_daytime_violationln` contains an addtional variable:
 
  * `ln_violation`. logarithm transformation of mean of violation
  
-```{r}
+```{r model_data, cache = T}
 boro_daytime_violation = 
   parking %>%  
   mutate(
@@ -232,7 +229,7 @@ boro_daytime_violation =
 
 
 ### Box-Cox Transformation
-```{r}
+```{r cox, cache=T}
 fit1 = 
   lm(violation_number ~ borough + factor(workday_weekend) + factor(daytime) + month, data = boro_daytime_violation)
 
@@ -243,7 +240,7 @@ MASS::boxcox(fit1)
 we use box-cox method to determine transformation of y. Since λ is close to 0, logarithm transformation should apply to violation counts.
 
 ### MLR
-```{r}
+```{r MLR, cache = T}
 boro_daytime_violationln = boro_daytime_violation %>%
   mutate(ln_violation = log(violation_number, base = exp(1)))
 
@@ -270,7 +267,7 @@ The P value for each month is smaller than 2e^16. No matter which month to go ou
 
 
 ### Model diagnosis
-```{r}
+```{r model_su, cache = T}
 summary(fit1)
 
 set.seed(500)
@@ -284,3 +281,4 @@ par(mfrow = c(2,2))
 plot(sample_lm)
 ```
 
+We can see that the residual vs fitted is not equally distributed around 0 horizontal line. In fact, there's a pattern in the residual, indicating that the model although have high goodness of fit, but violating normal assumption on the residual. As a matter of fact, our data follows poison distribution, and thus linear model wouldn't be appropriated for our model. When we doing regression, linear model will not be consider.
