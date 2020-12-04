@@ -422,9 +422,8 @@ div.tocify {
 
 <div id="hypothesis-test-about-fine-amount" class="section level2">
 <h2>Hypothesis test about fine amount</h2>
-<ol style="list-style-type: decimal">
-<li>Anova between fine amount and different boros</li>
-</ol>
+<div id="anova-between-fine-amount-and-different-boros" class="section level3">
+<h3>Anova between fine amount and different boros</h3>
 <p>From data exploration, we have notice that the violation code varies among boroughs as well as the fine amount. We see from the table that the mean of fine amount in Queen is different from the Manhattan by 10$, and thus, we propose hypothesis that there’s at least 1 pairs of boroughs’ fine amount is different from others.</p>
 <table>
 <caption>Fine Amount in borough</caption>
@@ -558,11 +557,11 @@ div.tocify {
 <p>As the ANOVA test result from above, we reject the Null at 99% confidence level and conclude that there’s at least one borough’s mean of fine amount is different from others.</p>
 <p>To further investigate the difference between boroughs, we perform Tukey test for pairwise comparison. Notice that all paris are different from each other in the setting of our data. Given the large amount of data, according to the law of large number, the estimate of mean fine amount close to the true mean of the fine amount in different borough. Under this setting, we have 99% confidence that Manhattan have different mean of fine amount than other borough. So if you unfortunately get a RISKY coffee, it is much burning than in other boroughs.</p>
 </div>
+</div>
 <div id="hypothesis-test-about-violation-counts" class="section level2">
 <h2>Hypothesis test about violation counts</h2>
-<ol style="list-style-type: lower-alpha">
-<li>Chi-Squared test between violation counts generated in each weekdays and different boroughs</li>
-</ol>
+<div id="chi-squared-test-between-violation-counts-generated-in-each-weekdays-and-different-boroughs" class="section level3">
+<h3>Chi-Squared test between violation counts generated in each weekdays and different boroughs</h3>
 <p>From data exploration, we have noticed that the violation counts proportions in different weekdays among each boroughs are different.Thus, we assume there is no homogeneity in tickets counts proportions in each weekdays among boroughs.</p>
 <p>To verify that, we performed Chi-squared test for multiple groups comparison. With:</p>
 <p><span class="math inline">\(H_0\)</span> : the tickets proportion in weekdays among boroughs are equal.</p>
@@ -641,9 +640,9 @@ div.tocify {
 ## X-squared = 4607, df = 24, p-value &lt;2e-16</code></pre>
 <pre><code>## [1] 36.4</code></pre>
 <p>According to above chi-square test result, We reject the null hypothesis and conclude that there’s at least one borough’s proportions of violation counts for week days is different from others at 0.05 significant level.</p>
-<ol start="2" style="list-style-type: lower-alpha">
-<li>Chi-Squared test between violation counts generated in each hour and different boroughs:</li>
-</ol>
+</div>
+<div id="chi-squared-test-between-violation-counts-generated-in-each-hour-and-different-boroughs" class="section level3">
+<h3>Chi-Squared test between violation counts generated in each hour and different boroughs:</h3>
 <table style="width:100%;">
 <colgroup>
 <col width="9%" />
@@ -861,8 +860,9 @@ div.tocify {
 <p>According to above chi-square test result, We reject the null hypothesis and conclude that there’s at least one borough’s proportions of violation counts for 24 hours is different from others at 0.05 significant level.</p>
 <p>Sine 526.14 million square feet of office space existed in Manhattan in 2020. Manhattan’s office space is located in 3,830 commercial buildings in the major markets of Midtown, Midtown South, Lower Manhattan and Uptown [<a href="https://www.statista.com/statistics/605882/size-of-office-area-manhattan-by-submarket/">Statistics</a>]. At any given time most of this office space is rented. Manhattan becomes the well deserved business center in NYC. Due to the unequal active status of commerce among boroughs and expensive costs of keeping a car in NYC, the active area of life and work for people who own a car concentrates upon Manhattan. This is one of reasonable explanations of chi-square test result. But this situation might be changed since the commercial areas tend to extend to other boroughs. Some data in the report shows that the Bronx office market and the Staten Island office market have seen increased investor interest over the past 10 years [<a href="https://www.metro-manhattan.com/blog/market-report-a-look-at-nyc-office-sales-activity-from-2010-to-2020/">click here to get more detailed information</a>].</p>
 </div>
-<div id="regression" class="section level2">
-<h2>Regression</h2>
+</div>
+<div id="regression-exploration" class="section level2">
+<h2>Regression Exploration</h2>
 <p>The resulting data frame of <code>boro_daytime_violation</code> contains a single dataframe df with 2,231,935rows of data on 8 variables, the list below is our variables of interest:</p>
 <ul>
 <li><code>violation_number</code>. mean of violation</li>
@@ -897,14 +897,13 @@ div.tocify {
     month = month,
     hour = hour
   )</code></pre>
-<pre><code>## `summarise()` regrouping output by &#39;borough&#39;, &#39;month&#39;, &#39;workday_weekend&#39;, &#39;daytime&#39; (override with `.groups` argument)</code></pre>
 <div id="box-cox-transformation" class="section level3">
 <h3>Box-Cox Transformation</h3>
 <pre class="r"><code>fit1 = 
   lm(violation_number ~ borough + factor(workday_weekend) + factor(daytime) + month, data = boro_daytime_violation)
 
 MASS::boxcox(fit1)</code></pre>
-<p><img src="test_here_files/figure-html/unnamed-chunk-6-1.png" width="768" /> we use box-cox method to determine transformation of y. Since λ is close to 0, logarithm transformation should apply to violation counts.</p>
+<p><img src="test_here_files/figure-html/cox-1.png" width="768" /> we use box-cox method to determine transformation of y. Since λ is close to 0, logarithm transformation should apply to violation counts.</p>
 </div>
 <div id="mlr" class="section level3">
 <h3>MLR</h3>
@@ -1111,7 +1110,8 @@ sample_lm = lm(ln_violation ~ borough + factor(workday_weekend) + factor(daytime
 
 par(mfrow = c(2,2))
 plot(sample_lm)</code></pre>
-<p><img src="test_here_files/figure-html/unnamed-chunk-8-1.png" width="768" /></p>
+<p><img src="test_here_files/figure-html/model_su-1.png" width="768" /></p>
+<p>We can see that the residual vs fitted is not equally distributed around 0 horizontal line. In fact, there’s a pattern in the residual, indicating that the model although have high goodness of fit, but violating normal assumption on the residual. As a matter of fact, our data follows poison distribution, and thus linear model wouldn’t be appropriated for our model. When we doing regression, linear model will not be consider.</p>
 </div>
 </div>
 
