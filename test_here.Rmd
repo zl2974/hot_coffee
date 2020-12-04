@@ -56,7 +56,8 @@ parking = read_csv(here::here("data/parking_vio2021_cleanv1.csv")) %>%
     borough = replace_na(borough, "Staten Island")
   )%>% 
   drop_na(address) %>% 
-  filter(issue_date <= as.Date("2020-11-16"))
+  filter(issue_date <= as.Date("2020-11-16")) %>% 
+  filter(issue_date >= as.Date("2020-01-01"))
 
 ```
 
@@ -151,11 +152,10 @@ chisq_boro_day%>%
 
 chisq.test(chisq_boro_day)
 
-x_crit = qchisq(0.95,24)
-x_crit   # x critical value
+
 ```
 
-According to above chi-square test result,  We reject the null hypothesis and conclude that there's at least one borough's proportions of violation counts for week days is different from others at 0.05 significant level.  
+According to above chi-square test result and the x critical value ( = `r qchisq(0.95,24)`)  We reject the null hypothesis and conclude that there's at least one borough's proportions of violation counts for week days is different from others at 0.05 significant level.  
 
 ###  Chi-Squared test between violation counts generated in each hour and different boroughs:
 
@@ -178,11 +178,10 @@ chisq_boro_hour %>% knitr::kable()
 chisq.test(chisq_boro_hour)%>% 
   broom::tidy() %>% knitr::kable()
 
-x_crit = qchisq(0.95,92)
-x_crit   # x critical value
+
 ```
 
-According to above chi-square test result,  We reject the null hypothesis and conclude that there's at least one borough's proportions of violation counts for 24 hours is different from others at 0.05 significant level.  
+According to above chi-square test result and the x critical value ( = `r qchisq(0.95,92)`),  We reject the null hypothesis and conclude that there's at least one borough's proportions of violation counts for 24 hours is different from others at 0.05 significant level.  
 
 Sine 526.14 million square feet of office space existed in Manhattan in 2020. Manhattan’s office space is located in 3,830 commercial buildings in the major markets of Midtown, Midtown South, Lower Manhattan and Uptown [[Statistics](https://www.statista.com/statistics/605882/size-of-office-area-manhattan-by-submarket/)]. At any given time most of this office space is rented. Manhattan becomes the well deserved business center in NYC. Due to the unequal active status of commerce among boroughs and expensive costs of keeping a car in NYC, the active area of life and work for people who own a car concentrates upon Manhattan. This is one of reasonable explanations of chi-square test result. But this situation might be changed since the commercial areas tend to extend to other boroughs. Some data in the report shows that the Bronx office market and the Staten Island office market have seen increased investor interest over the past 10 years [[click here to get more detailed information](https://www.metro-manhattan.com/blog/market-report-a-look-at-nyc-office-sales-activity-from-2010-to-2020/)].
 
@@ -232,53 +231,59 @@ boro_daytime_violation =
 ```{r cox, cache=T}
 fit1 = 
   lm(violation_number ~ borough + factor(workday_weekend) + factor(daytime) + month, data = boro_daytime_violation)
-
 MASS::boxcox(fit1)
-
-
 ```
 we use box-cox method to determine transformation of y. Since λ is close to 0, logarithm transformation should apply to violation counts.
+
 
 ### MLR
 ```{r MLR, cache = T}
 boro_daytime_violationln = boro_daytime_violation %>%
   mutate(ln_violation = log(violation_number, base = exp(1)))
-
 fit1 = 
   lm(ln_violation ~ borough + factor(workday_weekend) + factor(daytime) + month, data = boro_daytime_violationln)
-
 fit1 %>% 
   broom::tidy() %>% 
+  mutate(
+    term = str_replace(term, "borough", "Borough: "),
+    term = str_replace(term, "month", "Month: "),
+    term = str_replace(term, "factor(workday_weekend)1", "workday "),
+    term = str_replace(term, "factor(daytime)1", "daytime(8am to 8pm) ")
+  ) %>% 
   knitr::kable(caption = "Linar Regression Result")
 ```
 
-From above linear regression model, we could see that boroughs, month, workday/weekend, daytime/night are significant variables for violation counts prediction. These variabkes are  
+From above linear regression model, we could see that boroughs, month, workday/weekend, daytime/night are significant variables for violation counts prediction in comparison to the reference group. 
 
 $~$
 When Bronx works as reference, the p values for "Brooklyn", "Manhattan", "Queens" are far away smaller than 0.05. This means boroughs has significant effect on violation counts prediction. Staten Island has negative estimate and very small p value because its very small violation counts by comparing to other boroughs.  
 
 $~$
 
-The NYC parking regulation:[free parking on major Legal Holidays and Sundays:](https://newyorkparkingticket.com/parking-rules-holidays-sundays/). This explain why p-value of “workday_weekend” is below 0.05. That means workday factor is significant. Comparing with weekend, there are more parking violation on workdays than weenend due to NYC free parking rules on Sunday.This result is corresponding with the Violation per Hour plot we made in [data exploration](https://zl2974.github.io/hot_coffee/data_exploration.html)  
+The NYC parking regulation:[free parking on major Legal Holidays and Sundays:](https://newyorkparkingticket.com/parking-rules-holidays-sundays/). This explain why p-value of `workday` is below 0.05 when weekend as reference. That means workday factor is significant. Comparing with weekend, there are more parking violation on workdays than weekend due to NYC free parking rules on Sunday.This result is corresponding with the Violation per Hour plot we made in [data exploration](https://zl2974.github.io/hot_coffee/data_exploration.html)  
+
 $~$
-The p vale of factor(daytime)1 is less than 0.05. It makes sense, since people more likely to go out and parking on the street on daytime than night. And parking seems to become a routine issue for commuters.  
+
+The p vale of `daytime` is less than 0.05. It makes sense, since people more likely to go out and parking on the street on daytime than night. And parking seems to become a routine issue for commuters.  
+
 $~$
-The P value for each month is smaller than 2e^16. No matter which month to go out, there will be a significant risk of receiving a parking tickets. The police goes to work on the whole of the year. There might have another explanation for the significance of month. There might some months need to be pay more attention to. May, June, Junly and August are usually summer holiday for students all over the world. Due to that NYC is a tourist attraction, the number of tourists should be increased from May to August. Tourists who aren't familiar with the NYC parking rules may easily receive parking tickets.
+
+The P value for each month is smaller than e^6. No matter which month to go out, there will be a significant risk of receiving a parking tickets. The police goes to work on the whole of the year. There might have another explanation for the significance of month. There might some months need to be pay more attention to. May, June, Junly and August are usually summer holiday for students all over the world. Due to that NYC is a tourist attraction, the number of tourists should be increased from May to August. Tourists who aren't familiar with the NYC parking rules may easily receive parking tickets.
 
 
 ### Model diagnosis
 ```{r model_su, cache = T}
 summary(fit1)
-
 set.seed(500)
 sample_fit1 = 
   boro_daytime_violationln %>% 
   sample_n(5e+3, replace = TRUE)
 
 sample_lm = lm(ln_violation ~ borough + factor(workday_weekend) + factor(daytime) + month, sample_fit1)
-
 par(mfrow = c(2,2))
 plot(sample_lm)
 ```
 
+
 We can see that the residual vs fitted is not equally distributed around 0 horizontal line. In fact, there's a pattern in the residual, indicating that the model although have high goodness of fit, but violating normal assumption on the residual. As a matter of fact, our data follows poison distribution, and thus linear model wouldn't be appropriated for our model. When we doing regression, linear model will not be consider.
+
