@@ -1027,7 +1027,7 @@ At any given time most of this office space is rented. Manhattan becomes the wel
 This is one of reasonable explanations of chi-square test result. But this situation might be changed since the commercial areas tend to extend to other boroughs. Some data in the report shows that the Bronx office market and the Staten Island office market have seen increased investor interest over the past 10 years 
 [click here to get more detailed information](https://www.metro-manhattan.com/blog/market-report-a-look-at-nyc-office-sales-activity-from-2010-to-2020/)].
 
-### Regression Exploration
+## Regression Exploration
 
 The resulting data frame of `boro_daytime_violation` contains a single dataframe df with  2,231,935rows of data on 8 variables, the list below is our variables of interest:
 
@@ -1068,7 +1068,7 @@ boro_daytime_violation =
 
 
 
-#### Box-Cox Transformation
+### Box-Cox Transformation
 ```{r}
 fit1 = 
   lm(violation_number ~ borough + factor(workday_weekend) + factor(daytime) + month, data = boro_daytime_violation)
@@ -1079,7 +1079,7 @@ MASS::boxcox(fit1)
 ```
 we use box-cox method to determine transformation of y. Since λ is close to 0, logarithm transformation should apply to violation counts.
 
-#### MLR
+### MLR
 ```{r}
 boro_daytime_violationln = boro_daytime_violation %>%
   mutate(ln_violation = log(violation_number, base = exp(1)))
@@ -1112,7 +1112,7 @@ The P value for each month is smaller than 2e^16. No matter which month to go ou
 
 
 
-#### Model diagnosis
+### Model diagnosis
 ```{r}
 summary(fit1)
 
@@ -1131,9 +1131,9 @@ We can see that the residual vs fitted is not equally distributed around 0 horiz
 
 So we seek another method for fitting a model for our purpose.
 
-### Regression
+## Regression
 
-#### Data
+### Data
 From previously data exploration and data analysis, we know that the tickets issue is different in borough, hour and weekdays.
 
 Therefore, for us to predicting the possible amount of ticket around certain area of a cafe( in our case, 100m around the cafe), we use these variables as our interested predictors for our model. 
@@ -1151,7 +1151,7 @@ And here's the predictors in our model:
 - *borough* : factors reflecting which borough this area is in;
 - *tickets* : float reflecting the baseline total issue tickets of the area;
 
-#### Fitting Model
+### Fitting Model
 
 Because of the poison distribution of the dependent, we propose 3 models for prediction:
 
@@ -1159,7 +1159,7 @@ Because of the poison distribution of the dependent, we propose 3 models for pre
 1. General Model of _hour_day_risk ~ ticket + borough*hour + weekday_ with _poison()_ family, assuming that there are interaction
 1. General Addiction Model of *hour_day_risk ~ s(ticket) + s(hour) + borough  + weekday* with _poison()_ family and addressing that most tickets is issued during office hour.
 
-## Cross-validation for model
+### Cross-validation for model
 
 \ Looking at all model, all predictors we chose are statistically significant.so we stick to these model predictor for our model. and looking at all three model, the residual mean sum of square are similar across 3 model. So
 
@@ -1171,11 +1171,11 @@ Because of the poison distribution of the dependent, we propose 3 models for pre
 Given above consideration, and taking computing and optimization into consideration, we think the general linear model would be useful for predicting ticket of a area in certain time and day for our app.
 
 
-#### Model Conclusion
+### Model Conclusion
 
 \ *hour, weekdays, borough*, and the *baseline total amount of tickets issue* are all good predictor for expecting amount of ticket issue in a certain hour of a day. 
 
-### Shiny App
+## Shiny App
 
 \ With all the interesting finding and regression model for prediction from above. And to explore the question of how does the coffee shop and parking tickets rate related, and what is the risk of parking nearby a coffee shop or the risk of rank of parking in different boroughs,  we created a graphical user interface using the Shiny package. 
 
