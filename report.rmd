@@ -73,19 +73,19 @@ The following resources are a sample of what inspired this project:
 
 \ 5. What are the most commonly issured parking tickets type? Are they being different in different boroughs?
 
-Our question might shifted a bit during the exploration and regression, due to either falling into a rabbit hole or the data limitation( or our limitation).
+Our question might shifted a bit during the exploration and regression, due to either falling into a rabbit hole or the data limitation( or our limitation). Although these questions could be quiet common in different cities, here we will focus on NYC since it's a typical one.
 
 ## Data
 
 ### Data Sorce
 
-All data was downloaded from [NYC Open Data](https://opendata.cityofnewyork.us/).  
+As we mentioned before, our project will focus on data in NYC, and all data was downloaded from [NYC Open Data](https://opendata.cityofnewyork.us/).  
 
 * For parking violation information: [Parking Violations Issued - Fiscal Year 2021](https://data.cityofnewyork.us/City-Government/Parking-Violations-Issued-Fiscal-Year-2021/pvqr-7yc4)
 
-This dataset contains 380 million violations issued during the 2021 fiscal year.Data is provided by the Department of Finance (DOF).Each record represents a single violation issued. Information on summond number, issue date, violation code and issue street, house number,ect. are recorded. The Issuance datasets are not updated to reflect violation status, the information only represents the violation(s) at the time they are issued.
+This dataset contains 380 million violations issued during the 2021 fiscal year.Data is provided by the Department of Finance (DOF).Each record represents a single violation issued. Information on summond number, issue date, violation code and issue street, house number,etc. are recorded. The Issuance datasets are not updated to reflect violation status, the information only represents the violation(s) at the time they are issued.
 
-A ParkingViolation Code excel is attached to this dataset, which records corresponding violation information of each violation code.
+A ParkingViolation Code excel is attached to this dataset, which records corresponding violation information, such as description and fine amount, of each violation code.
 
 * For café in NYC: [Sidewalk Café Licenses and Applications](https://data.cityofnewyork.us/Business/Sidewalk-Caf-Licenses-and-Applications/qcdj-rwhu)
 
@@ -100,8 +100,7 @@ This dataset features detailed information about sidewalk café license applicat
 1. Parking Violations Issued - Fiscal Year 2021
 1. Sidewalk Café Licenses and Applications
 
-
-\ First we focus on acquiring our own geographic information via available information in the datasets. 
+\ First, in order to display these violations in a visualized way, we focus on acquiring our own geographic information via available information in the datasets. 
 
 \ We wrote a function to pull geographic information 
 from [Geosearch](https://labs-geosearch-docs.netlify.app/). We got longitude and latitude information
@@ -326,7 +325,7 @@ if (!file.exists("data/house_no_dic.csv")){
 ```
 
 
-\ For the cafe data, we generate geographic information according to zip code, the following code was used to create the resulting dataset:
+\ For the cafe data, since it has already contained some geographic information(such as latitude and longitude), we further complete the data by generating borough information according to zip code, the following code was used to create the resulting dataset:
 
 ```{r eval=FALSE}
 cafe =
@@ -461,7 +460,7 @@ data_2021_cleanv1 =
 ```
 
 \ Finally, we generate the fine_amount variable based on geographic variables and violation code. Since the fine amount is different in 
-Manhattan 96th St. & below, we select them by 96th St. geographic variables, and acquire fine amount acording to the attached ParkingViolation Code excel.
+Manhattan 96th St. & below, we select them by 96th St. geographic variables, and acquire fine amount according to the attached Parking Violation Code excel.
 
 \ It is interesting to notice that below 96th  St. have different fine amount for some case, so we need to identify them. NYC's streets are not horizontally or vertically distributed, so we can't just find a latitude and conclude that below them are all below 96th St. And our query function can only return point, not a line for 96th Street.
 
@@ -493,8 +492,9 @@ data_2021_cleanv1 = data_2021_cleanv1 %>%
   select(-below_96, -below_96_m) 
 ```
 
-
 \ Thus, for now, we could get all our required information without acquiring a excessively large dataset(around 14 GB).
+
+\ As a huge amount of data, even the cleaned data would larger than 500MB and which is clearly not able to store in github. With that problem, we decided to share our data through Google drive, and keep our local data file up to date all the time.
 
 \ Also worth mentioning, during building our shiny apps, and regression model, we need to identify all points that are located within a area of certain range. Then we have 2 problems, 
 
@@ -554,9 +554,9 @@ The resulting data file of `parking_vio2021_cleanv1` contains a single dataframe
   * `business_name2`. If applicable, the Doing-Business-As (DBA)/trade name.
   * `lat`. Latitude of cafe.
   * `long`. Longitude of cafe.
+  
 ```{r}
 cafe = read_csv(here::here("data/Sidewalk_Caf__Licenses_and_Applications_clean.csv"))
-
 ```
 
 
@@ -1199,16 +1199,17 @@ Given above consideration, and taking computing and optimization into considerat
 
      1. According to the map generated from the two main datasets, we can see that a large number of parking tickets are clustering in Manhattan.
      
-     2. According to the tickets fine amount density plot, parking tickets generated nearby coffee shops(within 100 meters) in Manhattan are far more than cafe shop in other areas.
+     2. According to the tickets fine amount density plot, parking tickets generated nearby coffee shops(within 100 meters) in Manhattan are far more than cafe shop in other areas.  
+     
 
-
-\ There are explicit patterns of the distribution of tickets generating.
+\ There are explicit patterns of the distribution of tickets generating. These patterns might caused by NYC citizens' scheduling and DOT Issuer's working time.
      
     1. Most of the parking tickets generating in the year of 2020 fall in June, July and August. 
      
     2. There are more parking tickets generarted during work days than weekends.
      
     3. There are two peaks within one day in the terms of parking ticket issuing: 8:00 in the morning and 1:00 in the afternoon.
+
 
 \ There are very different patterns and characteristics of parking tickets in the five boroughs of NYC
 
