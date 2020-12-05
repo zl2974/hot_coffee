@@ -1211,7 +1211,7 @@ Given above consideration, and taking computing and optimization into considerat
     3. There are two peaks within one day in the terms of parking ticket issuing: 8:00 in the morning and 1:00 in the afternoon.
 
 
-\ There are very different patterns and characteristics of parking tickets in the five boroughs of NYC
+\ There are significantly different patterns and characteristics of parking tickets in the five boroughs of NYC
 
     1. The most frequently issued violation types are different among the five boroughs. 
 
