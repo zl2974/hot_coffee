@@ -1,0 +1,206 @@
+---
+title : "Where Do You Like A Cup of Safe Coffee?"
+runtime: shiny
+output: 
+  flexdashboard::flex_dashboard:
+    orientation: rows
+    vertical_layout: fill
+    source: embed
+    code_folding: hide
+    theme: flatly
+---
+
+```{r setup, include=FALSE}
+library(flexdashboard)
+library(tidyverse)
+library(plotly)
+library(leaflet)
+library(shiny)
+library(httr)
+library(rvest)
+library(sf)
+library(shinyWidgets)
+
+knitr::opts_chunk$set(
+  message = F,
+  echo = F,
+  warning = F
+)
+
+theme_set(theme_minimal() + theme(legend.position = "bottom"))
+options(
+  ggplot2.continuous.colour = "viridis",
+  ggplot2.continuous.fill = "viridis",
+  digits = 10
+)
+
+Sys.setlocale("LC_TIME","C")
+
+scale_colour_discrete = scale_colour_viridis_d
+
+scale_fill_discrete = scale_fill_viridis_d
+
+get_location =
+  function(location_name = "Columbia University",
+           .pd = NA) {
+    if (!is.na(.pd)) {
+      .pd$tick()$print()
+    }
+    
+    location_name = str_c(
+      "https://geosearch.planninglabs.nyc/v1/search?text=",
+      location_name,
+      ", New York, NY&size=2"
+    )
+    
+    url =
+      URLencode(location_name)
+    
+    df = read_sf(GET(url) %>% content("text"))
+    
+    if (nrow(df) == 0) {
+      return(tibble(
+        long = NA,
+        lat = NA,
+        borough = NA
+      ))
+    }
+    
+    geometry = df %>%
+      pull(geometry) %>%
+      as.tibble() %>%
+      mutate(geometry = as.character(geometry),
+             geometry = str_replace_all(geometry, "c|[\\(\\)]", "")) %>%
+      separate(geometry, into = c("long", "lat"), sep = ",") %>%
+      mutate_all(as.numeric) %>%
+      summarise(long = mean(long),
+                lat = mean(lat))
+    return(geometry)
+  }
+
+```
+
+```{r data}
+if (file.exists("data/map_data.csv")){
+  cafe = read_csv(here::here("data/map_data.csv"))
+} else {source("map_data.R")}
+
+now = lubridate::now("EST")
+w_en = c("Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday")
+w_cn = c("星期一","星期二","星期三","星期四","星期五","星期六","星期天")
+now_day = weekdays(now)
+
+if (now_day %in% w_cn){
+  now_day = 
+    w_enp[which(now_day,w_cn)]
+}
+
+now_hour = lubridate::hour(now)
+
+cafe = 
+  cafe %>%
+  select(-hour,-weekday,-hour_day_risk) %>% 
+  distinct() %>% 
+  left_join(cafe %>% 
+  filter(weekday == now_day,hour == now_hour)) %>% 
+  mutate(n_risk = forcats::fct_relevel(n_risk,
+                                       "almost safe",
+                                       "some risk",
+                                       "BURNING RISKY"),
+         across(where(is.numeric),replace_na,replace = 0))
+
+boro = c("Manhattan","Queens","Bronx","Brooklyn")
+```
+
+Options {.sidebar}
+-----------------------------------------------------------------------
+
+```{r Sidebar}
+textInput(
+  inputId = "location",
+  label = h3("Where You At?"),
+  value = "Columbia University"
+)
+
+sliderTextInput(
+  inputId = "tolerant",
+  label = h3("Risk Willing to take"),
+  choice = c("almost safe",
+             "some risk",
+             "BURNING RISKY"),
+  selected =
+    "almost safe"
+)
+
+checkboxGroupInput(
+  "borough",
+  label = h3("Which Borough?"),
+  choices = boro,
+  selected = "Manhattan"
+)
+
+
+```
+
+Row {data-width=1000}
+-----------------------------------------------------------------------
+
+### Cafe Map
+
+```{r map}
+pal = colorNumeric(
+  palette = c("viridis", "magma", "inferno", "plasma")[[4]],
+  domain = cafe$ticket %>% sqrt()
+)
+
+renderLeaflet({
+    if (!is.null(input$location)) {
+    locat = get_location(input$location)
+    } else {locat = get_location()}
+  
+  
+  plot_cafe_map =
+    cafe  %>%
+    filter(as.integer(n_risk)<=which(input$tolerant==levels(n_risk)),
+           borough %in% input$borough)%>%
+    mutate(pop =
+             str_c("<h4>", business_name, "</h4>",
+                   adress,"<br>",
+                   swc_chairs," chairs in ",swc_sq_ft," feet space<br>",
+                   "<h5>",n_risk,"</h5><b>",
+                   hour_day_risk," ticket at ",
+                   now_day,now_hour,":00 </b>out of <br>total<b>",
+                   round(ticket), " tickets in 100m<br>",
+                   "EXPECTED FINE AMOUNT : ",round(fine_amount,2),"$</b><br>",
+                   sep = " ")) %>%
+    select(long,lat,pop,business_name,ticket) %>% 
+    leaflet() %>%
+    addProviderTiles(providers$CartoDB.Positron) %>%
+    addCircles(
+      locat[[1]],
+      locat[[2]],
+      radius = 1000,
+      label = "Your Location",
+      weight = 1,
+      fillOpacity = 0.5,
+      group = "Nearby Cafe"
+    ) %>% 
+    addCircleMarkers(
+      ~ long,
+      ~ lat,
+      color = ~ pal(ticket %>% sqrt()),
+      radius = .1,
+      popup = ~ (pop),
+      label = ~str_c(business_name," <- CLICK"),
+      group = "Cafe Shop"
+    ) %>% 
+    addLayersControl(
+      overlayGroups = c("Nearby Cafe","Cafe Shop"),
+      options = layersControlOptions(collapsed = FALSE)
+    ) %>% 
+    setView(lng = locat[[1]], lat = locat[[2]], zoom = 12)
+  
+  plot_cafe_map
+})
+  
+```
