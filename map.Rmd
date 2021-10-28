@@ -1,0 +1,12 @@
+---
+title: "Sorry"
+author : Zhuohui Liang(zl2974), Chufeng Yang(cy2588), Yiming Zhao(yz3955), Yu Liu(yl4604)
+output: html_document
+---
+
+
+## For those who look for our project, we are sorry that the map is **shutted down**. 
+
+The key API provider has terminated their service so the map can no longer function. But the source code is [here](https://github.com/zl2974/risky_coffee) and the idea is simple: PRESENT YOUR DATA IN A NICE AND INTERATIVE WAY.
+
+Good luck with the final project, and anyone want to fix or improve our project are more than welcome to email me.

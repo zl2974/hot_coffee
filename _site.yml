@@ -12,7 +12,7 @@ navbar:
         - text: 'Regression'
           href: https://zl2974.github.io/risky_coffee/Report.html
     - text: "Map"
-      href: https://zl2974.shinyapps.io/Risky_Coffee/
+      href: map.html
     - text: 'Data'
       href: data_source.html
     - text: 'About'
